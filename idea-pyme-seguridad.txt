@@ -1,0 +1,128 @@
+MVP (primera versión monetizable) de la app de seguridad para PYMEs. La idea es: rápido de construir, ya genera valor, y es lo bastante claro como para que alguien pague por él.
+
+🎯 Objetivo del MVP
+
+Dar a una PyME una foto clara de su salud de seguridad digital (correo, web, puertos básicos), con un score simple, hallazgos priorizados y un reporte exportable.
+
+👉 La PyME siente: “Esto me muestra riesgos reales que no conocía, y sé qué hacer para arreglarlos”.
+👉 Vos podés cobrar una suscripción mensual por mantener el monitoreo actualizado.
+
+✅ Alcance del MVP
+Activos
+
+Dominio principal (ej: miempresa.com)
+
+Carga manual (no descubrimiento automático todavía).
+
+Chequeos iniciales
+
+Correo
+
+SPF presente y válido.
+
+DKIM configurado.
+
+DMARC presente + política (none, quarantine, reject).
+
+Web
+
+Certificado SSL válido + días hasta expirar.
+
+Redirección a HTTPS.
+
+Headers básicos: HSTS, CSP, X-Frame-Options, X-Content-Type-Options.
+
+Puertos comunes
+
+TCP connect a top 10–20 puertos típicos (80, 443, 22, 25, 587, 993, 3306…).
+
+Detectar abiertos/cerrados.
+
+Dashboard
+
+Health Score (0–100) calculado con peso por severidad.
+
+Hallazgos listados (título, severidad, qué hacer).
+
+Tareas simples vinculadas (TODO / Done).
+
+Exportar PDF (para “mostrar al jefe”).
+
+Notificaciones
+
+Email semanal con el score + hallazgos nuevos.
+
+Alertas inmediatas solo si aparece algo CRITICAL (ej. SSL vencido).
+
+Multi-tenant básico
+
+1 usuario puede tener varias empresas (pero no RBAC complejo todavía).
+
+Monetización (desde el día 1)
+
+Trial 14 días gratis.
+
+Starter Plan: USD 29/mes (ARS 50k–60k al cambio local).
+
+Incluye 1 dominio, escaneo semanal, reportes PDF.
+
+🛠️ Stack para MVP
+
+Frontend: React + Vite + Apollo Client + Tailwind.
+
+Backend: NestJS + GraphQL + Prisma + PostgreSQL.
+
+Workers: Node (DNS/TLS/HTTP/puertos).
+
+Infra: Docker Compose local → Deploy a Render/Fly.io.
+
+Stripe para pagos.
+
+Nodemailer (SMTP o SendGrid) para emails.
+
+📅 Roadmap MVP (3 meses solo / 6 semanas si vas full)
+
+Semana 1–2
+
+Set up monorepo (api, web, worker).
+
+Auth básica (JWT + refresh).
+
+CRUD de dominios (assets).
+
+Semana 3–4
+
+Workers: DMARC/SPF/DKIM, SSL cert, headers, puertos.
+
+Guardado de hallazgos + cálculo de score.
+
+Dashboard con score y tabla de hallazgos.
+
+Semana 5–6
+
+Tareas vinculadas a hallazgos.
+
+Email semanal automático con resumen.
+
+Generación de reporte PDF.
+
+Semana 7–8
+
+Stripe integrado (trial + plan Starter).
+
+Deploy público (subdominio SaaS, ej: app.securepyme.com).
+
+Landing page con CTA: “Escaneá gratis tu dominio”.
+
+📣 Go-to-Market MVP
+
+Lanzás con 3–5 clientes beta (conocidos) → gratis 1 mes, luego USD 29.
+
+Landing con free scan inicial → lead.
+
+LinkedIn posts mostrando ejemplos reales.
+
+Charlas cortas en coworks / cámaras de comercio.
+
+👉 Con este MVP ya tenés algo usable, monetizable y vendible.
+No es un “toy project”: a una PyME le sirve saber que su correo se puede falsificar o que su SSL vence en 10 días.

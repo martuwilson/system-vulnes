@@ -1,0 +1,165 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companies     Company[]
+  subscription  Subscription?
+
+  @@map("users")
+}
+
+model Company {
+  id     String @id @default(cuid())
+  name   String
+  domain String
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  assets Asset[]
+  scans  SecurityScan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("companies")
+}
+
+model Asset {
+  id        String  @id @default(cuid())
+  domain    String
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("assets")
+}
+
+model SecurityScan {
+  id          String    @id @default(cuid())
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  status      ScanStatus
+  healthScore Int       @default(0)
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  findings Finding[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("security_scans")
+}
+
+model Finding {
+  id             String          @id @default(cuid())
+  scanId         String
+  scan           SecurityScan    @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  category       FindingCategory
+  severity       Severity
+  title          String
+  description    String
+  recommendation String
+  status         FindingStatus   @default(OPEN)
+
+  tasks Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("findings")
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  findingId   String
+  finding     Finding   @relation(fields: [findingId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tasks")
+}
+
+model Subscription {
+  id                    String             @id @default(cuid())
+  userId                String             @unique
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                  SubscriptionPlan
+  status                SubscriptionStatus
+  stripeSubscriptionId  String?            @unique
+  stripeCustomerId      String?
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean            @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("subscriptions")
+}
+
+enum ScanStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum FindingCategory {
+  EMAIL_SECURITY
+  SSL_CERTIFICATE
+  WEB_SECURITY
+  NETWORK_SECURITY
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum FindingStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  IGNORED
+}
+
+enum SubscriptionPlan {
+  TRIAL
+  STARTER
+  PROFESSIONAL
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+}
