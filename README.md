@@ -1,4 +1,4 @@
-# Security System for PYMEs
+# Security System for PYMEs (System Vulnes)
 
 Sistema de monitoreo de seguridad digital para pequeñas y medianas empresas.
 
