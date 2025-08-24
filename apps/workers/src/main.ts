@@ -1,14 +1,17 @@
 import { DNSSecurityWorker } from './workers/dns-security.worker';
 import { SSLCertificateWorker } from './workers/ssl-certificate.worker';
+import { WebSecurityWorker } from './workers/web-security.worker';
 import { i18n } from './i18n';
 
 export class SecurityWorker {
   private dnsWorker: DNSSecurityWorker;
   private sslWorker: SSLCertificateWorker;
+  private webSecurityWorker: WebSecurityWorker;
 
   constructor() {
     this.dnsWorker = new DNSSecurityWorker();
     this.sslWorker = new SSLCertificateWorker();
+    this.webSecurityWorker = new WebSecurityWorker();
   }
 
   /**
@@ -22,16 +25,23 @@ export class SecurityWorker {
       
       console.log(messages.general.scanStarting(domain));
       
-      const [dnsResults, sslResults] = await Promise.all([
+      const [dnsResults, sslResults, webSecurityResults] = await Promise.all([
         this.dnsWorker.scanDNSSecurity(domain),
-        this.sslWorker.scanSSLSecurity(domain)
+        this.sslWorker.scanSSLSecurity(domain),
+        this.webSecurityWorker.scanWebSecurity(domain)
       ]);
       
-      // Combinar findings de ambos scanners
-      const allFindings = [...dnsResults.findings, ...sslResults.findings];
+      // Combinar findings de todos los scanners
+      const allFindings = [
+        ...dnsResults.findings, 
+        ...sslResults.findings,
+        ...webSecurityResults.findings
+      ];
       
       // Calcular score promedio ponderado
-      const overallScore = Math.round((dnsResults.score + sslResults.score) / 2);
+      const overallScore = Math.round(
+        (dnsResults.score + sslResults.score + webSecurityResults.score) / 3
+      );
       
       return {
         domain,
@@ -40,11 +50,13 @@ export class SecurityWorker {
         findings: allFindings,
         details: {
           dns: dnsResults.result,
-          ssl: sslResults.result
+          ssl: sslResults.result,
+          webSecurity: webSecurityResults.result
         },
         scores: {
           dns: dnsResults.score,
           ssl: sslResults.score,
+          webSecurity: webSecurityResults.score,
           overall: overallScore
         }
       };
@@ -85,6 +97,7 @@ async function testScan() {
     console.log(`\n${messages.general.individualScores}:`);
     console.log(`- DNS Security: ${result.scores.dns}/100`);
     console.log(`- SSL Certificate: ${result.scores.ssl}/100`);
+    console.log(`- Web Security: ${result.scores.webSecurity}/100`);
     console.log(`- ${messages.general.overallScore}: ${result.scores.overall}/100`);
     
     console.log(`\n${messages.general.dnsSecurityDetails}:`);
@@ -101,6 +114,14 @@ async function testScan() {
     if (result.details.ssl.issuer) {
       console.log(`- ${messages.general.issuer}: ${result.details.ssl.issuer}`);
     }
+
+    console.log(`\n🌐 ${messages.general.webSecurityDetails}:`);
+    console.log(`- HTTPS Redirect: ${result.details.webSecurity.httpsRedirect ? '✅' : '❌'}`);
+    console.log(`- HSTS Header: ${result.details.webSecurity.headers.hsts ? '✅' : '❌'}`);
+    console.log(`- CSP Header: ${result.details.webSecurity.headers.csp ? '✅' : '❌'}`);
+    console.log(`- X-Frame-Options: ${result.details.webSecurity.headers.xFrameOptions ? '✅' : '❌'}`);
+    console.log(`- X-Content-Type-Options: ${result.details.webSecurity.headers.xContentTypeOptions ? '✅' : '❌'}`);
+    console.log(`- X-XSS-Protection: ${result.details.webSecurity.headers.xXSSProtection ? '✅' : '❌'}`);
     
     if (result.findings.length > 0) {
       console.log(`\n${messages.general.securityFindings}:`);

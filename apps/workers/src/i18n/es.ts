@@ -66,6 +66,51 @@ export const esMessages: Messages = {
       recommendation: 'Configura tu servidor web para redirigir automáticamente todo el tráfico HTTP a HTTPS.'
     }
   },
+
+  webSecurity: {
+    starting: '🌐 Iniciando escaneo de seguridad web para:',
+    completed: '✅ Escaneo de seguridad web completado para',
+    noHttpsRedirect: {
+      title: 'Redirección HTTPS Faltante',
+      description: 'El sitio web no redirige el tráfico HTTP a HTTPS, permitiendo conexiones inseguras.',
+      recommendation: 'Configura tu servidor web para redirigir automáticamente todo el tráfico HTTP a HTTPS.'
+    },
+    missingHsts: {
+      title: 'Header HSTS Faltante',
+      description: 'El header HTTP Strict Transport Security está faltante, haciendo las conexiones vulnerables a ataques de degradación.',
+      recommendation: 'Agrega el header "Strict-Transport-Security: max-age=31536000; includeSubDomains" a la configuración de tu servidor.'
+    },
+    weakHsts: {
+      title: 'Configuración HSTS Débil',
+      description: 'El max-age de HSTS es muy corto. Considera usar al menos 1 año.',
+      recommendation: 'Aumenta el max-age de HSTS a al menos 31536000 segundos (1 año).'
+    },
+    missingCsp: {
+      title: 'Política de Seguridad de Contenido Faltante',
+      description: 'No se encontró header Content Security Policy, dejando el sitio vulnerable a ataques XSS e inyección de código.',
+      recommendation: 'Implementa un header Content Security Policy para prevenir ataques XSS. Comienza con "Content-Security-Policy: default-src \'self\'".'
+    },
+    weakCsp: {
+      title: 'Política de Seguridad de Contenido Débil',
+      description: 'CSP contiene directivas inseguras (unsafe-inline o unsafe-eval) que reducen la efectividad de seguridad.',
+      recommendation: 'Remueve unsafe-inline y unsafe-eval de tu CSP y usa nonces o hashes en su lugar.'
+    },
+    missingFrameOptions: {
+      title: 'Header X-Frame-Options Faltante',
+      description: 'El header X-Frame-Options está faltante, haciendo el sitio vulnerable a ataques de clickjacking.',
+      recommendation: 'Agrega el header "X-Frame-Options: DENY" o "X-Frame-Options: SAMEORIGIN" para prevenir clickjacking.'
+    },
+    missingContentType: {
+      title: 'Header X-Content-Type-Options Faltante',
+      description: 'El header X-Content-Type-Options está faltante, permitiendo ataques de sniffing de tipo MIME.',
+      recommendation: 'Agrega el header "X-Content-Type-Options: nosniff" para prevenir el sniffing MIME.'
+    },
+    missingXssProtection: {
+      title: 'Header X-XSS-Protection Faltante',
+      description: 'El header X-XSS-Protection está faltante, deshabilitando el filtrado XSS del navegador.',
+      recommendation: 'Agrega el header "X-XSS-Protection: 1; mode=block" para habilitar el filtrado XSS.'
+    }
+  },
   
   general: {
     scanStarting: (domain: string) => `🚀 Iniciando escaneo completo de seguridad para: ${domain}`,
@@ -76,6 +121,7 @@ export const esMessages: Messages = {
     individualScores: '📈 Puntajes Individuales',
     dnsSecurityDetails: '🔍 Detalles de Seguridad DNS',
     sslCertificateDetails: '🔒 Detalles del Certificado SSL',
+    webSecurityDetails: '🌐 Detalles de Seguridad Web',
     securityFindings: '⚠️  HALLAZGOS DE SEGURIDAD',
     noIssuesFound: '🎉 ¡No se encontraron problemas de seguridad!',
     scanFailed: (error: string) => `❌ Falló el escaneo: ${error}`,

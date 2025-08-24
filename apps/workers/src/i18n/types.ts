@@ -66,6 +66,52 @@ export interface Messages {
       recommendation: string;
     };
   };
+
+  // Web Security Messages
+  webSecurity: {
+    starting: string;
+    completed: string;
+    noHttpsRedirect: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+    missingHsts: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+    weakHsts: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+    missingCsp: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+    weakCsp: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+    missingFrameOptions: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+    missingContentType: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+    missingXssProtection: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+  };
   
   // General Messages
   general: {
@@ -77,6 +123,7 @@ export interface Messages {
     individualScores: string;
     dnsSecurityDetails: string;
     sslCertificateDetails: string;
+    webSecurityDetails: string;
     securityFindings: string;
     noIssuesFound: string;
     scanFailed: (error: string) => string;

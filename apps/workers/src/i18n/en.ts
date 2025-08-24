@@ -66,6 +66,51 @@ export const enMessages: Messages = {
       recommendation: 'Configure your web server to automatically redirect all HTTP traffic to HTTPS.'
     }
   },
+
+  webSecurity: {
+    starting: '🌐 Starting web security scan for:',
+    completed: '✅ Web security scan completed for',
+    noHttpsRedirect: {
+      title: 'Missing HTTPS Redirect',
+      description: 'Website does not redirect HTTP traffic to HTTPS, allowing insecure connections.',
+      recommendation: 'Configure your web server to automatically redirect all HTTP traffic to HTTPS.'
+    },
+    missingHsts: {
+      title: 'Missing HSTS Header',
+      description: 'HTTP Strict Transport Security header is missing, making connections vulnerable to downgrade attacks.',
+      recommendation: 'Add "Strict-Transport-Security: max-age=31536000; includeSubDomains" header to your server configuration.'
+    },
+    weakHsts: {
+      title: 'Weak HSTS Configuration',
+      description: 'HSTS max-age is too short. Consider using at least 1 year.',
+      recommendation: 'Increase HSTS max-age to at least 31536000 seconds (1 year).'
+    },
+    missingCsp: {
+      title: 'Missing Content Security Policy',
+      description: 'No Content Security Policy header found, leaving the site vulnerable to XSS and code injection attacks.',
+      recommendation: 'Implement a Content Security Policy header to prevent XSS attacks. Start with "Content-Security-Policy: default-src \'self\'".'
+    },
+    weakCsp: {
+      title: 'Weak Content Security Policy',
+      description: 'CSP contains unsafe directives (unsafe-inline or unsafe-eval) that reduce security effectiveness.',
+      recommendation: 'Remove unsafe-inline and unsafe-eval from your CSP and use nonces or hashes instead.'
+    },
+    missingFrameOptions: {
+      title: 'Missing X-Frame-Options Header',
+      description: 'X-Frame-Options header is missing, making the site vulnerable to clickjacking attacks.',
+      recommendation: 'Add "X-Frame-Options: DENY" or "X-Frame-Options: SAMEORIGIN" header to prevent clickjacking.'
+    },
+    missingContentType: {
+      title: 'Missing X-Content-Type-Options Header',
+      description: 'X-Content-Type-Options header is missing, allowing MIME type sniffing attacks.',
+      recommendation: 'Add "X-Content-Type-Options: nosniff" header to prevent MIME sniffing.'
+    },
+    missingXssProtection: {
+      title: 'Missing X-XSS-Protection Header',
+      description: 'X-XSS-Protection header is missing, disabling browser XSS filtering.',
+      recommendation: 'Add "X-XSS-Protection: 1; mode=block" header to enable XSS filtering.'
+    }
+  },
   
   general: {
     scanStarting: (domain: string) => `🚀 Starting comprehensive security scan for: ${domain}`,
@@ -76,6 +121,7 @@ export const enMessages: Messages = {
     individualScores: '📈 Individual Scores',
     dnsSecurityDetails: '🔍 DNS Security Details',
     sslCertificateDetails: '🔒 SSL Certificate Details',
+    webSecurityDetails: '🌐 Web Security Details',
     securityFindings: '⚠️  SECURITY FINDINGS',
     noIssuesFound: '🎉 No security issues found!',
     scanFailed: (error: string) => `❌ Scan failed: ${error}`,
