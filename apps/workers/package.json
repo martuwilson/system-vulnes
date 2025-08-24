@@ -4,29 +4,29 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "start": "node dist/index.js",
-    "lint": "eslint \"src/**/*.ts\" --fix",
-    "test": "jest"
+    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
+    "start": "node dist/main.js",
+    "test": "ts-node src/main.ts",
+    "lint": "eslint \"src/**/*.ts\" --fix"
   },
   "dependencies": {
+    "@security-pyme/shared": "*",
     "bull": "^4.12.2",
-    "redis": "^4.6.13",
+    "cheerio": "^1.0.0-rc.12",
     "dns": "^0.2.2",
-    "tls": "^0.0.1",
-    "net": "^1.0.2",
+    "dotenv": "^16.4.5",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
+    "net": "^1.0.2",
     "node-fetch": "^3.3.2",
-    "cheerio": "^1.0.0-rc.12",
     "nodemailer": "^6.9.9",
     "puppeteer": "^22.4.0",
-    "dotenv": "^16.4.5",
-    "@security-pyme/shared": "*"
+    "redis": "^4.6.13",
+    "tls": "^0.0.1"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
     "@types/bull": "^4.10.0",
+    "@types/node": "^20.19.11",
     "@types/nodemailer": "^6.4.14",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
