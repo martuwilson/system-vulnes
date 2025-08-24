@@ -5,12 +5,12 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BullModule } from '@nestjs/bull';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { CompaniesModule } from './companies/companies.module';
-import { ScansModule } from './scans/scans.module';
-import { FindingsModule } from './findings/findings.module';
-import { TasksModule } from './tasks/tasks.module';
-import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+// import { UsersModule } from './users/users.module';
+// import { CompaniesModule } from './companies/companies.module';
+// import { ScansModule } from './scans/scans.module';
+// import { FindingsModule } from './findings/findings.module';
+// import { TasksModule } from './tasks/tasks.module';
+// import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -33,12 +33,12 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     }),
     PrismaModule,
     AuthModule,
-    UsersModule,
-    CompaniesModule,
-    ScansModule,
-    FindingsModule,
-    TasksModule,
-    SubscriptionsModule,
+    // UsersModule,
+    // CompaniesModule,
+    // ScansModule,
+    // FindingsModule,
+    // TasksModule,
+    // SubscriptionsModule,
   ],
 })
 export class AppModule {}

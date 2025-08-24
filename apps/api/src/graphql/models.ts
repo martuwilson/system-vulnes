@@ -1,0 +1,237 @@
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+
+// Enums locales (temporalmente hasta que solucionemos el path mapping)
+export enum ScanStatus {
+  PENDING = 'PENDING',
+  RUNNING = 'RUNNING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED'
+}
+
+export enum FindingCategory {
+  EMAIL_SECURITY = 'EMAIL_SECURITY',
+  SSL_CERTIFICATE = 'SSL_CERTIFICATE',
+  WEB_SECURITY = 'WEB_SECURITY',
+  NETWORK_SECURITY = 'NETWORK_SECURITY'
+}
+
+export enum Severity {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL'
+}
+
+export enum FindingStatus {
+  OPEN = 'OPEN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  RESOLVED = 'RESOLVED',
+  IGNORED = 'IGNORED'
+}
+
+export enum SubscriptionPlan {
+  TRIAL = 'TRIAL',
+  STARTER = 'STARTER',
+  PROFESSIONAL = 'PROFESSIONAL'
+}
+
+export enum SubscriptionStatus {
+  ACTIVE = 'ACTIVE',
+  CANCELED = 'CANCELED',
+  PAST_DUE = 'PAST_DUE',
+  TRIALING = 'TRIALING'
+}
+
+// Registrar enums para GraphQL
+registerEnumType(ScanStatus, { name: 'ScanStatus' });
+registerEnumType(FindingCategory, { name: 'FindingCategory' });
+registerEnumType(Severity, { name: 'Severity' });
+registerEnumType(FindingStatus, { name: 'FindingStatus' });
+registerEnumType(SubscriptionPlan, { name: 'SubscriptionPlan' });
+registerEnumType(SubscriptionStatus, { name: 'SubscriptionStatus' });
+
+@ObjectType()
+export class User {
+  @Field()
+  id: string;
+
+  @Field()
+  email: string;
+
+  @Field()
+  firstName: string;
+
+  @Field()
+  lastName: string;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class UserSubscription {
+  @Field()
+  id: string;
+
+  @Field()
+  userId: string;
+
+  @Field(() => SubscriptionPlan)
+  plan: SubscriptionPlan;
+
+  @Field(() => SubscriptionStatus)
+  status: SubscriptionStatus;
+
+  @Field({ nullable: true })
+  stripeSubscriptionId?: string;
+
+  @Field({ nullable: true })
+  stripeCustomerId?: string;
+
+  @Field()
+  currentPeriodStart: Date;
+
+  @Field()
+  currentPeriodEnd: Date;
+
+  @Field()
+  cancelAtPeriodEnd: boolean;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class Company {
+  @Field()
+  id: string;
+
+  @Field()
+  name: string;
+
+  @Field()
+  domain: string;
+
+  @Field()
+  userId: string;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class Asset {
+  @Field()
+  id: string;
+
+  @Field()
+  domain: string;
+
+  @Field()
+  companyId: string;
+
+  @Field()
+  isActive: boolean;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class SecurityScan {
+  @Field()
+  id: string;
+
+  @Field()
+  companyId: string;
+
+  @Field(() => ScanStatus)
+  status: ScanStatus;
+
+  @Field()
+  healthScore: number;
+
+  @Field()
+  startedAt: Date;
+
+  @Field({ nullable: true })
+  completedAt?: Date;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class Finding {
+  @Field()
+  id: string;
+
+  @Field()
+  scanId: string;
+
+  @Field(() => FindingCategory)
+  category: FindingCategory;
+
+  @Field(() => Severity)
+  severity: Severity;
+
+  @Field()
+  title: string;
+
+  @Field()
+  description: string;
+
+  @Field()
+  recommendation: string;
+
+  @Field(() => FindingStatus)
+  status: FindingStatus;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class Task {
+  @Field()
+  id: string;
+
+  @Field()
+  findingId: string;
+
+  @Field()
+  title: string;
+
+  @Field()
+  description: string;
+
+  @Field()
+  isCompleted: boolean;
+
+  @Field({ nullable: true })
+  completedAt?: Date;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
