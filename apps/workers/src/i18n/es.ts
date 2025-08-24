@@ -109,6 +109,48 @@ export const esMessages: Messages = {
       title: 'Header X-XSS-Protection Faltante',
       description: 'El header X-XSS-Protection está faltante, deshabilitando el filtrado XSS del navegador.',
       recommendation: 'Agrega el header "X-XSS-Protection: 1; mode=block" para habilitar el filtrado XSS.'
+    },
+    genericIssue: {
+      title: 'Problema de Seguridad Web',
+      description: 'Se detectó un problema de configuración de seguridad web.',
+      recommendation: 'Revisa y resuelve el problema de configuración de seguridad web.'
+    }
+  },
+
+  portScanner: {
+    starting: '🔍 Iniciando escaneo de puertos para:',
+    completed: '✅ Escaneo de puertos completado para',
+    criticalPort: {
+      title: 'Servicio Crítico Expuesto',
+      description: (port: number, service: string, reason: string) => 
+        `El puerto ${port} (${service}) está abierto y accesible desde internet. ${reason}`,
+      recommendation: 'Cierra inmediatamente este puerto o restringe el acceso usando reglas de firewall. Solo permite acceso desde direcciones IP confiables.'
+    },
+    warningPort: {
+      title: 'Servicio Expuesto',
+      description: (port: number, service: string, reason: string) => 
+        `El puerto ${port} (${service}) está abierto. ${reason}`,
+      recommendation: 'Revisa si este servicio necesita ser públicamente accesible. Considera restringir el acceso o usar VPN.'
+    },
+    noPorts: {
+      title: 'Sin Puertos Comunes Abiertos',
+      description: 'No hay puertos comunes abiertos a internet, lo cual es bueno para la seguridad.',
+      recommendation: 'Continúa monitoreando y asegúrate de que solo los servicios necesarios estén expuestos.'
+    },
+    manyPorts: {
+      title: 'Múltiples Puertos Abiertos',
+      description: (count: number) => `${count} puertos están abiertos a internet. Esto aumenta la superficie de ataque.`,
+      recommendation: 'Revisa todos los puertos abiertos y cierra cualquiera que no sea esencial para las operaciones del negocio.'
+    },
+    sshExposed: {
+      title: 'Servicio SSH Expuesto',
+      description: 'SSH (puerto 22) es accesible desde internet, convirtiéndolo en objetivo de ataques de fuerza bruta.',
+      recommendation: 'Considera cambiar SSH a un puerto no estándar, usar autenticación basada en llaves, o restringir acceso por IP.'
+    },
+    rdpExposed: {
+      title: 'Servicio RDP Expuesto',
+      description: 'El Protocolo de Escritorio Remoto (puerto 3389) está expuesto a internet, lo cual es extremadamente peligroso.',
+      recommendation: 'Restringe inmediatamente el acceso RDP a direcciones IP específicas o usa VPN. Considera deshabilitar RDP si no es necesario.'
     }
   },
   

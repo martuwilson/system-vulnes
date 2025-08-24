@@ -21,7 +21,7 @@ export class SSLCertificateWorker {
     console.log(`${messages.ssl.starting} ${domain}`);
     
     const result = await this.sslService.checkSSLSecurity(domain);
-    const findings = this.generateFindings(result);
+    const findings = this.generateFindings(result, messages);
     const score = this.calculateSSLScore(result);
 
     console.log(`${messages.ssl.completed} ${domain}. Score: ${score}/100`);
@@ -36,7 +36,7 @@ export class SSLCertificateWorker {
   /**
    * Genera findings basados en los resultados del escaneo SSL
    */
-  private generateFindings(result: SSLResult & { httpsRedirect: boolean; redirectIssues?: string[] }): ScanResult[] {
+  private generateFindings(result: SSLResult & { httpsRedirect: boolean; redirectIssues?: string[] }, messages: any): ScanResult[] {
     const findings: ScanResult[] = [];
 
     // SSL Certificate Issues
@@ -130,9 +130,9 @@ export class SSLCertificateWorker {
       findings.push({
         category: 'SSL_CERTIFICATE',
         severity,
-        title: 'Missing HTTPS Redirect',
-        description,
-        recommendation: 'Configure your web server to automatically redirect all HTTP traffic to HTTPS.',
+        title: messages.ssl?.noHttpsRedirect?.title || 'Missing HTTPS Redirect',
+        description: messages.ssl?.noHttpsRedirect?.description || description,
+        recommendation: messages.ssl?.noHttpsRedirect?.recommendation || 'Configure your web server to automatically redirect all HTTP traffic to HTTPS.',
         score: severity === 'HIGH' ? 20 : 60
       });
     }

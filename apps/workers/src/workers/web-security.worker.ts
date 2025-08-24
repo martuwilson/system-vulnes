@@ -25,7 +25,7 @@ export class WebSecurityWorker {
       this.webSecurityService.checkDetailedHeaders(domain)
     ]);
 
-    const findings = this.generateFindings(result, detailedHeaders);
+    const findings = this.generateFindings(result, detailedHeaders, messages);
     const score = this.calculateWebSecurityScore(result);
 
     console.log(`✅ ${messages.webSecurity?.completed || 'Web security scan completed for'} ${domain}. Score: ${score}/100`);
@@ -42,10 +42,10 @@ export class WebSecurityWorker {
    */
   private generateFindings(
     result: WebSecurityResult,
-    detailedHeaders: any
+    detailedHeaders: any,
+    messages: any
   ): ScanResult[] {
     const findings: ScanResult[] = [];
-    const messages = i18n.getMessages();
 
     // HTTPS Redirect
     if (!result.httpsRedirect) {
@@ -149,9 +149,9 @@ export class WebSecurityWorker {
         findings.push({
           category: 'WEB_SECURITY',
           severity: 'MEDIUM',
-          title: 'Web Security Issue',
+          title: messages.webSecurity?.genericIssue?.title || 'Web Security Issue',
           description: issue,
-          recommendation: 'Review and resolve the web security configuration issue.',
+          recommendation: messages.webSecurity?.genericIssue?.recommendation || 'Review and resolve the web security configuration issue.',
           score: 60
         });
       });

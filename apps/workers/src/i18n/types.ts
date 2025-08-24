@@ -111,6 +111,47 @@ export interface Messages {
       description: string;
       recommendation: string;
     };
+    genericIssue: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+  };
+
+  // Port Scanner Messages
+  portScanner: {
+    starting: string;
+    completed: string;
+    criticalPort: {
+      title: string;
+      description: (port: number, service: string, reason: string) => string;
+      recommendation: string;
+    };
+    warningPort: {
+      title: string;
+      description: (port: number, service: string, reason: string) => string;
+      recommendation: string;
+    };
+    noPorts: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+    manyPorts: {
+      title: string;
+      description: (count: number) => string;
+      recommendation: string;
+    };
+    sshExposed: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
+    rdpExposed: {
+      title: string;
+      description: string;
+      recommendation: string;
+    };
   };
   
   // General Messages

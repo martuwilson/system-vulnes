@@ -109,6 +109,48 @@ export const enMessages: Messages = {
       title: 'Missing X-XSS-Protection Header',
       description: 'X-XSS-Protection header is missing, disabling browser XSS filtering.',
       recommendation: 'Add "X-XSS-Protection: 1; mode=block" header to enable XSS filtering.'
+    },
+    genericIssue: {
+      title: 'Web Security Issue',
+      description: 'A web security configuration issue was detected.',
+      recommendation: 'Review and resolve the web security configuration issue.'
+    }
+  },
+
+  portScanner: {
+    starting: '🔍 Starting port scan for:',
+    completed: '✅ Port scan completed for',
+    criticalPort: {
+      title: 'Critical Service Exposed',
+      description: (port: number, service: string, reason: string) => 
+        `Port ${port} (${service}) is open and accessible from the internet. ${reason}`,
+      recommendation: 'Immediately close this port or restrict access using firewall rules. Only allow access from trusted IP addresses.'
+    },
+    warningPort: {
+      title: 'Service Exposed',
+      description: (port: number, service: string, reason: string) => 
+        `Port ${port} (${service}) is open. ${reason}`,
+      recommendation: 'Review if this service needs to be publicly accessible. Consider restricting access or using VPN.'
+    },
+    noPorts: {
+      title: 'No Common Ports Open',
+      description: 'No common ports are open to the internet, which is good for security.',
+      recommendation: 'Continue monitoring and ensure only necessary services are exposed.'
+    },
+    manyPorts: {
+      title: 'Multiple Ports Open',
+      description: (count: number) => `${count} ports are open to the internet. This increases the attack surface.`,
+      recommendation: 'Review all open ports and close any that are not essential for business operations.'
+    },
+    sshExposed: {
+      title: 'SSH Service Exposed',
+      description: 'SSH (port 22) is accessible from the internet, making it a target for brute force attacks.',
+      recommendation: 'Consider changing SSH to a non-standard port, using key-based authentication, or restricting access by IP.'
+    },
+    rdpExposed: {
+      title: 'RDP Service Exposed',
+      description: 'Remote Desktop Protocol (port 3389) is exposed to the internet, which is extremely dangerous.',
+      recommendation: 'Immediately restrict RDP access to specific IP addresses or use VPN. Consider disabling RDP if not needed.'
     }
   },
   
