@@ -21,6 +21,7 @@ model User {
 
   companies     Company[]
   subscription  Subscription?
+  companyUsers  CompanyUser[]
 
   @@map("users")
 }
@@ -32,8 +33,10 @@ model Company {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  assets Asset[]
-  scans  SecurityScan[]
+  assets       Asset[]
+  scans        SecurityScan[]
+  companyUsers CompanyUser[]
+  notifications NotificationSetting[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -123,6 +126,29 @@ model Subscription {
   @@map("subscriptions")
 }
 
+model PlanLimits {
+  id                    String           @id @default(cuid())
+  plan                  SubscriptionPlan @unique
+  maxDomains            Int              // 1, 5, -1 (unlimited)
+  maxAssets             Int              // 10, 50, -1 (unlimited)  
+  scanFrequencyHours    Int              // 168(semanal), 24(diario), 6(tiempo real)
+  hasSlackIntegration   Boolean          @default(false)
+  hasTeamsIntegration   Boolean          @default(false)
+  hasPDFReports         Boolean          @default(false)
+  hasCSVReports         Boolean          @default(false)
+  hasComplianceReports  Boolean          @default(false)
+  hasAuditorAccess      Boolean          @default(false)
+  hasPrioritySupport    Boolean          @default(false)
+  hasHistoricalTrends   Boolean          @default(false)
+  maxUsers              Int              // -1 para unlimited
+  priceUsd              Int              // precio en centavos USD
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("plan_limits")
+}
+
 enum ScanStatus {
   PENDING
   RUNNING
@@ -154,7 +180,8 @@ enum FindingStatus {
 enum SubscriptionPlan {
   TRIAL
   STARTER
-  PROFESSIONAL
+  GROWTH
+  PRO
 }
 
 enum SubscriptionStatus {
@@ -162,4 +189,74 @@ enum SubscriptionStatus {
   CANCELED
   PAST_DUE
   TRIALING
+}
+
+enum CompanyRole {
+  OWNER
+  ADMIN
+  MEMBER
+  AUDITOR  // Para acceso de consultores externos
+  VIEWER   // Solo lectura
+}
+
+enum ReportFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum ReportFormat {
+  PDF
+  CSV
+  JSON
+}
+
+model CompanyUser {
+  id        String      @id @default(cuid())
+  userId    String
+  companyId String
+  role      CompanyRole @default(MEMBER)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company   Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  invitedAt DateTime?
+  joinedAt  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, companyId])
+  @@map("company_users")
+}
+
+model NotificationSetting {
+  id           String  @id @default(cuid())
+  userId       String
+  companyId    String
+  company      Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  emailAlerts  Boolean @default(true)
+  slackWebhook String?
+  teamsWebhook String?
+  
+  criticalOnly Boolean @default(false) // Solo alertas críticas
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, companyId])
+  @@map("notification_settings")
+}
+
+model ScheduledReport {
+  id          String      @id @default(cuid())
+  companyId   String
+  frequency   ReportFrequency
+  format      ReportFormat
+  recipients  String      // JSON array de emails
+  isActive    Boolean     @default(true)
+  lastSentAt  DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("scheduled_reports")
 }

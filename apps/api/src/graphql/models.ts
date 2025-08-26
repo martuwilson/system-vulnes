@@ -32,7 +32,8 @@ export enum FindingStatus {
 export enum SubscriptionPlan {
   TRIAL = 'TRIAL',
   STARTER = 'STARTER',
-  PROFESSIONAL = 'PROFESSIONAL'
+  GROWTH = 'GROWTH',
+  PRO = 'PRO'
 }
 
 export enum SubscriptionStatus {
@@ -42,6 +43,26 @@ export enum SubscriptionStatus {
   TRIALING = 'TRIALING'
 }
 
+export enum CompanyRole {
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+  MEMBER = 'MEMBER',
+  AUDITOR = 'AUDITOR',
+  VIEWER = 'VIEWER'
+}
+
+export enum ReportFrequency {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY'
+}
+
+export enum ReportFormat {
+  PDF = 'PDF',
+  CSV = 'CSV',
+  JSON = 'JSON'
+}
+
 // Registrar enums para GraphQL
 registerEnumType(ScanStatus, { name: 'ScanStatus' });
 registerEnumType(FindingCategory, { name: 'FindingCategory' });
@@ -49,6 +70,9 @@ registerEnumType(Severity, { name: 'Severity' });
 registerEnumType(FindingStatus, { name: 'FindingStatus' });
 registerEnumType(SubscriptionPlan, { name: 'SubscriptionPlan' });
 registerEnumType(SubscriptionStatus, { name: 'SubscriptionStatus' });
+registerEnumType(CompanyRole, { name: 'CompanyRole' });
+registerEnumType(ReportFrequency, { name: 'ReportFrequency' });
+registerEnumType(ReportFormat, { name: 'ReportFormat' });
 
 @ObjectType()
 export class User {
@@ -228,6 +252,153 @@ export class Task {
 
   @Field({ nullable: true })
   completedAt?: Date;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class PlanLimits {
+  @Field()
+  id: string;
+
+  @Field(() => SubscriptionPlan)
+  plan: SubscriptionPlan;
+
+  @Field()
+  maxDomains: number;
+
+  @Field()
+  maxAssets: number;
+
+  @Field()
+  scanFrequencyHours: number;
+
+  @Field()
+  hasSlackIntegration: boolean;
+
+  @Field()
+  hasTeamsIntegration: boolean;
+
+  @Field()
+  hasPDFReports: boolean;
+
+  @Field()
+  hasCSVReports: boolean;
+
+  @Field()
+  hasComplianceReports: boolean;
+
+  @Field()
+  hasAuditorAccess: boolean;
+
+  @Field()
+  hasPrioritySupport: boolean;
+
+  @Field()
+  hasHistoricalTrends: boolean;
+
+  @Field()
+  maxUsers: number;
+
+  @Field()
+  priceUsd: number;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class CompanyUser {
+  @Field()
+  id: string;
+
+  @Field()
+  userId: string;
+
+  @Field()
+  companyId: string;
+
+  @Field(() => CompanyRole)
+  role: CompanyRole;
+
+  @Field({ nullable: true })
+  invitedAt?: Date;
+
+  @Field({ nullable: true })
+  joinedAt?: Date;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+
+  @Field(() => User)
+  user: User;
+
+  @Field(() => Company)
+  company: Company;
+}
+
+@ObjectType()
+export class NotificationSetting {
+  @Field()
+  id: string;
+
+  @Field()
+  userId: string;
+
+  @Field()
+  companyId: string;
+
+  @Field()
+  emailAlerts: boolean;
+
+  @Field({ nullable: true })
+  slackWebhook?: string;
+
+  @Field({ nullable: true })
+  teamsWebhook?: string;
+
+  @Field()
+  criticalOnly: boolean;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class ScheduledReport {
+  @Field()
+  id: string;
+
+  @Field()
+  companyId: string;
+
+  @Field(() => ReportFrequency)
+  frequency: ReportFrequency;
+
+  @Field(() => ReportFormat)
+  format: ReportFormat;
+
+  @Field()
+  recipients: string;
+
+  @Field()
+  isActive: boolean;
+
+  @Field({ nullable: true })
+  lastSentAt?: Date;
 
   @Field()
   createdAt: Date;

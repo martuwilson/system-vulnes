@@ -11,10 +11,19 @@ CREATE TYPE "Severity" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL');
 CREATE TYPE "FindingStatus" AS ENUM ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'IGNORED');
 
 -- CreateEnum
-CREATE TYPE "SubscriptionPlan" AS ENUM ('TRIAL', 'STARTER', 'PROFESSIONAL');
+CREATE TYPE "SubscriptionPlan" AS ENUM ('TRIAL', 'STARTER', 'GROWTH', 'PRO');
 
 -- CreateEnum
 CREATE TYPE "SubscriptionStatus" AS ENUM ('ACTIVE', 'CANCELED', 'PAST_DUE', 'TRIALING');
+
+-- CreateEnum
+CREATE TYPE "CompanyRole" AS ENUM ('OWNER', 'ADMIN', 'MEMBER', 'AUDITOR', 'VIEWER');
+
+-- CreateEnum
+CREATE TYPE "ReportFrequency" AS ENUM ('DAILY', 'WEEKLY', 'MONTHLY');
+
+-- CreateEnum
+CREATE TYPE "ReportFormat" AS ENUM ('PDF', 'CSV', 'JSON');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -114,6 +123,73 @@ CREATE TABLE "subscriptions" (
     CONSTRAINT "subscriptions_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "plan_limits" (
+    "id" TEXT NOT NULL,
+    "plan" "SubscriptionPlan" NOT NULL,
+    "maxDomains" INTEGER NOT NULL,
+    "maxAssets" INTEGER NOT NULL,
+    "scanFrequencyHours" INTEGER NOT NULL,
+    "hasSlackIntegration" BOOLEAN NOT NULL DEFAULT false,
+    "hasTeamsIntegration" BOOLEAN NOT NULL DEFAULT false,
+    "hasPDFReports" BOOLEAN NOT NULL DEFAULT false,
+    "hasCSVReports" BOOLEAN NOT NULL DEFAULT false,
+    "hasComplianceReports" BOOLEAN NOT NULL DEFAULT false,
+    "hasAuditorAccess" BOOLEAN NOT NULL DEFAULT false,
+    "hasPrioritySupport" BOOLEAN NOT NULL DEFAULT false,
+    "hasHistoricalTrends" BOOLEAN NOT NULL DEFAULT false,
+    "maxUsers" INTEGER NOT NULL,
+    "priceUsd" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "plan_limits_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "company_users" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "companyId" TEXT NOT NULL,
+    "role" "CompanyRole" NOT NULL DEFAULT 'MEMBER',
+    "invitedAt" TIMESTAMP(3),
+    "joinedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "company_users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "notification_settings" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "companyId" TEXT NOT NULL,
+    "emailAlerts" BOOLEAN NOT NULL DEFAULT true,
+    "slackWebhook" TEXT,
+    "teamsWebhook" TEXT,
+    "criticalOnly" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "notification_settings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "scheduled_reports" (
+    "id" TEXT NOT NULL,
+    "companyId" TEXT NOT NULL,
+    "frequency" "ReportFrequency" NOT NULL,
+    "format" "ReportFormat" NOT NULL,
+    "recipients" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "lastSentAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "scheduled_reports_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -122,6 +198,15 @@ CREATE UNIQUE INDEX "subscriptions_userId_key" ON "subscriptions"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "subscriptions_stripeSubscriptionId_key" ON "subscriptions"("stripeSubscriptionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "plan_limits_plan_key" ON "plan_limits"("plan");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "company_users_userId_companyId_key" ON "company_users"("userId", "companyId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "notification_settings_userId_companyId_key" ON "notification_settings"("userId", "companyId");
 
 -- AddForeignKey
 ALTER TABLE "companies" ADD CONSTRAINT "companies_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -140,3 +225,12 @@ ALTER TABLE "tasks" ADD CONSTRAINT "tasks_findingId_fkey" FOREIGN KEY ("findingI
 
 -- AddForeignKey
 ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "company_users" ADD CONSTRAINT "company_users_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "company_users" ADD CONSTRAINT "company_users_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "notification_settings" ADD CONSTRAINT "notification_settings_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;

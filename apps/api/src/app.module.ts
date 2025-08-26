@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { CompaniesModule } from './companies/companies.module';
 import { AssetsModule } from './assets/assets.module';
+import { PlansModule } from './plans/plans.module';
 // import { UsersModule } from './users/users.module';
 // import { ScansModule } from './scans/scans.module';
 // import { FindingsModule } from './findings/findings.module';
@@ -36,6 +37,7 @@ import { AssetsModule } from './assets/assets.module';
     AuthModule,
     CompaniesModule,
     AssetsModule,
+    PlansModule,
     // UsersModule,
     // ScansModule,
     // FindingsModule,
