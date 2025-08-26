@@ -5,8 +5,9 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BullModule } from '@nestjs/bull';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { CompaniesModule } from './companies/companies.module';
+import { AssetsModule } from './assets/assets.module';
 // import { UsersModule } from './users/users.module';
-// import { CompaniesModule } from './companies/companies.module';
 // import { ScansModule } from './scans/scans.module';
 // import { FindingsModule } from './findings/findings.module';
 // import { TasksModule } from './tasks/tasks.module';
@@ -33,8 +34,9 @@ import { AuthModule } from './auth/auth.module';
     }),
     PrismaModule,
     AuthModule,
+    CompaniesModule,
+    AssetsModule,
     // UsersModule,
-    // CompaniesModule,
     // ScansModule,
     // FindingsModule,
     // TasksModule,
