@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { CompaniesModule } from './companies/companies.module';
 import { AssetsModule } from './assets/assets.module';
 import { PlansModule } from './plans/plans.module';
+import { SecurityModule } from './security/security.module';
 // import { UsersModule } from './users/users.module';
 // import { ScansModule } from './scans/scans.module';
 // import { FindingsModule } from './findings/findings.module';
@@ -38,6 +39,7 @@ import { PlansModule } from './plans/plans.module';
     CompaniesModule,
     AssetsModule,
     PlansModule,
+    SecurityModule,
     // UsersModule,
     // ScansModule,
     // FindingsModule,

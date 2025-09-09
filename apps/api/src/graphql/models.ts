@@ -406,3 +406,91 @@ export class ScheduledReport {
   @Field()
   updatedAt: Date;
 }
+
+// Security-related models
+@ObjectType()
+export class SecurityFinding {
+  @Field()
+  id: string;
+
+  @Field()
+  assetId: string;
+
+  @Field(() => FindingCategory)
+  category: FindingCategory;
+
+  @Field(() => Severity)
+  severity: Severity;
+
+  @Field()
+  title: string;
+
+  @Field()
+  description: string;
+
+  @Field()
+  recommendation: string;
+
+  @Field(() => FindingStatus)
+  status: FindingStatus;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
+
+@ObjectType()
+export class SecurityScanResult {
+  @Field()
+  success: boolean;
+
+  @Field({ nullable: true })
+  scanId?: string;
+
+  @Field()
+  message: string;
+
+  @Field()
+  healthScore: number;
+
+  @Field(() => [SecurityFinding])
+  findings: SecurityFinding[];
+}
+
+@ObjectType()
+export class SecurityScanSummary {
+  @Field()
+  id: string;
+
+  @Field()
+  assetId: number;
+
+  @Field()
+  healthScore: number;
+
+  @Field()
+  findingsCount: number;
+
+  @Field()
+  criticalFindings: number;
+
+  @Field()
+  highFindings: number;
+
+  @Field()
+  mediumFindings: number;
+
+  @Field()
+  lowFindings: number;
+
+  @Field(() => ScanStatus)
+  status: ScanStatus;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}

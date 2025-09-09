@@ -151,3 +151,21 @@ export class CreateScheduledReportInput {
   @IsString()
   recipients: string; // JSON array como string
 }
+
+// Security-related inputs
+@InputType()
+export class SecurityScanInput {
+  @Field()
+  @IsString()
+  assetId: string;
+}
+
+@InputType()
+export class UpdateFindingStatusInput {
+  @Field()
+  @IsString()
+  findingId: string;
+
+  @Field(() => String)
+  status: string; // FindingStatus como string
+}
