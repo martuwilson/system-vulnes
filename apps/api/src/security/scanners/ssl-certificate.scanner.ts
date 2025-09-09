@@ -44,7 +44,7 @@ export class SSLCertificateScanner {
 
       // 2. Verificar algoritmo de firma
       const signatureAlgorithm = certInfo.certificate!.signatureAlgorithm;
-      if (signatureAlgorithm.includes('sha1')) {
+      if (signatureAlgorithm && signatureAlgorithm.includes('sha1')) {
         findings.push({
           category: FindingCategory.SSL_CERTIFICATE,
           severity: Severity.HIGH,

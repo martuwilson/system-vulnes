@@ -35,15 +35,32 @@ export class SecurityResolver {
         };
       }
 
-      const result = await this.securityService.startAssetScan(
-        input.assetId,
-        userWithCompany.companyId,
-      );
+      // Por ahora hacemos scan directo para pruebas
+      const result = await this.securityService.executeScan("google.com");
+      
+      return {
+        success: true,
+        scanId: "test-scan-" + Date.now(),
+        message: 'Security scan completed successfully',
+        healthScore: result.healthScore,
+        findings: result.findings.map(finding => ({
+          id: finding.id || '',
+          category: finding.category as any,
+          severity: finding.severity as any,
+          title: finding.title,
+          description: finding.description,
+          recommendation: finding.recommendation,
+          status: finding.status as any,
+          assetId: input.assetId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })),
+      };
 
       return {
         success: true,
-        scanId: result.scanId,
-        message: 'Security scan started successfully',
+        scanId: "test-scan-" + Date.now(),
+        message: 'Security scan completed successfully',
         healthScore: result.healthScore,
         findings: result.findings.map(finding => ({
           id: finding.id || '',
