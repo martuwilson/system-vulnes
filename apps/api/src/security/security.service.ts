@@ -1,22 +1,113 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { PrismaService } from '../prisma/prisma.service';
 import { ScanStatus, FindingCategory, Severity, FindingStatus } from '@prisma/client';
 import { EmailSecurityScanner } from './scanners/email-security.scanner';
 import { SSLCertificateScanner } from './scanners/ssl-certificate.scanner';
 import { SecurityHeadersScanner } from './scanners/security-headers.scanner';
 import { PortScanner } from './scanners/port.scanner';
+import { SecurityScanJob } from './security.processor';
 
 @Injectable()
 export class SecurityService {
   private readonly logger = new Logger(SecurityService.name);
 
   constructor(
+    @InjectQueue('security-scan') private securityQueue: Queue,
     private prisma: PrismaService,
     private emailScanner: EmailSecurityScanner,
     private sslScanner: SSLCertificateScanner,
     private headersScanner: SecurityHeadersScanner,
     private portScanner: PortScanner,
   ) {}
+
+  /**
+   * Encolar un escaneo de seguridad para procesamiento en background
+   */
+  async queueSecurityScan(
+    domain: string,
+    companyId: string,
+    userId: string,
+    assetId?: string
+  ): Promise<{ scanId: string; jobId: string }> {
+    const scanId = `security-scan-${Date.now()}`;
+
+    this.logger.log(`Queuing security scan for domain: ${domain}, scanId: ${scanId}`);
+
+    try {
+      // Crear el job data
+      const jobData: SecurityScanJob = {
+        scanId,
+        domain,
+        assetId: assetId || '',
+        companyId,
+        userId,
+      };
+
+      // Encolar el trabajo
+      const job = await this.securityQueue.add('execute-scan', jobData, {
+        delay: 0,
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 5000,
+        },
+      });
+
+      this.logger.log(`Security scan job queued: ${job.id} for domain: ${domain}`);
+
+      return {
+        scanId,
+        jobId: job.id?.toString() || 'unknown',
+      };
+
+    } catch (error) {
+      this.logger.error(`Failed to queue security scan for ${domain}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtener el estado de un escaneo
+   */
+  async getScanStatus(scanId: string) {
+    try {
+      const scan = await this.prisma.securityScan.findUnique({
+        where: { id: scanId },
+        include: {
+          findings: true,
+        },
+      });
+
+      if (!scan) {
+        return null;
+      }
+
+      return {
+        id: scan.id,
+        status: scan.status,
+        healthScore: scan.healthScore,
+        startedAt: scan.startedAt,
+        completedAt: scan.completedAt,
+        findingsCount: scan.findings.length,
+        findings: scan.findings.map(finding => ({
+          id: finding.id,
+          category: finding.category,
+          severity: finding.severity,
+          title: finding.title,
+          description: finding.description,
+          recommendation: finding.recommendation,
+          status: finding.status,
+          createdAt: finding.createdAt,
+        })),
+      };
+
+    } catch (error) {
+      this.logger.error(`Failed to get scan status for ${scanId}:`, error);
+      throw error;
+    }
+  }
 
   /**
    * Iniciar un escaneo completo de seguridad para una empresa
@@ -262,27 +353,7 @@ export class SecurityService {
     return Math.max(0, score);
   }
 
-  /**
-   * Obtener el estado de un scan
-   */
-  async getScanStatus(scanId: string) {
-    return this.prisma.securityScan.findUnique({
-      where: { id: scanId },
-      include: {
-        findings: {
-          orderBy: {
-            severity: 'desc'
-          }
-        },
-        company: {
-          select: {
-            name: true,
-            domain: true
-          }
-        }
-      }
-    });
-  }
+
 
   /**
    * Obtener todos los scans de una empresa

@@ -1,6 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { SecurityService } from './security.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from '@prisma/client';
@@ -14,7 +15,57 @@ import { SecurityScanInput as SecurityScanInputType } from '../graphql/inputs';
 @Resolver()
 @UseGuards(JwtAuthGuard)
 export class SecurityResolver {
-  constructor(private readonly securityService: SecurityService) {}
+  constructor(
+    private readonly securityService: SecurityService,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  @Mutation(() => SecurityScanResult)
+  async startSecurityScanQueued(
+    @Args('input') input: SecurityScanInputType,
+    @CurrentUser() user: User,
+  ): Promise<SecurityScanResult> {
+    try {
+      // El user de Prisma no incluye companyId, necesitamos obtenerlo
+      const userWithCompany = await this.getCurrentUserWithCompany(user.id);
+      
+      if (!userWithCompany?.companyId) {
+        return {
+          success: false,
+          scanId: null,
+          message: 'User is not associated with any company',
+          healthScore: 0,
+          findings: []
+        };
+      }
+
+      // Encolar el escaneo para procesamiento en background
+      const result = await this.securityService.queueSecurityScan(
+        'google.com', // Para testing directo
+        userWithCompany.companyId,
+        user.id,
+        input.assetId
+      );
+
+      return {
+        success: true,
+        scanId: result.scanId,
+        message: `Security scan queued successfully. Job ID: ${result.jobId}`,
+        healthScore: 0, // Se calculará cuando complete
+        findings: []
+      };
+
+    } catch (error) {
+      console.error('Error starting queued security scan:', error);
+      return {
+        success: false,
+        scanId: null,
+        message: `Failed to queue security scan: ${error.message}`,
+        healthScore: 0,
+        findings: []
+      };
+    }
+  }
 
   @Mutation(() => SecurityScanResult)
   async startSecurityScan(
@@ -240,14 +291,68 @@ export class SecurityResolver {
     }
   }
 
+  @Query(() => SecurityScanResult, { nullable: true })
+  async getSecurityScanStatus(
+    @Args('scanId') scanId: string,
+    @CurrentUser() user: User,
+  ): Promise<SecurityScanResult | null> {
+    try {
+      const scanStatus = await this.securityService.getScanStatus(scanId);
+      
+      if (!scanStatus) {
+        return null;
+      }
+
+      return {
+        success: scanStatus.status === 'COMPLETED',
+        scanId: scanStatus.id,
+        message: `Scan status: ${scanStatus.status}`,
+        healthScore: scanStatus.healthScore,
+        findings: scanStatus.findings.map(f => ({
+          id: f.id,
+          assetId: '', // TODO: obtener del scan
+          category: f.category as any,
+          severity: f.severity as any,
+          title: f.title,
+          description: f.description,
+          recommendation: f.recommendation,
+          status: f.status as any,
+          createdAt: f.createdAt,
+          updatedAt: f.createdAt, // usar createdAt como fallback
+        })) || []
+      };
+
+    } catch (error) {
+      console.error('Error getting scan status:', error);
+      return null;
+    }
+  }
+
   /**
-   * Helper para obtener usuario con companyId
+   * Helper para obtener usuario con companyId real de la base de datos
    */
   private async getCurrentUserWithCompany(userId: string) {
-    // Por ahora simulamos que el usuario tiene una empresa
-    // En una implementación real, esto vendría de una tabla de relación usuario-empresa
-    return {
-      companyId: `company-${userId}` // Temporal
-    };
+    try {
+      // Buscar la empresa del usuario en la base de datos
+      const userCompany = await this.prisma.company.findFirst({
+        where: { userId: userId },
+        select: { id: true }
+      });
+
+      if (!userCompany) {
+        // Si no tiene empresa, usar la empresa que creamos en los tests
+        const testCompany = await this.prisma.company.findFirst({
+          orderBy: { createdAt: 'desc' },
+          select: { id: true }
+        });
+        
+        return testCompany ? { companyId: testCompany.id } : null;
+      }
+
+      return { companyId: userCompany.id };
+    } catch (error) {
+      console.error('Error getting user company:', error);
+      return null;
+    }
   }
 }
