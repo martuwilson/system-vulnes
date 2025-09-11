@@ -14,6 +14,11 @@ import {
   IconButton,
   Alert,
   CircularProgress,
+  Tooltip,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
 } from '@mui/material';
 import {
   Security,
@@ -29,7 +34,7 @@ import { SeverityChip } from '../../components/ui/SeverityChip';
 import { MetricCard } from '../../components/ui/MetricCard';
 // import { LoadingState } from '../../components/ui/LoadingState';
 import { Toast, useToast } from '../../components/ui/Toast';
-import { METRIC_GRADIENTS, getCategoryIcon } from '../../lib/design-system';
+import { METRIC_GRADIENTS, getSeverityIcon } from '../../lib/design-system';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -117,6 +122,7 @@ const getHealthScoreIcon = (score: number) => {
 
 export function DashboardPage() {
   const [refreshing, setRefreshing] = useState(false);
+  const [severityFilter, setSeverityFilter] = useState<string>('all');
   const toast = useToast();
 
   // Obtener las empresas del usuario
@@ -218,7 +224,7 @@ export function DashboardPage() {
           <MetricCard
             title="Assets Monitoreados"
             value={totalAssets}
-            subtitle={totalAssets === 1 ? "dominio activo" : "dominios activos"}
+            subtitle={totalAssets === 1 ? "Dominio activo" : "Dominios activos"}
             icon={<Shield />}
             gradient={METRIC_GRADIENTS.assets}
           />
@@ -226,11 +232,11 @@ export function DashboardPage() {
 
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
-            title="Health Score Promedio"
+            title="Puntaje de Salud Promedio"
             value={`${averageHealthScore}%`}
-            subtitle={averageHealthScore >= 80 ? "Excelente seguridad" : 
-                     averageHealthScore >= 60 ? "Buena seguridad" :
-                     averageHealthScore >= 40 ? "Requiere atención" : "Estado crítico"}
+            subtitle={averageHealthScore >= 80 ? "Excelente seguridad 🚀" : 
+                     averageHealthScore >= 60 ? "Buena seguridad ✅" :
+                     averageHealthScore >= 40 ? "Requiere atención ⚠️" : "Estado crítico 🚨"}
             icon={getHealthScoreIcon(averageHealthScore)}
             gradient={METRIC_GRADIENTS.healthScore(averageHealthScore)}
           />
@@ -240,9 +246,9 @@ export function DashboardPage() {
           <MetricCard
             title="Vulnerabilidades Críticas"
             value={criticalFindings}
-            subtitle={criticalFindings === 0 ? "¡Excelente! 🎉" : "Requieren atención inmediata"}
+            subtitle={criticalFindings === 0 ? "Sin vulnerabilidades 🚀" : "Requieren atención inmediata"}
             icon={<Error />}
-            gradient={METRIC_GRADIENTS.vulnerabilities}
+            gradient={METRIC_GRADIENTS.vulnerabilities(criticalFindings)}
           />
         </Grid>
 
@@ -250,9 +256,9 @@ export function DashboardPage() {
           <MetricCard
             title="Vulnerabilidades Altas"
             value={highFindings}
-            subtitle={highFindings === 0 ? "¡Muy bien! ✅" : "Revisar pronto"}
+            subtitle={highFindings === 0 ? "Todo en orden ✅" : "Revisar pronto"}
             icon={<Warning />}
-            gradient={METRIC_GRADIENTS.vulnerabilities}
+            gradient={METRIC_GRADIENTS.vulnerabilities(highFindings)}
           />
         </Grid>
       </Grid>
@@ -291,7 +297,11 @@ export function DashboardPage() {
                   {assets.map((asset) => (
                     <ListItem key={asset.id} divider sx={{ py: 2 }}>
                       <ListItemIcon>
-                        <Language color="primary" />
+                        <Language 
+                          sx={{ 
+                            color: asset.isActive ? '#4caf50' : '#f57c00' // Verde activo, naranja inactivo
+                          }} 
+                        />
                       </ListItemIcon>
                       <ListItemText
                         primary={
@@ -302,7 +312,11 @@ export function DashboardPage() {
                             <Chip
                               label={asset.isActive ? 'Activo' : 'Inactivo'}
                               size="small"
-                              color={asset.isActive ? 'success' : 'default'}
+                              sx={{
+                                backgroundColor: asset.isActive ? '#e8f5e8' : '#fff3e0',
+                                color: asset.isActive ? '#2e7d32' : '#f57c00',
+                                fontWeight: 600,
+                              }}
                               variant="outlined"
                             />
                           </Box>
@@ -329,14 +343,32 @@ export function DashboardPage() {
                 <Typography variant="h6" fontWeight="bold">
                   Vulnerabilidades Recientes
                 </Typography>
-                {recentFindings.length > 0 && (
-                  <Chip 
-                    label={`${recentFindings.length} total`} 
-                    size="small" 
-                    color="primary" 
-                    variant="outlined"
-                  />
-                )}
+                <Box display="flex" alignItems="center" gap={2}>
+                  {recentFindings.length > 0 && (
+                    <Chip 
+                      label={`${recentFindings.length} total`} 
+                      size="small" 
+                      color="primary" 
+                      variant="outlined"
+                    />
+                  )}
+                  {recentFindings.length > 5 && (
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                      <InputLabel>Severidad</InputLabel>
+                      <Select
+                        value={severityFilter}
+                        label="Severidad"
+                        onChange={(e) => setSeverityFilter(e.target.value)}
+                      >
+                        <MenuItem value="all">Todas</MenuItem>
+                        <MenuItem value="critical">Críticas</MenuItem>
+                        <MenuItem value="high">Altas</MenuItem>
+                        <MenuItem value="medium">Medias</MenuItem>
+                        <MenuItem value="low">Bajas</MenuItem>
+                      </Select>
+                    </FormControl>
+                  )}
+                </Box>
               </Box>
               
               {recentFindings.length === 0 ? (
@@ -356,6 +388,10 @@ export function DashboardPage() {
               ) : (
                 <List>
                   {[...recentFindings]
+                    .filter(finding => 
+                      severityFilter === 'all' || 
+                      finding.severity.toLowerCase() === severityFilter
+                    )
                     .sort((a, b) => {
                       // Ordenar por severidad: critical > high > medium > low
                       const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
@@ -367,7 +403,7 @@ export function DashboardPage() {
                       <ListItem key={finding.id} divider sx={{ py: 2 }}>
                         <ListItemIcon>
                           <Box sx={{ fontSize: '1.5em' }}>
-                            {getCategoryIcon(finding.category)}
+                            {getSeverityIcon(finding.severity)}
                           </Box>
                         </ListItemIcon>
                         <ListItemText
@@ -384,9 +420,26 @@ export function DashboardPage() {
                               <Typography variant="body2" color="text.secondary" gutterBottom>
                                 {finding.asset.domain} • {new Date(finding.createdAt).toLocaleDateString()}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                                {finding.description.substring(0, 100)}...
-                              </Typography>
+                              <Tooltip 
+                                title={finding.description}
+                                arrow
+                                enterDelay={500}
+                              >
+                                <Typography 
+                                  variant="body2" 
+                                  color="text.secondary" 
+                                  sx={{ 
+                                    fontSize: '0.875rem',
+                                    cursor: 'help',
+                                    '&:hover': { textDecoration: 'underline' }
+                                  }}
+                                >
+                                  {finding.description.length > 100 
+                                    ? `${finding.description.substring(0, 100)}...`
+                                    : finding.description
+                                  }
+                                </Typography>
+                              </Tooltip>
                             </Box>
                           }
                         />

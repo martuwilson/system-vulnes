@@ -108,10 +108,10 @@ export const getHealthScoreTheme = (score: number) => {
 export const getSeverityIcon = (severity: string) => {
   switch (severity.toLowerCase()) {
     case 'critical': return '🚨';
-    case 'high': return '⚠️';
+    case 'high': return '🔴';
     case 'medium': return '⚡';
-    case 'low': return 'ℹ️';
-    default: return '📋';
+    case 'low': return '🔵';
+    default: return 'ℹ️';
   }
 };
 
@@ -129,6 +129,8 @@ export const getCategoryIcon = (category: string) => {
 export const METRIC_GRADIENTS = {
   assets: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   healthScore: (score: number) => getHealthScoreTheme(score).gradient,
-  vulnerabilities: 'linear-gradient(135deg, #fc466b 0%, #3f5efb 100%)',
+  vulnerabilities: (count: number) => count === 0 
+    ? 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)' // Verde para 0 vulnerabilidades
+    : 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)', // Rojo para vulnerabilidades
   scans: 'linear-gradient(135deg, #3facf3 0%, #5b97c7 100%)'
 };

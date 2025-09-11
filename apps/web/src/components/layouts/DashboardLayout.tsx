@@ -135,7 +135,7 @@ export function DashboardLayout() {
           {user?.firstName?.charAt(0).toUpperCase()}
         </Avatar>
         <Typography variant="subtitle1" fontWeight="600" sx={{ mb: 0.5 }}>
-          {user?.firstName} {user?.lastName}
+          {user?.firstName?.charAt(0).toUpperCase()}.
         </Typography>
         <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
           {user?.email}
@@ -190,6 +190,7 @@ export function DashboardLayout() {
                     color: isActive ? 'white' : 'inherit',
                     boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
                     transition: 'all 0.2s ease-in-out',
+                    position: 'relative',
                     '&:hover': {
                       backgroundColor: isActive 
                         ? theme.palette.primary.dark 
@@ -197,6 +198,18 @@ export function DashboardLayout() {
                       transform: 'translateY(-1px)',
                       boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
                     },
+                    // Badge indicator for active item
+                    '&::after': isActive ? {
+                      content: '""',
+                      position: 'absolute',
+                      right: 8,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: 4,
+                      height: 20,
+                      backgroundColor: 'white',
+                      borderRadius: 2,
+                    } : {},
                   }}
                 >
                   <ListItemIcon
