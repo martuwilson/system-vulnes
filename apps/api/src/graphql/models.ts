@@ -409,6 +409,12 @@ export class ScheduledReport {
 
 // Security-related models
 @ObjectType()
+export class AssetRef {
+  @Field()
+  domain: string;
+}
+
+@ObjectType()
 export class SecurityFinding {
   @Field()
   id: string;
@@ -433,6 +439,9 @@ export class SecurityFinding {
 
   @Field(() => FindingStatus)
   status: FindingStatus;
+
+  @Field(() => AssetRef)
+  asset: AssetRef;
 
   @Field()
   createdAt: Date;
@@ -466,6 +475,9 @@ export class SecurityScanSummary {
 
   @Field()
   assetId: number;
+
+  @Field()
+  domain: string;
 
   @Field()
   healthScore: number;

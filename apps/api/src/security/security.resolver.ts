@@ -39,9 +39,25 @@ export class SecurityResolver {
         };
       }
 
+      // Obtener el asset para conseguir el dominio
+      const asset = await this.prisma.asset.findUnique({
+        where: { id: input.assetId },
+        select: { domain: true, companyId: true }
+      });
+
+      if (!asset || asset.companyId !== userWithCompany.companyId) {
+        return {
+          success: false,
+          scanId: null,
+          message: 'Asset not found or not accessible',
+          healthScore: 0,
+          findings: []
+        };
+      }
+
       // Encolar el escaneo para procesamiento en background
       const result = await this.securityService.queueSecurityScan(
-        'google.com', // Para testing directo
+        asset.domain, // Usar el dominio real del asset
         userWithCompany.companyId,
         user.id,
         input.assetId
@@ -86,8 +102,24 @@ export class SecurityResolver {
         };
       }
 
-      // Por ahora hacemos scan directo para pruebas
-      const result = await this.securityService.executeScan("google.com");
+      // Obtener el asset para conseguir el dominio
+      const asset = await this.prisma.asset.findUnique({
+        where: { id: input.assetId },
+        select: { domain: true, companyId: true }
+      });
+
+      if (!asset || asset.companyId !== userWithCompany.companyId) {
+        return {
+          success: false,
+          scanId: null,
+          message: 'Asset not found or not accessible',
+          healthScore: 0,
+          findings: [],
+        };
+      }
+
+      // Hacer scan directo usando el dominio real
+      const result = await this.securityService.executeScan(asset.domain);
       
       return {
         success: true,
@@ -325,6 +357,129 @@ export class SecurityResolver {
     } catch (error) {
       console.error('Error getting scan status:', error);
       return null;
+    }
+  }
+
+  /**
+   * Query para obtener scans por compañía (para el dashboard)
+   */
+  @Query(() => [SecurityScanSummary])
+  async securityScans(
+    @Args('companyId', { type: () => String }) companyId: string,
+    @Args('limit', { type: () => Int, nullable: true, defaultValue: 5 }) limit: number,
+    @CurrentUser() user: User,
+  ): Promise<SecurityScanSummary[]> {
+    try {
+      const userWithCompany = await this.getCurrentUserWithCompany(user.id);
+      
+      if (!userWithCompany?.companyId || userWithCompany.companyId !== companyId) {
+        return [];
+      }
+
+      // Obtener todos los scans de la compañía
+      const scans = await this.prisma.securityScan.findMany({
+        where: {
+          companyId: companyId
+        },
+        include: {
+          findings: {
+            select: {
+              id: true,
+              severity: true,
+              category: true,
+              title: true
+            }
+          },
+          company: {
+            select: {
+              domain: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: limit,
+      });
+
+      return scans.map(scan => ({
+        id: scan.id,
+        assetId: 0, // No hay assetId en este modelo
+        domain: scan.company.domain,
+        healthScore: scan.healthScore,
+        findingsCount: scan.findings?.length || 0,
+        criticalFindings: scan.findings?.filter(f => f.severity === 'CRITICAL').length || 0,
+        highFindings: scan.findings?.filter(f => f.severity === 'HIGH').length || 0,
+        mediumFindings: scan.findings?.filter(f => f.severity === 'MEDIUM').length || 0,
+        lowFindings: scan.findings?.filter(f => f.severity === 'LOW').length || 0,
+        status: scan.status as any,
+        createdAt: scan.createdAt,
+        updatedAt: scan.updatedAt,
+      }));
+    } catch (error) {
+      console.error('Error retrieving company security scans:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Query para obtener findings por compañía (para el dashboard)
+   */
+  @Query(() => [SecurityFinding])
+  async securityFindings(
+    @Args('companyId', { type: () => String }) companyId: string,
+    @Args('limit', { type: () => Int, nullable: true, defaultValue: 10 }) limit: number,
+    @CurrentUser() user: User,
+  ): Promise<SecurityFinding[]> {
+    try {
+      const userWithCompany = await this.getCurrentUserWithCompany(user.id);
+      
+      if (!userWithCompany?.companyId || userWithCompany.companyId !== companyId) {
+        return [];
+      }
+
+      // Obtener todos los findings de la compañía
+      const findings = await this.prisma.finding.findMany({
+        where: {
+          scan: {
+            companyId: companyId
+          }
+        },
+        include: {
+          scan: {
+            include: {
+              company: {
+                select: {
+                  domain: true
+                }
+              }
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: limit,
+      });
+
+      return findings.map(finding => ({
+        id: finding.id,
+        category: finding.category as any,
+        severity: finding.severity as any,
+        title: finding.title,
+        description: finding.description,
+        recommendation: finding.recommendation,
+        status: finding.status as any,
+        assetId: '0', // No hay assetId en este modelo
+        asset: {
+          domain: finding.scan.company.domain
+        },
+        createdAt: finding.createdAt,
+        updatedAt: finding.updatedAt,
+      }));
+    } catch (error) {
+      console.error('Error retrieving company security findings:', error);
+      return [];
     }
   }
 

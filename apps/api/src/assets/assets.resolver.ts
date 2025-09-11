@@ -30,6 +30,19 @@ export class AssetsResolver {
   }
 
   /**
+   * Obtener todos los assets de una empresa (alias para compatibilidad con dashboard)
+   * Requiere autenticación
+   */
+  @Query(() => [Asset])
+  @UseGuards(JwtAuthGuard)
+  async assets(
+    @Args('companyId') companyId: string,
+    @CurrentUser() user: any,
+  ): Promise<Asset[]> {
+    return this.assetsService.getCompanyAssets(user.id, companyId);
+  }
+
+  /**
    * Obtener todos los assets de una empresa
    * Requiere autenticación
    */

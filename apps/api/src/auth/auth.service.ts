@@ -31,33 +31,56 @@ export class AuthService {
     // Hashear la contraseña
     const hashedPassword = await bcrypt.hash(input.password, 12);
 
-    // Crear el usuario
-    const user = await this.prisma.user.create({
-      data: {
-        email: input.email,
-        password: hashedPassword,
-        firstName: input.firstName,
-        lastName: input.lastName,
-      },
-    });
+    // Crear el usuario y la empresa en una transacción
+    const result = await this.prisma.$transaction(async (prisma) => {
+      // Crear el usuario
+      const user = await prisma.user.create({
+        data: {
+          email: input.email,
+          password: hashedPassword,
+          firstName: input.name.split(' ')[0] || input.name,
+          lastName: input.name.split(' ').slice(1).join(' ') || '',
+        },
+      });
 
-    // Crear suscripción trial automática
-    await this.prisma.subscription.create({
-      data: {
-        userId: user.id,
-        plan: 'TRIAL',
-        status: 'TRIALING',
-        currentPeriodStart: new Date(),
-        currentPeriodEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 días
-      },
+      // Crear la empresa
+      const company = await prisma.company.create({
+        data: {
+          name: input.companyName,
+          domain: input.companyDomain,
+          userId: user.id,
+        },
+      });
+
+      // Crear la relación CompanyUser
+      await prisma.companyUser.create({
+        data: {
+          userId: user.id,
+          companyId: company.id,
+          role: 'OWNER',
+        },
+      });
+
+      // Crear suscripción trial automática
+      await prisma.subscription.create({
+        data: {
+          userId: user.id,
+          plan: 'TRIAL',
+          status: 'TRIALING',
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 días
+        },
+      });
+
+      return { user, company };
     });
 
     // Generar tokens
-    const tokens = await this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(result.user.id, result.user.email);
 
     return {
       ...tokens,
-      user: user as any,
+      user: result.user as any,
     };
   }
 
