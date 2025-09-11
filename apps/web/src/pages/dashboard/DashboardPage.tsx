@@ -35,7 +35,7 @@ import { MetricCard } from '../../components/ui/MetricCard';
 // import { LoadingState } from '../../components/ui/LoadingState';
 import { Toast, useToast } from '../../components/ui/Toast';
 import { METRIC_GRADIENTS } from '../../lib/design-system';
-import { translateSeverity, translateStatus, getCategoryIconByType } from '../../lib/translations';
+import { translateSeverity, translateStatus, getCategoryIconByType, formatDateTime } from '../../lib/translations';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -324,7 +324,7 @@ export function DashboardPage() {
                         }
                         secondary={
                           <Typography variant="body2" color="text.secondary">
-                            Agregado: {new Date(asset.createdAt).toLocaleDateString()}
+                            Agregado: {formatDateTime(asset.createdAt)}
                           </Typography>
                         }
                       />
@@ -419,7 +419,7 @@ export function DashboardPage() {
                           secondary={
                             <Box>
                               <Typography variant="body2" color="text.secondary" gutterBottom>
-                                {finding.asset.domain} • {new Date(finding.createdAt).toLocaleDateString()}
+                                {finding.asset.domain} • {formatDateTime(finding.createdAt)}
                               </Typography>
                               <Tooltip 
                                 title={finding.description}
@@ -504,7 +504,7 @@ export function DashboardPage() {
                         secondary={
                           <Box>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                              {scan.findingsCount} vulnerabilidades • {new Date(scan.createdAt).toLocaleDateString()}
+                              {scan.findingsCount} vulnerabilidades • {formatDateTime(scan.createdAt)}
                             </Typography>
                             <Box display="flex" alignItems="center" gap={1}>
                               <Typography variant="body2" color="text.secondary">

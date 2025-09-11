@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import { Add, Business, Language, Delete } from '@mui/icons-material';
 import toast from 'react-hot-toast';
+import { formatDateTime } from '../../lib/translations';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -268,7 +269,7 @@ export function CompaniesPage() {
                     secondary={
                       <Box>
                         <Typography variant="body2" color="text.secondary">
-                          Agregado: {new Date(asset.createdAt).toLocaleDateString()}
+                          Agregado: {formatDateTime(asset.createdAt)}
                         </Typography>
                       </Box>
                     }

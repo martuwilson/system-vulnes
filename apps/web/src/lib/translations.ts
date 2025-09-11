@@ -98,3 +98,36 @@ export const getCategoryIconByType = (category: string) => {
       return '🔍';
   }
 };
+
+// Función para formatear fechas de manera amigable
+export const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  const isToday = date.toDateString() === today.toDateString();
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+  
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  };
+  
+  const time = date.toLocaleString('es-ES', timeOptions);
+  
+  if (isToday) {
+    return `Hoy ${time}`;
+  } else if (isYesterday) {
+    return `Ayer ${time}`;
+  } else {
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    };
+    const dateStr = date.toLocaleString('es-ES', dateOptions);
+    return `${dateStr} ${time}`;
+  }
+};
