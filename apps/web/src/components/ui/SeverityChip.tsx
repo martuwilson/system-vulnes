@@ -1,5 +1,6 @@
 import { Chip, Box } from '@mui/material';
 import { getSeverityColor, getSeverityIcon } from '../../lib/design-system';
+import { translateSeverity } from '../../lib/translations';
 
 interface SeverityChipProps {
   severity: string;
@@ -36,7 +37,7 @@ export function SeverityChip({
 
   return (
     <Chip
-      label={severity.charAt(0).toUpperCase() + severity.slice(1).toLowerCase()}
+      label={translateSeverity(severity)}
       icon={showIcon ? <Box component="span">{icon}</Box> : undefined}
       size={size}
       variant={variant === 'outlined' ? 'outlined' : 'filled'}

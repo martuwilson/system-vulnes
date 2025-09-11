@@ -28,13 +28,10 @@ import {
   PlayArrow, 
   Security, 
   Refresh,
-  Language,
-  Lock,
-  Shield,
-  NetworkCheck,
   CheckCircle,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
+import { translateSeverity, translateStatus, getCategoryIconByType } from '../../lib/translations';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -116,6 +113,38 @@ const getStatusColor = (status: string) => {
     case 'queued': return 'warning';
     case 'failed': return 'error';
     default: return 'default';
+  }
+};
+
+const formatScanDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  const isToday = date.toDateString() === today.toDateString();
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+  
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  };
+  
+  const time = date.toLocaleString('es-ES', timeOptions);
+  
+  if (isToday) {
+    return `Hoy ${time}`;
+  } else if (isYesterday) {
+    return `Ayer ${time}`;
+  } else {
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    };
+    const dateStr = date.toLocaleString('es-ES', dateOptions);
+    return `${dateStr} ${time}`;
   }
 };
 
@@ -295,11 +324,11 @@ export function ScansPage() {
                             {scan.domain}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {new Date(scan.createdAt).toLocaleString()}
+                            {formatScanDateTime(scan.createdAt)}
                           </Typography>
                         </Box>
                         <Chip
-                          label={scan.status}
+                          label={translateStatus(scan.status)}
                           color={getStatusColor(scan.status) as any}
                           size="small"
                         />
@@ -374,7 +403,7 @@ export function ScansPage() {
                     Estado:
                   </Typography>
                   <Chip
-                    label={selectedScan.status}
+                    label={translateStatus(selectedScan.status)}
                     color={getStatusColor(selectedScan.status) as any}
                     sx={{ mt: 0.5 }}
                   />
@@ -392,7 +421,7 @@ export function ScansPage() {
                     Iniciado:
                   </Typography>
                   <Typography variant="body1">
-                    {new Date(selectedScan.createdAt).toLocaleString()}
+                    {formatScanDateTime(selectedScan.createdAt)}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -400,7 +429,7 @@ export function ScansPage() {
                     Actualizado:
                   </Typography>
                   <Typography variant="body1">
-                    {new Date(selectedScan.updatedAt).toLocaleString()}
+                    {formatScanDateTime(selectedScan.updatedAt)}
                   </Typography>
                 </Grid>
               </Grid>
@@ -418,10 +447,7 @@ export function ScansPage() {
                   {selectedScan.findings.map((finding) => (
                     <ListItem key={finding.id} divider>
                       <ListItemIcon>
-                        {finding.type === 'EMAIL_SECURITY' && <Language />}
-                        {finding.type === 'SSL_CERTIFICATE' && <Lock />}
-                        {finding.type === 'SECURITY_HEADERS' && <Shield />}
-                        {finding.type === 'PORT_SCAN' && <NetworkCheck />}
+                        {getCategoryIconByType(finding.type)}
                       </ListItemIcon>
                       <ListItemText
                         primary={
@@ -430,7 +456,7 @@ export function ScansPage() {
                               {finding.title}
                             </Typography>
                             <Chip
-                              label={finding.severity}
+                              label={translateSeverity(finding.severity)}
                               color={getSeverityColor(finding.severity) as any}
                               size="small"
                             />

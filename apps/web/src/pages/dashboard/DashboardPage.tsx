@@ -34,7 +34,8 @@ import { SeverityChip } from '../../components/ui/SeverityChip';
 import { MetricCard } from '../../components/ui/MetricCard';
 // import { LoadingState } from '../../components/ui/LoadingState';
 import { Toast, useToast } from '../../components/ui/Toast';
-import { METRIC_GRADIENTS, getSeverityIcon } from '../../lib/design-system';
+import { METRIC_GRADIENTS } from '../../lib/design-system';
+import { translateSeverity, translateStatus, getCategoryIconByType } from '../../lib/translations';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -403,7 +404,7 @@ export function DashboardPage() {
                       <ListItem key={finding.id} divider sx={{ py: 2 }}>
                         <ListItemIcon>
                           <Box sx={{ fontSize: '1.5em' }}>
-                            {getSeverityIcon(finding.severity)}
+                            {getCategoryIconByType(finding.category)}
                           </Box>
                         </ListItemIcon>
                         <ListItemText
@@ -412,7 +413,7 @@ export function DashboardPage() {
                               <Typography variant="subtitle1" fontWeight="600">
                                 {finding.title}
                               </Typography>
-                              <SeverityChip severity={finding.severity} />
+                              <SeverityChip severity={translateSeverity(finding.severity)} />
                             </Box>
                           }
                           secondary={
@@ -494,7 +495,7 @@ export function DashboardPage() {
                               Escaneo de {scan.domain}
                             </Typography>
                             <Chip
-                              label={scan.status === 'COMPLETED' ? 'Completado' : scan.status}
+                              label={translateStatus(scan.status)}
                               color={scan.status === 'COMPLETED' ? 'success' : 'default'}
                               size="small"
                             />
