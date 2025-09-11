@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   Typography,
-  LinearProgress,
   Chip,
   List,
   ListItem,
@@ -19,14 +18,18 @@ import {
 import {
   Security,
   Warning,
-  CheckCircle,
   Error,
+  CheckCircle,
   Refresh,
   Shield,
   Language,
-  Lock,
-  NetworkCheck,
 } from '@mui/icons-material';
+import { HealthScoreIndicator } from '../../components/ui/HealthScoreIndicator';
+import { SeverityChip } from '../../components/ui/SeverityChip';
+import { MetricCard } from '../../components/ui/MetricCard';
+// import { LoadingState } from '../../components/ui/LoadingState';
+import { Toast, useToast } from '../../components/ui/Toast';
+import { METRIC_GRADIENTS, getCategoryIcon } from '../../lib/design-system';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -106,27 +109,6 @@ interface SecurityScan {
   lowFindings: number;
 }
 
-const getSeverityColor = (severity: string) => {
-  switch (severity.toLowerCase()) {
-    case 'critical':
-      return 'error';
-    case 'high':
-      return 'error';
-    case 'medium':
-      return 'warning';
-    case 'low':
-      return 'info';
-    default:
-      return 'default';
-  }
-};
-
-const getHealthScoreColor = (score: number) => {
-  if (score >= 80) return 'success';
-  if (score >= 60) return 'warning';
-  return 'error';
-};
-
 const getHealthScoreIcon = (score: number) => {
   if (score >= 80) return <CheckCircle color="success" />;
   if (score >= 60) return <Warning color="warning" />;
@@ -135,6 +117,7 @@ const getHealthScoreIcon = (score: number) => {
 
 export function DashboardPage() {
   const [refreshing, setRefreshing] = useState(false);
+  const toast = useToast();
 
   // Obtener las empresas del usuario
   const { data: companiesData } = useQuery(GET_MY_COMPANIES);
@@ -150,6 +133,10 @@ export function DashboardPage() {
     setRefreshing(true);
     try {
       await refetch();
+      toast.showSuccess('Datos actualizados correctamente', '¡Actualización exitosa!');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast.showError('No se pudo actualizar los datos. Inténtalo de nuevo.', 'Error de actualización');
     } finally {
       setRefreshing(false);
     }
@@ -186,15 +173,23 @@ export function DashboardPage() {
 
   return (
     <Box>
-      {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      {/* Header Mejorado */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
         <Box>
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             Dashboard de Seguridad
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
             Resumen de la seguridad digital de {userCompany?.name || 'tu empresa'}
           </Typography>
+          {userCompany && (
+            <Chip 
+              label={`Monitoreando: ${userCompany.domain}`}
+              size="small"
+              color="primary"
+              variant="outlined"
+            />
+          )}
         </Box>
         <IconButton 
           onClick={handleRefresh} 
@@ -203,7 +198,8 @@ export function DashboardPage() {
           sx={{ 
             backgroundColor: 'primary.main',
             color: 'white',
-            '&:hover': { backgroundColor: 'primary.dark' }
+            '&:hover': { backgroundColor: 'primary.dark' },
+            '&:disabled': { backgroundColor: 'grey.300' }
           }}
         >
           <Refresh sx={{ 
@@ -216,114 +212,107 @@ export function DashboardPage() {
         </IconButton>
       </Box>
 
-      {/* Stats Cards */}
+      {/* Stats Cards Mejoradas */}
       <Grid container spacing={3} mb={4}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-            <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {totalAssets}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Assets Monitoreados
-                  </Typography>
-                </Box>
-                <Shield sx={{ fontSize: 48, opacity: 0.8 }} />
-              </Box>
-            </CardContent>
-          </Card>
+          <MetricCard
+            title="Assets Monitoreados"
+            value={totalAssets}
+            subtitle={totalAssets === 1 ? "dominio activo" : "dominios activos"}
+            icon={<Shield />}
+            gradient={METRIC_GRADIENTS.assets}
+          />
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: `linear-gradient(135deg, ${getHealthScoreColor(averageHealthScore) === 'success' ? '#4facfe 0%, #00f2fe 100%' : getHealthScoreColor(averageHealthScore) === 'warning' ? '#f093fb 0%, #f5576c 100%' : '#ff9a9e 0%, #fecfef 100%'})`, color: 'white' }}>
-            <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {averageHealthScore}%
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Health Score Promedio
-                  </Typography>
-                </Box>
-                {getHealthScoreIcon(averageHealthScore)}
-              </Box>
-            </CardContent>
-          </Card>
+          <MetricCard
+            title="Health Score Promedio"
+            value={`${averageHealthScore}%`}
+            subtitle={averageHealthScore >= 80 ? "Excelente seguridad" : 
+                     averageHealthScore >= 60 ? "Buena seguridad" :
+                     averageHealthScore >= 40 ? "Requiere atención" : "Estado crítico"}
+            icon={getHealthScoreIcon(averageHealthScore)}
+            gradient={METRIC_GRADIENTS.healthScore(averageHealthScore)}
+          />
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #fc466b 0%, #3f5efb 100%)', color: 'white' }}>
-            <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {criticalFindings}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Vulnerabilidades Críticas
-                  </Typography>
-                </Box>
-                <Error sx={{ fontSize: 48, opacity: 0.8 }} />
-              </Box>
-            </CardContent>
-          </Card>
+          <MetricCard
+            title="Vulnerabilidades Críticas"
+            value={criticalFindings}
+            subtitle={criticalFindings === 0 ? "¡Excelente! 🎉" : "Requieren atención inmediata"}
+            icon={<Error />}
+            gradient={METRIC_GRADIENTS.vulnerabilities}
+          />
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white' }}>
-            <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {highFindings}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Vulnerabilidades Altas
-                  </Typography>
-                </Box>
-                <Warning sx={{ fontSize: 48, opacity: 0.8 }} />
-              </Box>
-            </CardContent>
-          </Card>
+          <MetricCard
+            title="Vulnerabilidades Altas"
+            value={highFindings}
+            subtitle={highFindings === 0 ? "¡Muy bien! ✅" : "Revisar pronto"}
+            icon={<Warning />}
+            gradient={METRIC_GRADIENTS.vulnerabilities}
+          />
         </Grid>
       </Grid>
 
       {/* Main Content */}
       <Grid container spacing={3}>
-        {/* Assets Overview */}
+        {/* Assets Overview Mejorado */}
         <Grid item xs={12} md={6}>
-          <Card>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Assets Monitoreados
-              </Typography>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6" fontWeight="bold">
+                  Assets Monitoreados
+                </Typography>
+                <Chip 
+                  label={`${assets.filter(a => a.isActive).length} activos`} 
+                  size="small" 
+                  color="success" 
+                  variant="outlined"
+                />
+              </Box>
               
               {assets.length === 0 ? (
-                <Alert severity="info">
-                  No tienes assets monitoreados aún. Agrega tu primer dominio para comenzar.
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      ¿Listo para empezar? 🚀
+                    </Typography>
+                    <Typography variant="body2">
+                      Agrega tu primer dominio para comenzar a monitorear la seguridad
+                    </Typography>
+                  </Box>
                 </Alert>
               ) : (
                 <List>
                   {assets.map((asset) => (
-                    <ListItem key={asset.id} divider>
+                    <ListItem key={asset.id} divider sx={{ py: 2 }}>
                       <ListItemIcon>
                         <Language color="primary" />
                       </ListItemIcon>
                       <ListItemText
-                        primary={asset.domain}
-                        secondary={`Agregado: ${new Date(asset.createdAt).toLocaleDateString()}`}
+                        primary={
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Typography variant="subtitle1" fontWeight="600">
+                              {asset.domain}
+                            </Typography>
+                            <Chip
+                              label={asset.isActive ? 'Activo' : 'Inactivo'}
+                              size="small"
+                              color={asset.isActive ? 'success' : 'default'}
+                              variant="outlined"
+                            />
+                          </Box>
+                        }
+                        secondary={
+                          <Typography variant="body2" color="text.secondary">
+                            Agregado: {new Date(asset.createdAt).toLocaleDateString()}
+                          </Typography>
+                        }
                       />
-                      <Box>
-                        <Chip
-                          label={asset.isActive ? 'Activo' : 'Inactivo'}
-                          color={asset.isActive ? 'success' : 'default'}
-                          variant="outlined"
-                          size="small"
-                        />
-                      </Box>
                     </ListItem>
                   ))}
                 </List>
@@ -332,87 +321,157 @@ export function DashboardPage() {
           </Card>
         </Grid>
 
-        {/* Recent Vulnerabilities */}
+        {/* Vulnerabilidades Recientes Mejoradas */}
         <Grid item xs={12} md={6}>
-          <Card>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Vulnerabilidades Recientes
-              </Typography>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6" fontWeight="bold">
+                  Vulnerabilidades Recientes
+                </Typography>
+                {recentFindings.length > 0 && (
+                  <Chip 
+                    label={`${recentFindings.length} total`} 
+                    size="small" 
+                    color="primary" 
+                    variant="outlined"
+                  />
+                )}
+              </Box>
               
               {recentFindings.length === 0 ? (
-                <Alert severity="success">
-                  ¡Excelente! No se encontraron vulnerabilidades recientes.
+                <Alert severity="success" sx={{ mt: 2 }}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <CheckCircle />
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        ¡Excelente! No hay vulnerabilidades recientes 🚀
+                      </Typography>
+                      <Typography variant="body2">
+                        Tu sistema está bien protegido
+                      </Typography>
+                    </Box>
+                  </Box>
                 </Alert>
               ) : (
                 <List>
-                  {recentFindings.slice(0, 5).map((finding) => (
-                    <ListItem key={finding.id} divider>
-                      <ListItemIcon>
-                        {finding.category === 'EMAIL_SECURITY' && <Language />}
-                        {finding.category === 'SSL_CERTIFICATE' && <Lock />}
-                        {finding.category === 'SECURITY_HEADERS' && <Security />}
-                        {finding.category === 'PORT_SCAN' && <NetworkCheck />}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={finding.title}
-                        secondary={`${finding.asset.domain} • ${new Date(finding.createdAt).toLocaleDateString()}`}
-                      />
-                      <Chip
-                        label={finding.severity}
-                        color={getSeverityColor(finding.severity) as any}
-                        size="small"
-                      />
-                    </ListItem>
-                  ))}
+                  {[...recentFindings]
+                    .sort((a, b) => {
+                      // Ordenar por severidad: critical > high > medium > low
+                      const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+                      return (severityOrder[b.severity.toLowerCase() as keyof typeof severityOrder] || 0) - 
+                             (severityOrder[a.severity.toLowerCase() as keyof typeof severityOrder] || 0);
+                    })
+                    .slice(0, 5)
+                    .map((finding) => (
+                      <ListItem key={finding.id} divider sx={{ py: 2 }}>
+                        <ListItemIcon>
+                          <Box sx={{ fontSize: '1.5em' }}>
+                            {getCategoryIcon(finding.category)}
+                          </Box>
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={
+                            <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                              <Typography variant="subtitle1" fontWeight="600">
+                                {finding.title}
+                              </Typography>
+                              <SeverityChip severity={finding.severity} />
+                            </Box>
+                          }
+                          secondary={
+                            <Box>
+                              <Typography variant="body2" color="text.secondary" gutterBottom>
+                                {finding.asset.domain} • {new Date(finding.createdAt).toLocaleDateString()}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                                {finding.description.substring(0, 100)}...
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                    ))}
                 </List>
               )}
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Recent Scans */}
+        {/* Escaneos Recientes Mejorados */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Escaneos Recientes
-              </Typography>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6" fontWeight="bold">
+                  Escaneos Recientes
+                </Typography>
+                {recentScans.length > 0 && (
+                  <Chip 
+                    label={`${recentScans.length} escaneos`} 
+                    size="small" 
+                    color="primary" 
+                    variant="outlined"
+                  />
+                )}
+              </Box>
               
               {recentScans.length === 0 ? (
-                <Alert severity="info">
-                  No hay escaneos recientes. Ejecuta tu primer escaneo de seguridad.
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      ¡Ejecuta tu primer escaneo! 🔍
+                    </Typography>
+                    <Typography variant="body2">
+                      Ve a la sección de Escaneos para analizar la seguridad de tus dominios
+                    </Typography>
+                  </Box>
                 </Alert>
               ) : (
                 <List>
                   {recentScans.map((scan) => (
-                    <ListItem key={scan.id} divider>
+                    <ListItem key={scan.id} divider sx={{ py: 2 }}>
                       <ListItemIcon>
                         <Security color="primary" />
                       </ListItemIcon>
                       <ListItemText
-                        primary={`Escaneo de ${scan.domain}`}
-                        secondary={`${scan.findingsCount} vulnerabilidades encontradas • ${new Date(scan.createdAt).toLocaleDateString()}`}
+                        primary={
+                          <Box display="flex" alignItems="center" gap={2} mb={1}>
+                            <Typography variant="subtitle1" fontWeight="600">
+                              Escaneo de {scan.domain}
+                            </Typography>
+                            <Chip
+                              label={scan.status === 'COMPLETED' ? 'Completado' : scan.status}
+                              color={scan.status === 'COMPLETED' ? 'success' : 'default'}
+                              size="small"
+                            />
+                          </Box>
+                        }
+                        secondary={
+                          <Box>
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                              {scan.findingsCount} vulnerabilidades • {new Date(scan.createdAt).toLocaleDateString()}
+                            </Typography>
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <Typography variant="body2" color="text.secondary">
+                                Health Score:
+                              </Typography>
+                              <HealthScoreIndicator 
+                                score={scan.healthScore} 
+                                size="small" 
+                                showProgress={false}
+                                showLabel={false}
+                              />
+                            </Box>
+                          </Box>
+                        }
                       />
                       <Box display="flex" alignItems="center" gap={1}>
-                        {scan.healthScore !== undefined && (
-                          <Box display="flex" alignItems="center" gap={1} mr={2}>
-                            <Typography variant="body2">Health Score:</Typography>
-                            <LinearProgress
-                              variant="determinate"
-                              value={scan.healthScore}
-                              color={getHealthScoreColor(scan.healthScore) as any}
-                              sx={{ width: 100, height: 8, borderRadius: 4 }}
-                            />
-                            <Typography variant="body2" fontWeight="bold">
-                              {scan.healthScore}%
-                            </Typography>
-                          </Box>
-                        )}
-                        <Chip
-                          label={scan.status}
-                          color={scan.status === 'COMPLETED' ? 'success' : 'default'}
-                          size="small"
+                        <HealthScoreIndicator 
+                          score={scan.healthScore} 
+                          size="small" 
+                          showLabel={true}
+                          showProgress={true}
                         />
                       </Box>
                     </ListItem>
@@ -423,6 +482,15 @@ export function DashboardPage() {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Toast notifications */}
+      <Toast
+        open={toast.open}
+        onClose={toast.hideToast}
+        type={toast.type}
+        title={toast.title}
+        message={toast.message}
+      />
     </Box>
   );
 }

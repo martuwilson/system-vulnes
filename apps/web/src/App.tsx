@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box } from '@mui/material';
 
@@ -27,11 +26,16 @@ function App() {
     return (
       <Box
         display="flex"
+        flexDirection="column"
         justifyContent="center"
         alignItems="center"
         minHeight="100vh"
+        gap={2}
       >
-        Cargando...
+        <div>Cargando aplicación...</div>
+        <div style={{ fontSize: '12px', color: '#666' }}>
+          Verificando autenticación...
+        </div>
       </Box>
     );
   }

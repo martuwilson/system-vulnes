@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -34,10 +34,9 @@ interface LoginFormData {
 }
 
 export function LoginPage() {
-  const navigate = useNavigate();
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -53,21 +52,20 @@ export function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setLoading(true);
+    setIsLoggingIn(true);
     setError(null);
 
     try {
       const result = await login(data.email, data.password);
       
-      if (result?.success) {
-        navigate('/dashboard');
-      } else {
+      if (!result?.success) {
         setError(result?.error || 'Error al iniciar sesión');
       }
     } catch (err: any) {
+      console.error('Login exception:', err);
       setError(err.message || 'Error inesperado');
     } finally {
-      setLoading(false);
+      setIsLoggingIn(false);
     }
   };
 
@@ -163,10 +161,10 @@ export function LoginPage() {
         fullWidth
         variant="contained"
         size="large"
-        disabled={loading}
+        disabled={isLoggingIn}
         sx={{ mb: 2, py: 1.5 }}
       >
-        {loading ? (
+        {isLoggingIn ? (
           <CircularProgress size={24} color="inherit" />
         ) : (
           'Iniciar Sesión'

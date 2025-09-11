@@ -83,6 +83,32 @@ async function main() {
     console.log(`✅ Created limits for ${limits.plan} plan`);
   }
 
+  // Create test user
+  const testUser = await prisma.user.upsert({
+    where: { email: 'test@dalone.com.ar' },
+    update: {},
+    create: {
+      email: 'test@dalone.com.ar',
+      firstName: 'Usuario',
+      lastName: 'Prueba',
+      password: '$2b$10$rXKh5gp7gqIQxNKZnOPEJ.Nm2vvSJbQHd0WP9V4fI.mDECo7vbMzO', // "password123"
+      companies: {
+        create: {
+          name: 'Dalone Corporation',
+          domain: 'dalone.com.ar',
+          assets: {
+            create: [
+              {
+                domain: 'dalone.com.ar',
+              }
+            ]
+          }
+        }
+      }
+    },
+  });
+  console.log(`✅ Created test user: ${testUser.email}`);
+
   console.log('🎉 Database seeded successfully!');
 }
 

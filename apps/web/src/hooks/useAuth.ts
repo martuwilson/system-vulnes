@@ -108,7 +108,17 @@ export function useAuth() {
         });
 
         toast.success('¡Bienvenido de vuelta!');
+        
+        // Forzar redirección después de actualizar el estado
+        setTimeout(() => {
+          if (window.location.pathname.startsWith('/auth')) {
+            window.location.href = '/dashboard';
+          }
+        }, 100);
+        
         return { success: true };
+      } else {
+        return { success: false, error: 'No se recibieron datos de login' };
       }
     } catch (error: any) {
       console.error('Login error:', error);
