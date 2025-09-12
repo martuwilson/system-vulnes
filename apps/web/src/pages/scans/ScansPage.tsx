@@ -19,6 +19,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  Skeleton,
 } from '@mui/material';
 import { 
   PlayArrow, 
@@ -34,7 +40,7 @@ import {
   Schedule,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
-import { translateStatus, formatDateTime } from '../../lib/translations';
+import { translateStatus, translateSeverity, getCategoryIconByType, formatDateTime } from '../../lib/translations';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -75,6 +81,25 @@ const GET_SECURITY_SCANS = gql`
   }
 `;
 
+const GET_SCAN_DETAILS = gql`
+  query GetSecurityScanStatus($scanId: String!) {
+    getSecurityScanStatus(scanId: $scanId) {
+      success
+      scanId
+      message
+      healthScore
+      findings {
+        id
+        title
+        description
+        severity
+        category
+        recommendation
+      }
+    }
+  }
+`;
+
 const START_SCAN_QUEUED = gql`
   mutation StartSecurityScanQueued($input: SecurityScanInput!) {
     startSecurityScanQueued(input: $input) {
@@ -111,6 +136,15 @@ interface SecurityScan {
   lowFindings: number;
   createdAt: string;
   updatedAt: string;
+}
+
+interface SecurityFinding {
+  id: string;
+  title: string;
+  description: string;
+  severity: string;
+  category: string;
+  recommendation?: string;
 }
 
 const getStatusColor = (status: string) => {
@@ -170,6 +204,9 @@ export function ScansPage() {
   const [lastCompletedScan, setLastCompletedScan] = useState<SecurityScan | null>(null);
   const [showCompletionAlert, setShowCompletionAlert] = useState(false);
   
+  // Estados para modal de detalles
+  const [selectedScanId, setSelectedScanId] = useState<string | null>(null);
+  
   // Filtros para el historial
   const [statusFilter, setStatusFilter] = useState('all');
   const [healthScoreFilter, setHealthScoreFilter] = useState('all');
@@ -192,6 +229,12 @@ export function ScansPage() {
   });
 
   const [startScanQueued] = useMutation(START_SCAN_QUEUED);
+
+  // Query para obtener detalles del escaneo seleccionado
+  const { data: scanDetailsData, loading: detailsLoading } = useQuery(GET_SCAN_DETAILS, {
+    variables: { scanId: selectedScanId || '' },
+    skip: !selectedScanId,
+  });
 
   const assets: Asset[] = data?.companyAssets || [];
   const allScans: SecurityScan[] = scansData?.securityScans || [];
@@ -300,6 +343,7 @@ export function ScansPage() {
 
   const handleViewDetails = (scan: SecurityScan) => {
     setSelectedScan(scan);
+    setSelectedScanId(scan.id);
     setDetailsOpen(true);
   };
 
@@ -608,8 +652,11 @@ export function ScansPage() {
       {/* Scan Details Dialog */}
       <Dialog 
         open={detailsOpen} 
-        onClose={() => setDetailsOpen(false)} 
-        maxWidth="md" 
+        onClose={() => {
+          setDetailsOpen(false);
+          setSelectedScanId(null);
+        }} 
+        maxWidth="lg" 
         fullWidth
       >
         <DialogTitle>
@@ -626,19 +673,30 @@ export function ScansPage() {
                   <Typography variant="body2" color="text.secondary">
                     Estado:
                   </Typography>
-                  <Chip
-                    label={translateStatus(selectedScan.status)}
-                    color={getStatusColor(selectedScan.status) as any}
-                    sx={{ mt: 0.5 }}
-                  />
+                  <Box display="flex" alignItems="center" gap={0.5} mt={0.5}>
+                    {getStatusIcon(selectedScan.status)}
+                    <Chip
+                      label={translateStatus(selectedScan.status)}
+                      color={getStatusColor(selectedScan.status) as any}
+                      size="small"
+                    />
+                  </Box>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">
                     Health Score:
                   </Typography>
-                  <Typography variant="h6" fontWeight="bold">
-                    {selectedScan.healthScore ?? 'N/A'}%
-                  </Typography>
+                  <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={selectedScan.healthScore || 0}
+                      color={getHealthScoreColor(selectedScan.healthScore || 0)}
+                      sx={{ flexGrow: 1, height: 8, borderRadius: 4 }}
+                    />
+                    <Typography variant="h6" fontWeight="bold">
+                      {selectedScan.healthScore ?? 'N/A'}%
+                    </Typography>
+                  </Box>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">
@@ -658,71 +716,91 @@ export function ScansPage() {
                 </Grid>
               </Grid>
 
+              <Divider sx={{ my: 2 }} />
+
               <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Resumen de Vulnerabilidades ({selectedScan.findingsCount})
+                Vulnerabilidades Detectadas ({selectedScan.findingsCount})
               </Typography>
               
-              {selectedScan.findingsCount === 0 ? (
+              {detailsLoading ? (
+                <Box>
+                  {[1, 2, 3].map((i) => (
+                    <Box key={i} sx={{ mb: 2 }}>
+                      <Skeleton variant="text" width="60%" height={24} />
+                      <Skeleton variant="text" width="40%" height={20} />
+                      <Skeleton variant="rectangular" width="100%" height={60} sx={{ mt: 1 }} />
+                    </Box>
+                  ))}
+                </Box>
+              ) : selectedScan.findingsCount === 0 ? (
                 <Alert severity="success" icon={<CheckCircle />}>
                   ¡Excelente! No se encontraron vulnerabilidades de seguridad.
                 </Alert>
+              ) : scanDetailsData?.getSecurityScanStatus?.findings ? (
+                <List>
+                  {scanDetailsData.getSecurityScanStatus.findings.map((finding: SecurityFinding, index: number) => (
+                    <Box key={finding.id}>
+                      <ListItem alignItems="flex-start" sx={{ px: 0 }}>
+                        <ListItemIcon sx={{ mt: 1 }}>
+                          {getCategoryIconByType(finding.category)}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={
+                            <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <Typography variant="h6" component="span">
+                                {finding.title}
+                              </Typography>
+                              <Chip
+                                label={translateSeverity(finding.severity)}
+                                color={
+                                  finding.severity.toLowerCase() === 'critical' || finding.severity.toLowerCase() === 'high'
+                                    ? 'error'
+                                    : finding.severity.toLowerCase() === 'medium'
+                                    ? 'warning'
+                                    : 'info'
+                                }
+                                size="small"
+                              />
+                            </Box>
+                          }
+                          secondary={
+                            <Box>
+                              <Typography variant="body2" color="text.primary" paragraph>
+                                {finding.description}
+                              </Typography>
+                              {finding.recommendation && (
+                                <Box sx={{ mt: 1, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
+                                  <Typography variant="body2" fontWeight="bold" gutterBottom>
+                                    💡 Recomendación:
+                                  </Typography>
+                                  <Typography variant="body2" color="text.secondary">
+                                    {finding.recommendation}
+                                  </Typography>
+                                </Box>
+                              )}
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                      {index < scanDetailsData.getSecurityScanStatus.findings.length - 1 && (
+                        <Divider variant="inset" component="li" />
+                      )}
+                    </Box>
+                  ))}
+                </List>
               ) : (
-                <Grid container spacing={2}>
-                  {selectedScan.criticalFindings > 0 && (
-                    <Grid item xs={6} sm={3}>
-                      <Box textAlign="center">
-                        <Typography variant="h4" color="error.main" fontWeight="bold">
-                          {selectedScan.criticalFindings}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Críticas
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  )}
-                  {selectedScan.highFindings > 0 && (
-                    <Grid item xs={6} sm={3}>
-                      <Box textAlign="center">
-                        <Typography variant="h4" color="error.main" fontWeight="bold">
-                          {selectedScan.highFindings}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Altas
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  )}
-                  {selectedScan.mediumFindings > 0 && (
-                    <Grid item xs={6} sm={3}>
-                      <Box textAlign="center">
-                        <Typography variant="h4" color="warning.main" fontWeight="bold">
-                          {selectedScan.mediumFindings}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Medias
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  )}
-                  {selectedScan.lowFindings > 0 && (
-                    <Grid item xs={6} sm={3}>
-                      <Box textAlign="center">
-                        <Typography variant="h4" color="info.main" fontWeight="bold">
-                          {selectedScan.lowFindings}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Bajas
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  )}
-                </Grid>
+                <Alert severity="info">
+                  No se pudieron cargar los detalles de las vulnerabilidades.
+                </Alert>
               )}
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDetailsOpen(false)}>
+          <Button onClick={() => {
+            setDetailsOpen(false);
+            setSelectedScanId(null);
+          }}>
             Cerrar
           </Button>
         </DialogActions>
