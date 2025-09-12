@@ -21,9 +21,24 @@ import {
   ListItemSecondaryAction,
   IconButton,
 } from '@mui/material';
-import { Add, Business, Delete, CheckCircle, Warning, Launch } from '@mui/icons-material';
+import { 
+  Add, 
+  Business, 
+  Delete, 
+  CheckCircle, 
+  Warning, 
+  Launch, 
+  FlashOn, 
+  Edit,
+  Language
+} from '@mui/icons-material';
 import toast from 'react-hot-toast';
-import { formatDateTime } from '../../lib/translations';
+import { formatDateTime, translateStatus } from '../../lib/translations';
+
+// Función helper para plurales
+const formatPlural = (count: number, singular: string, plural: string) => {
+  return count === 1 ? `${count} ${singular}` : `${count} ${plural}`;
+};
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -42,6 +57,17 @@ const GET_ASSETS = gql`
       domain
       createdAt
       isActive
+    }
+  }
+`;
+
+const GET_COMPANY_SCANS = gql`
+  query GetSecurityScans($companyId: String!) {
+    securityScans(companyId: $companyId, limit: 5) {
+      id
+      createdAt
+      status
+      healthScore
     }
   }
 `;
@@ -96,6 +122,12 @@ export function CompaniesPage() {
     }
   });
 
+  const { data: scansData } = useQuery(GET_COMPANY_SCANS, {
+    variables: { companyId: userCompany?.id },
+    skip: !userCompany?.id,
+    errorPolicy: 'all'
+  });
+
   const [createAsset] = useMutation(CREATE_ASSET, {
     refetchQueries: ['GetCompanyAssets'],
   });
@@ -104,6 +136,7 @@ export function CompaniesPage() {
   });
 
   const assets: Asset[] = data?.companyAssets || [];
+  const latestScan = scansData?.securityScans?.[0]; // Último scan de la empresa
 
   const handleSubmit = async () => {
     if (!domain.trim()) return;
@@ -191,6 +224,9 @@ export function CompaniesPage() {
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             Activos de la Empresa
           </Typography>
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+            {formatPlural(assets.length, 'dominio monitoreado', 'dominios monitoreados')}
+          </Typography>
           <Typography variant="body1" color="text.secondary">
             Gestiona los dominios y activos de {userCompany?.name || 'tu empresa'}
           </Typography>
@@ -201,7 +237,7 @@ export function CompaniesPage() {
           onClick={() => setOpen(true)}
           size="large"
         >
-          + Nuevo Activo
+          + Añadir dominio
         </Button>
       </Box>
 
@@ -209,7 +245,20 @@ export function CompaniesPage() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Box display="flex" alignItems="center" mb={3}>
-            <Business color="primary" sx={{ mr: 2, fontSize: 40 }} />
+            <Box 
+              sx={{ 
+                mr: 2, 
+                p: 1.5, 
+                borderRadius: 2, 
+                bgcolor: 'primary.main', 
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Business sx={{ fontSize: 32 }} />
+            </Box>
             <Box>
               <Typography variant="h4" fontWeight="bold" color="primary" gutterBottom>
                 {userCompany?.name || 'Sin empresa'}
@@ -236,16 +285,16 @@ export function CompaniesPage() {
           
           <Box display="flex" gap={2} flexWrap="wrap">
             <Chip 
-              label={`${assets.length} Total`} 
-              color="primary" 
+              label={formatPlural(assets.length, 'Total', 'Total')} 
+              color="default" 
               variant="outlined"
             />
             <Chip 
-              label={`${assets.filter(a => a.isActive).length} Activos`} 
+              label={formatPlural(assets.filter(a => a.isActive).length, 'Activo', 'Activos')} 
               color="success" 
             />
             <Chip 
-              label={`${assets.filter(a => !a.isActive).length} Inactivos`} 
+              label={formatPlural(assets.filter(a => !a.isActive).length, 'Inactivo', 'Inactivos')} 
               color={assets.filter(a => !a.isActive).length > 0 ? "error" : "default"}
               variant={assets.filter(a => !a.isActive).length > 0 ? "filled" : "outlined"}
             />
@@ -255,8 +304,8 @@ export function CompaniesPage() {
 
       {/* Assets List */}
       <Card>
-        <CardContent>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
             Dominios monitoreados: {assets.length}
           </Typography>
           
@@ -265,58 +314,105 @@ export function CompaniesPage() {
               No tienes assets registrados aún. Agrega tu primer dominio para comenzar a monitorear la seguridad.
             </Alert>
           ) : (
-            <List>
+            <List sx={{ '& .MuiListItem-root': { borderRadius: 2, mb: 1 } }}>
               {assets.map((asset) => (
-                <ListItem key={asset.id} divider>
-                  <ListItemIcon>
-                    {asset.isActive ? (
-                      <CheckCircle color="success" />
-                    ) : (
-                      <Warning color="warning" />
-                    )}
+                <ListItem key={asset.id} divider sx={{ py: 3 }}>
+                  <ListItemIcon sx={{ minWidth: 56 }}>
+                    <Language color="primary" sx={{ fontSize: 32 }} />
                   </ListItemIcon>
                   <ListItemText
                     primary={
-                      <Box display="flex" alignItems="center" gap={1} justifyContent="space-between">
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <Typography variant="subtitle1" fontWeight="600">
+                      <Box display="flex" alignItems="center" justifyContent="space-between" mb={1.5}>
+                        <Box display="flex" alignItems="center" gap={2}>
+                          <Typography variant="h6" fontWeight="600" color="text.primary">
                             {asset.domain}
                           </Typography>
-                          <Chip
-                            label={asset.isActive ? 'Activo' : 'Inactivo'}
-                            size="small"
-                            color={asset.isActive ? 'success' : 'warning'}
-                            variant="outlined"
-                            icon={asset.isActive ? <CheckCircle sx={{ fontSize: 16 }} /> : <Warning sx={{ fontSize: 16 }} />}
-                          />
-                        </Box>
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <Typography variant="body2" color="text.secondary">
-                            Agregado: {formatDateTime(asset.createdAt)}
-                          </Typography>
+                          {asset.isActive ? (
+                            <CheckCircle color="success" sx={{ fontSize: 24 }} />
+                          ) : (
+                            <Warning color="warning" sx={{ fontSize: 24 }} />
+                          )}
                         </Box>
                       </Box>
                     }
                     secondary={
-                      <Box display="flex" alignItems="center" gap={2} mt={1}>
-                        <Typography variant="body2" color="text.secondary">
-                          Último escaneo: Pendiente
+                      <Box>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                          Agregado: {formatDateTime(asset.createdAt)}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Health Score: N/A
-                        </Typography>
+                        <Box display="flex" alignItems="center" gap={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            Último escaneo: 
+                            <Box component="span" sx={{ color: 'text.primary', fontWeight: 500, ml: 0.5 }}>
+                              {latestScan 
+                                ? `${formatDateTime(latestScan.createdAt)} - ${translateStatus(latestScan.status)}`
+                                : 'Sin escanear aún'
+                              }
+                            </Box>
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Health Score: 
+                            <Box 
+                              component="span" 
+                              sx={{ 
+                                color: latestScan?.healthScore !== undefined 
+                                  ? latestScan.healthScore >= 80 ? 'success.main' 
+                                    : latestScan.healthScore >= 60 ? 'warning.main' 
+                                    : 'error.main'
+                                  : 'text.primary',
+                                fontWeight: 500, 
+                                ml: 0.5 
+                              }}
+                            >
+                              {latestScan?.healthScore !== undefined 
+                                ? `${latestScan.healthScore}%`
+                                : 'Pendiente'
+                              }
+                            </Box>
+                          </Typography>
+                        </Box>
                       </Box>
                     }
                   />
                   <ListItemSecondaryAction>
-                    <IconButton
-                      edge="end"
-                      onClick={() => handleDelete(asset.id, asset.domain)}
-                      color="error"
-                      size="small"
-                    >
-                      <Delete />
-                    </IconButton>
+                    <Box display="flex" alignItems="center" gap={0.5}>
+                      <IconButton
+                        size="medium"
+                        color="primary"
+                        title="Escanear ahora"
+                        sx={{ 
+                          bgcolor: 'primary.main',
+                          color: 'white',
+                          '&:hover': { bgcolor: 'primary.dark' }
+                        }}
+                      >
+                        <FlashOn sx={{ fontSize: 20 }} />
+                      </IconButton>
+                      <IconButton
+                        size="medium"
+                        color="default"
+                        title="Editar dominio"
+                        sx={{ 
+                          bgcolor: 'grey.100',
+                          '&:hover': { bgcolor: 'grey.200' }
+                        }}
+                      >
+                        <Edit sx={{ fontSize: 20 }} />
+                      </IconButton>
+                      <IconButton
+                        size="medium"
+                        onClick={() => handleDelete(asset.id, asset.domain)}
+                        color="error"
+                        title="Eliminar"
+                        sx={{ 
+                          bgcolor: 'error.light',
+                          color: 'white',
+                          '&:hover': { bgcolor: 'error.main' }
+                        }}
+                      >
+                        <Delete sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Box>
                   </ListItemSecondaryAction>
                 </ListItem>
               ))}
@@ -327,7 +423,7 @@ export function CompaniesPage() {
 
       {/* Add Asset Dialog */}
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Agregar Nuevo Activo</DialogTitle>
+        <DialogTitle>Añadir Nuevo Dominio</DialogTitle>
         <DialogContent>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Agrega un dominio para monitorear su seguridad digital
@@ -353,7 +449,7 @@ export function CompaniesPage() {
             variant="contained"
             disabled={loading || !domain.trim()}
           >
-            {loading ? <CircularProgress size={20} /> : 'Agregar'}
+            {loading ? <CircularProgress size={20} /> : 'Añadir'}
           </Button>
         </DialogActions>
       </Dialog>
