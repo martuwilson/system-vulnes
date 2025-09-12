@@ -40,7 +40,15 @@ import {
   Schedule,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
-import { translateStatus, translateSeverity, getCategoryIconByType, formatDateTime } from '../../lib/translations';
+import { 
+  translateStatus, 
+  translateSeverity, 
+  translateCategory,
+  translateVulnerabilityTitle,
+  translateVulnerabilityDescription,
+  getCategoryIconByType, 
+  formatDateTime 
+} from '../../lib/translations';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -738,17 +746,21 @@ export function ScansPage() {
                 </Alert>
               ) : scanDetailsData?.getSecurityScanStatus?.findings ? (
                 <List>
-                  {scanDetailsData.getSecurityScanStatus.findings.map((finding: SecurityFinding, index: number) => (
+                  {scanDetailsData.getSecurityScanStatus.findings.map((finding: SecurityFinding, index: number) => {
+                    const translatedTitle = translateVulnerabilityTitle(finding.title);
+                    const translatedDescription = translateVulnerabilityDescription(finding.description);
+                    
+                    return (
                     <Box key={finding.id}>
                       <ListItem alignItems="flex-start" sx={{ px: 0 }}>
                         <ListItemIcon sx={{ mt: 1 }}>
-                          {getCategoryIconByType(finding.category)}
+                          {getCategoryIconByType(translateCategory(finding.category))}
                         </ListItemIcon>
                         <ListItemText
                           primary={
                             <Box display="flex" alignItems="center" gap={1} mb={1}>
                               <Typography variant="h6" component="span">
-                                {finding.title}
+                                {translatedTitle}
                               </Typography>
                               <Chip
                                 label={translateSeverity(finding.severity)}
@@ -766,7 +778,7 @@ export function ScansPage() {
                           secondary={
                             <Box>
                               <Typography variant="body2" color="text.primary" paragraph>
-                                {finding.description}
+                                {translatedDescription}
                               </Typography>
                               {finding.recommendation && (
                                 <Box sx={{ mt: 1, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
@@ -774,7 +786,7 @@ export function ScansPage() {
                                     💡 Recomendación:
                                   </Typography>
                                   <Typography variant="body2" color="text.secondary">
-                                    {finding.recommendation}
+                                    {translateVulnerabilityDescription(finding.recommendation)}
                                   </Typography>
                                 </Box>
                               )}
@@ -786,7 +798,8 @@ export function ScansPage() {
                         <Divider variant="inset" component="li" />
                       )}
                     </Box>
-                  ))}
+                    );
+                  })}
                 </List>
               ) : (
                 <Alert severity="info">
