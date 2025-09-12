@@ -25,6 +25,13 @@ import {
   Security, 
   Refresh,
   CheckCircle,
+  TrendingUp,
+  TrendingDown,
+  TrendingFlat,
+  Download,
+  Compare,
+  Error,
+  Schedule,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 import { translateStatus, formatDateTime } from '../../lib/translations';
@@ -110,10 +117,46 @@ const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case 'completed': return 'success';
     case 'in_progress': return 'info';
-    case 'queued': return 'warning';
-    case 'failed': return 'error';
+    case 'queued': 
+    case 'programado': return 'warning';
+    case 'failed':
+    case 'fallido': return 'error';
     default: return 'default';
   }
+};
+
+const getStatusIcon = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'completed': return <CheckCircle fontSize="small" />;
+    case 'in_progress': return <CircularProgress size={16} />;
+    case 'queued':
+    case 'programado': return <Schedule fontSize="small" />;
+    case 'failed':
+    case 'fallido': return <Error fontSize="small" />;
+    default: return null;
+  }
+};
+
+const getHealthScoreColor = (score: number) => {
+  if (score >= 71) return 'success';
+  if (score >= 41) return 'warning';
+  return 'error';
+};
+
+const getTrendIcon = (currentScore: number, previousScore: number | null) => {
+  if (previousScore === null) return null;
+  if (currentScore > previousScore) return <TrendingUp color="success" fontSize="small" />;
+  if (currentScore < previousScore) return <TrendingDown color="error" fontSize="small" />;
+  return <TrendingFlat color="inherit" fontSize="small" />;
+};
+
+const formatVulnerabilitySummary = (scan: SecurityScan) => {
+  const parts = [];
+  if (scan.criticalFindings > 0) parts.push(`${scan.criticalFindings} críticas`);
+  if (scan.highFindings > 0) parts.push(`${scan.highFindings} altas`);
+  if (scan.mediumFindings > 0) parts.push(`${scan.mediumFindings} medias`);
+  if (scan.lowFindings > 0) parts.push(`${scan.lowFindings} bajas`);
+  return parts.length > 0 ? parts.join(' | ') : 'Sin vulnerabilidades';
 };
 
 export function ScansPage() {
@@ -121,6 +164,11 @@ export function ScansPage() {
   const [scanningDomain, setScanningDomain] = useState<string | null>(null);
   const [selectedScan, setSelectedScan] = useState<SecurityScan | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  
+  // Filtros para el historial
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [healthScoreFilter, setHealthScoreFilter] = useState('all');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
 
   // Obtener las empresas del usuario
   const { data: companiesData } = useQuery(GET_MY_COMPANIES);
@@ -141,7 +189,24 @@ export function ScansPage() {
   const [startScanQueued] = useMutation(START_SCAN_QUEUED);
 
   const assets: Asset[] = data?.companyAssets || [];
-  const scans: SecurityScan[] = scansData?.securityScans || [];
+  const allScans: SecurityScan[] = scansData?.securityScans || [];
+  
+  // Aplicar filtros
+  const filteredScans = allScans.filter(scan => {
+    if (statusFilter !== 'all' && scan.status.toLowerCase() !== statusFilter) {
+      return false;
+    }
+    if (healthScoreFilter !== 'all') {
+      const score = scan.healthScore || 0;
+      switch (healthScoreFilter) {
+        case 'excellent': return score >= 80;
+        case 'good': return score >= 60 && score < 80;
+        case 'poor': return score < 60;
+        default: return true;
+      }
+    }
+    return true;
+  });
 
   const handleStartScan = async () => {
     if (!selectedDomain) return;
@@ -272,85 +337,158 @@ export function ScansPage() {
       {/* Recent Scans */}
       <Card>
         <CardContent>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            Historial de Escaneos ({scans.length})
-          </Typography>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+            <Typography variant="h6" fontWeight="bold">
+              Historial de escaneos de seguridad ({filteredScans.length})
+            </Typography>
+            
+            <Box display="flex" gap={2} alignItems="center">
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <InputLabel>Estado</InputLabel>
+                <Select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  label="Estado"
+                >
+                  <MenuItem value="all">Todos</MenuItem>
+                  <MenuItem value="completed">Completado</MenuItem>
+                  <MenuItem value="in_progress">En progreso</MenuItem>
+                  <MenuItem value="queued">En cola</MenuItem>
+                  <MenuItem value="failed">Fallido</MenuItem>
+                </Select>
+              </FormControl>
+              
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <InputLabel>Health Score</InputLabel>
+                <Select
+                  value={healthScoreFilter}
+                  onChange={(e) => setHealthScoreFilter(e.target.value)}
+                  label="Health Score"
+                >
+                  <MenuItem value="all">Todos</MenuItem>
+                  <MenuItem value="excellent">Excelente (80-100%)</MenuItem>
+                  <MenuItem value="good">Bueno (60-79%)</MenuItem>
+                  <MenuItem value="poor">Pobre (&lt;60%)</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
           
-          {scans.length === 0 ? (
+          {filteredScans.length === 0 ? (
             <Alert severity="info">
               No hay escaneos ejecutados aún. Inicia tu primer escaneo de seguridad.
             </Alert>
           ) : (
             <Grid container spacing={2}>
-              {scans.map((scan) => (
-                <Grid item xs={12} md={6} key={scan.id}>
-                  <Card 
-                    variant="outlined" 
-                    sx={{ 
-                      cursor: 'pointer',
-                      '&:hover': { boxShadow: 2 }
-                    }}
-                    onClick={() => handleViewDetails(scan)}
-                  >
-                    <CardContent>
-                      <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
-                        <Box>
-                          <Typography variant="subtitle1" fontWeight="bold">
-                            {scan.domain}
-                          </Typography>
+              {filteredScans.map((scan, index) => {
+                const previousScan = index < filteredScans.length - 1 ? filteredScans[index + 1] : null;
+                const trendIcon = getTrendIcon(scan.healthScore || 0, previousScan?.healthScore || null);
+                
+                return (
+                  <Grid item xs={12} md={6} key={scan.id}>
+                    <Card 
+                      variant="outlined" 
+                      sx={{ 
+                        cursor: 'pointer',
+                        position: 'relative',
+                        '&:hover': { boxShadow: 2 },
+                        border: index === 0 ? '2px solid' : '1px solid',
+                        borderColor: index === 0 ? 'primary.main' : 'grey.300'
+                      }}
+                      onClick={() => handleViewDetails(scan)}
+                    >
+                      {index === 0 && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            backgroundColor: 'primary.main',
+                            color: 'white',
+                            px: 1,
+                            py: 0.5,
+                            borderRadius: 1,
+                            fontSize: '0.75rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          Más reciente
+                        </Box>
+                      )}
+                      <CardContent>
+                        <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
+                          <Box>
+                            <Typography variant="subtitle1" fontWeight="bold">
+                              {scan.domain}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {formatDateTime(scan.createdAt)}
+                            </Typography>
+                          </Box>
+                          <Box display="flex" alignItems="center" gap={0.5}>
+                            {getStatusIcon(scan.status)}
+                            <Chip
+                              label={translateStatus(scan.status)}
+                              color={getStatusColor(scan.status) as any}
+                              size="small"
+                            />
+                          </Box>
+                        </Box>
+                        
+                        {scan.status === 'IN_PROGRESS' && (
+                          <Box sx={{ mb: 2 }}>
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                              Escaneo en progreso...
+                            </Typography>
+                            <LinearProgress />
+                          </Box>
+                        )}
+                        
+                        {scan.healthScore !== undefined && (
+                          <Box display="flex" alignItems="center" gap={2} mb={2}>
+                            <Typography variant="body2">Health Score:</Typography>
+                            <LinearProgress
+                              variant="determinate"
+                              value={scan.healthScore}
+                              color={getHealthScoreColor(scan.healthScore)}
+                              sx={{ flexGrow: 1, height: 8, borderRadius: 4 }}
+                            />
+                            <Box display="flex" alignItems="center" gap={0.5}>
+                              <Typography variant="body2" fontWeight="bold">
+                                {scan.healthScore}%
+                              </Typography>
+                              {trendIcon}
+                            </Box>
+                          </Box>
+                        )}
+                        
+                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                           <Typography variant="body2" color="text.secondary">
-                            {formatDateTime(scan.createdAt)}
+                            {formatVulnerabilitySummary(scan)}
                           </Typography>
                         </Box>
-                        <Chip
-                          label={translateStatus(scan.status)}
-                          color={getStatusColor(scan.status) as any}
-                          size="small"
-                        />
-                      </Box>
-                      
-                      {scan.status === 'IN_PROGRESS' && (
-                        <Box sx={{ mb: 2 }}>
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Escaneo en progreso...
-                          </Typography>
-                          <LinearProgress />
+
+                        <Box display="flex" gap={1} flexWrap="wrap">
+                          <Button size="small" variant="outlined" startIcon={<Security />}>
+                            Ver Detalles
+                          </Button>
+                          <Button size="small" variant="text" startIcon={<Download />}>
+                            Reporte
+                          </Button>
+                          <Button size="small" variant="text" startIcon={<Refresh />}>
+                            Re-escanear
+                          </Button>
+                          {index > 0 && (
+                            <Button size="small" variant="text" startIcon={<Compare />}>
+                              Comparar
+                            </Button>
+                          )}
                         </Box>
-                      )}
-                      
-                      {scan.healthScore !== undefined && (
-                        <Box display="flex" alignItems="center" gap={2} mb={2}>
-                          <Typography variant="body2">Health Score:</Typography>
-                          <LinearProgress
-                            variant="determinate"
-                            value={scan.healthScore}
-                            color={
-                              scan.healthScore >= 80 
-                                ? 'success' 
-                                : scan.healthScore >= 60 
-                                ? 'warning' 
-                                : 'error'
-                            }
-                            sx={{ flexGrow: 1, height: 8, borderRadius: 4 }}
-                          />
-                          <Typography variant="body2" fontWeight="bold">
-                            {scan.healthScore}%
-                          </Typography>
-                        </Box>
-                      )}
-                      
-                      <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="body2" color="text.secondary">
-                          {scan.findingsCount} vulnerabilidades
-                        </Typography>
-                        <Button size="small" variant="outlined">
-                          Ver Detalles
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
             </Grid>
           )}
         </CardContent>
