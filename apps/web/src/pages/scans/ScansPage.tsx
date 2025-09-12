@@ -19,10 +19,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
 } from '@mui/material';
 import { 
   PlayArrow, 
@@ -31,7 +27,7 @@ import {
   CheckCircle,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
-import { translateSeverity, translateStatus, getCategoryIconByType, formatDateTime } from '../../lib/translations';
+import { translateStatus, formatDateTime } from '../../lib/translations';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -50,6 +46,24 @@ const GET_COMPANY_ASSETS = gql`
       domain
       companyId
       isActive
+    }
+  }
+`;
+
+const GET_SECURITY_SCANS = gql`
+  query GetSecurityScans($companyId: String!) {
+    securityScans(companyId: $companyId, limit: 20) {
+      id
+      domain
+      status
+      healthScore
+      findingsCount
+      criticalFindings
+      highFindings
+      mediumFindings
+      lowFindings
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -78,33 +92,19 @@ interface Asset {
   isActive: boolean;
 }
 
-interface SecurityFinding {
-  id: string;
-  type: string;
-  severity: string;
-  title: string;
-  description: string;
-}
-
 interface SecurityScan {
   id: string;
   domain: string;
   status: string;
   healthScore?: number;
+  findingsCount: number;
+  criticalFindings: number;
+  highFindings: number;
+  mediumFindings: number;
+  lowFindings: number;
   createdAt: string;
   updatedAt: string;
-  findings: SecurityFinding[];
 }
-
-const getSeverityColor = (severity: string) => {
-  switch (severity.toLowerCase()) {
-    case 'critical': return 'error';
-    case 'high': return 'error';
-    case 'medium': return 'warning';
-    case 'low': return 'info';
-    default: return 'default';
-  }
-};
 
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -132,10 +132,16 @@ export function ScansPage() {
     pollInterval: 5000, // Poll every 5 seconds for scan updates
   });
 
+  const { data: scansData, loading: scansLoading, refetch: refetchScans } = useQuery(GET_SECURITY_SCANS, {
+    variables: { companyId: userCompany?.id },
+    skip: !userCompany?.id,
+    pollInterval: 10000, // Poll every 10 seconds for scan updates
+  });
+
   const [startScanQueued] = useMutation(START_SCAN_QUEUED);
 
   const assets: Asset[] = data?.companyAssets || [];
-  const scans: SecurityScan[] = []; // Por ahora vacío hasta implementar la query de scans
+  const scans: SecurityScan[] = scansData?.securityScans || [];
 
   const handleStartScan = async () => {
     if (!selectedDomain) return;
@@ -159,7 +165,8 @@ export function ScansPage() {
       
       if (result.data?.startSecurityScanQueued?.success) {
         toast.success(`Escaneo iniciado para ${selectedDomain}`);
-        refetch(); // Refresh to show new scan
+        refetch(); // Refresh assets
+        refetchScans(); // Refresh scans list
       } else {
         toast.error(result.data?.startSecurityScanQueued?.message || 'Error al iniciar escaneo');
       }
@@ -334,7 +341,7 @@ export function ScansPage() {
                       
                       <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="body2" color="text.secondary">
-                          {scan.findings.length} vulnerabilidades
+                          {scan.findingsCount} vulnerabilidades
                         </Typography>
                         <Button size="small" variant="outlined">
                           Ver Detalles
@@ -403,38 +410,64 @@ export function ScansPage() {
               </Grid>
 
               <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Vulnerabilidades Encontradas ({selectedScan.findings.length})
+                Resumen de Vulnerabilidades ({selectedScan.findingsCount})
               </Typography>
               
-              {selectedScan.findings.length === 0 ? (
+              {selectedScan.findingsCount === 0 ? (
                 <Alert severity="success" icon={<CheckCircle />}>
                   ¡Excelente! No se encontraron vulnerabilidades de seguridad.
                 </Alert>
               ) : (
-                <List>
-                  {selectedScan.findings.map((finding) => (
-                    <ListItem key={finding.id} divider>
-                      <ListItemIcon>
-                        {getCategoryIconByType(finding.type)}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Box display="flex" alignItems="center" gap={1}>
-                            <Typography variant="subtitle2">
-                              {finding.title}
-                            </Typography>
-                            <Chip
-                              label={translateSeverity(finding.severity)}
-                              color={getSeverityColor(finding.severity) as any}
-                              size="small"
-                            />
-                          </Box>
-                        }
-                        secondary={finding.description}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
+                <Grid container spacing={2}>
+                  {selectedScan.criticalFindings > 0 && (
+                    <Grid item xs={6} sm={3}>
+                      <Box textAlign="center">
+                        <Typography variant="h4" color="error.main" fontWeight="bold">
+                          {selectedScan.criticalFindings}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Críticas
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                  {selectedScan.highFindings > 0 && (
+                    <Grid item xs={6} sm={3}>
+                      <Box textAlign="center">
+                        <Typography variant="h4" color="error.main" fontWeight="bold">
+                          {selectedScan.highFindings}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Altas
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                  {selectedScan.mediumFindings > 0 && (
+                    <Grid item xs={6} sm={3}>
+                      <Box textAlign="center">
+                        <Typography variant="h4" color="warning.main" fontWeight="bold">
+                          {selectedScan.mediumFindings}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Medias
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                  {selectedScan.lowFindings > 0 && (
+                    <Grid item xs={6} sm={3}>
+                      <Box textAlign="center">
+                        <Typography variant="h4" color="info.main" fontWeight="bold">
+                          {selectedScan.lowFindings}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Bajas
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                </Grid>
               )}
             </Box>
           )}
