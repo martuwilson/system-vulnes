@@ -66,15 +66,15 @@ export const VULNERABILITY_TITLE_TRANSLATIONS = {
   'Certificate Chain Issues': 'Problemas en la Cadena de Certificados',
   
   // Security Headers
-  'Missing Security Headers': 'Headers de Seguridad Faltantes',
-  'Strict-Transport-Security Missing': 'Strict-Transport-Security Faltante',
-  'X-Frame-Options Missing': 'X-Frame-Options Faltante',
-  'X-Frame-Options Header Missing': 'Cabecera X-Frame-Options Faltante',
-  'X-Content-Type-Options Missing': 'X-Content-Type-Options Faltante',
-  'Content-Security-Policy Missing': 'Content-Security-Policy Faltante',
-  'Content Security Policy Issues': 'Problemas de Política de Seguridad de Contenido',
-  'X-XSS-Protection Missing': 'X-XSS-Protection Faltante',
-  'HSTS Header Missing or Misconfigured': 'Cabecera HSTS Faltante o Mal Configurada',
+  'Missing Security Headers': 'Headers de Seguridad: Faltantes',
+  'Strict-Transport-Security Missing': 'Strict-Transport-Security: Faltante',
+  'X-Frame-Options Missing': 'X-Frame-Options: Faltante',
+  'X-Frame-Options Header Missing': 'X-Frame-Options: Faltante',
+  'X-Content-Type-Options Missing': 'X-Content-Type-Options: Faltante',
+  'Content-Security-Policy Missing': 'Content-Security-Policy: Faltante',
+  'Content Security Policy Issues': 'Content Security Policy: Problemas de configuración',
+  'X-XSS-Protection Missing': 'X-XSS-Protection: Faltante',
+  'HSTS Header Missing or Misconfigured': 'HSTS: Faltante o mal configurada',
   
   // Port Security
   'Open Port Detected': 'Puerto Abierto Detectado',
@@ -91,11 +91,11 @@ export const VULNERABILITY_TITLE_TRANSLATIONS = {
   'Web Service on Non-Standard Port 9000': 'Servicio Web en Puerto No Estándar 9000',
   
   // DNS Security
-  'DNS Configuration Issue': 'Problema de Configuración DNS',
-  'Missing SPF Record': 'Registro SPF Faltante',
-  'Missing DMARC Record': 'Registro DMARC Faltante',
-  'DMARC Policy Issues': 'Problemas de Política DMARC',
-  'DNS Vulnerability': 'Vulnerabilidad DNS',
+  'DNS Configuration Issue': 'DNS: Problema de configuración',
+  'Missing SPF Record': 'SPF: Registro faltante',
+  'Missing DMARC Record': 'DMARC: Registro faltante',
+  'DMARC Policy Issues': 'DMARC: Problemas de política',
+  'DNS Vulnerability': 'DNS: Vulnerabilidad detectada',
   
   // Web Security
   'SQL Injection Vulnerability': 'Vulnerabilidad de Inyección SQL',

@@ -20,11 +20,14 @@ import {
   DialogContent,
   DialogActions,
   List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Divider,
   Skeleton,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  IconButton,
+  Tooltip,
+  Paper,
 } from '@mui/material';
 import { 
   PlayArrow, 
@@ -38,6 +41,13 @@ import {
   Compare,
   Error,
   Schedule,
+  BugReport,
+  ExpandMore,
+  ContentCopy,
+  FileDownload,
+  Assignment,
+  PersonAdd,
+  Cancel,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 import { 
@@ -183,6 +193,75 @@ const getHealthScoreColor = (score: number) => {
   if (score >= 71) return 'success';
   if (score >= 41) return 'warning';
   return 'error';
+};
+
+const getHealthScoreBadge = (score: number) => {
+  if (score >= 71) return 'Bueno';
+  if (score >= 41) return 'Moderado';
+  return 'Crítico';
+};
+
+const getHealthScoreColorName = (score: number) => {
+  if (score >= 71) return '#4caf50'; // green
+  if (score >= 41) return '#ff9800'; // orange
+  return '#f44336'; // red
+};
+
+const formatFullDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+const formatScanId = (id: string) => {
+  // Mostrar solo los últimos 8 caracteres del ID
+  return `#${id.slice(-8).toUpperCase()}`;
+};
+
+const groupFindingsBySeverity = (findings: SecurityFinding[]) => {
+  const groups = {
+    CRITICAL: [] as SecurityFinding[],
+    HIGH: [] as SecurityFinding[],
+    MEDIUM: [] as SecurityFinding[],
+    LOW: [] as SecurityFinding[],
+  };
+  
+  findings.forEach(finding => {
+    const severity = finding.severity.toUpperCase() as keyof typeof groups;
+    if (groups[severity]) {
+      groups[severity].push(finding);
+    } else {
+      // Si no es una severidad conocida, agregar a MEDIUM por defecto
+      groups.MEDIUM.push(finding);
+    }
+  });
+  
+  return groups;
+};
+
+const getSeverityIcon = (severity: string) => {
+  switch (severity.toUpperCase()) {
+    case 'CRITICAL': return '🟥';
+    case 'HIGH': return '🔴';
+    case 'MEDIUM': return '🟧';
+    case 'LOW': return '🟡';
+    default: return '⚪';
+  }
+};
+
+const getSeverityLabel = (severity: string) => {
+  switch (severity.toUpperCase()) {
+    case 'CRITICAL': return 'Críticas';
+    case 'HIGH': return 'Altas';
+    case 'MEDIUM': return 'Medias';
+    case 'LOW': return 'Bajas';
+    default: return severity;
+  }
 };
 
 const getTrendIcon = (currentScore: number, previousScore: number | null) => {
@@ -668,9 +747,25 @@ export function ScansPage() {
         fullWidth
       >
         <DialogTitle>
-          <Box display="flex" alignItems="center" gap={2}>
-            <Security color="primary" />
-            Detalles del Escaneo - {selectedScan?.domain}
+          <Box>
+            <Box display="flex" alignItems="center" gap={2} mb={1}>
+              <Security color="primary" />
+              <Typography variant="h6" component="div">
+                Detalles del Escaneo - {selectedScan?.domain}
+              </Typography>
+            </Box>
+            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+              <Typography variant="body2" color="text.secondary">
+                Escaneo iniciado: {formatFullDateTime(selectedScan?.createdAt || '')} - 
+                Estado: {translateStatus(selectedScan?.status || '')} {getStatusIcon(selectedScan?.status || '')}
+              </Typography>
+              <Chip 
+                label={formatScanId(selectedScan?.id || '')}
+                size="small"
+                variant="outlined"
+                color="primary"
+              />
+            </Box>
           </Box>
         </DialogTitle>
         <DialogContent>
@@ -703,6 +798,21 @@ export function ScansPage() {
                     />
                     <Typography variant="h6" fontWeight="bold">
                       {selectedScan.healthScore ?? 'N/A'}%
+                    </Typography>
+                    <Chip 
+                      label={getHealthScoreBadge(selectedScan.healthScore || 0)}
+                      color={getHealthScoreColor(selectedScan.healthScore || 0)}
+                      size="small"
+                    />
+                  </Box>
+                  {/* Trend TODO: necesitaríamos datos del escaneo anterior */}
+                  <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+                    <Typography variant="caption" color="text.secondary">
+                      Respecto al escaneo anterior:
+                    </Typography>
+                    {/* {getTrendIcon(selectedScan.healthScore || 0, previousScan?.healthScore || null)} */}
+                    <Typography variant="caption" color="text.secondary">
+                      Sin datos previos
                     </Typography>
                   </Box>
                 </Grid>
@@ -745,62 +855,94 @@ export function ScansPage() {
                   ¡Excelente! No se encontraron vulnerabilidades de seguridad.
                 </Alert>
               ) : scanDetailsData?.getSecurityScanStatus?.findings ? (
-                <List>
-                  {scanDetailsData.getSecurityScanStatus.findings.map((finding: SecurityFinding, index: number) => {
-                    const translatedTitle = translateVulnerabilityTitle(finding.title);
-                    const translatedDescription = translateVulnerabilityDescription(finding.description);
-                    
-                    return (
-                    <Box key={finding.id}>
-                      <ListItem alignItems="flex-start" sx={{ px: 0 }}>
-                        <ListItemIcon sx={{ mt: 1 }}>
-                          {getCategoryIconByType(translateCategory(finding.category))}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Box display="flex" alignItems="center" gap={1} mb={1}>
-                              <Typography variant="h6" component="span">
-                                {translatedTitle}
-                              </Typography>
-                              <Chip
-                                label={translateSeverity(finding.severity)}
-                                color={
-                                  finding.severity.toLowerCase() === 'critical' || finding.severity.toLowerCase() === 'high'
-                                    ? 'error'
-                                    : finding.severity.toLowerCase() === 'medium'
-                                    ? 'warning'
-                                    : 'info'
-                                }
-                                size="small"
-                              />
-                            </Box>
-                          }
-                          secondary={
-                            <Box>
-                              <Typography variant="body2" color="text.primary" paragraph>
-                                {translatedDescription}
-                              </Typography>
-                              {finding.recommendation && (
-                                <Box sx={{ mt: 1, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                                  <Typography variant="body2" fontWeight="bold" gutterBottom>
-                                    💡 Recomendación:
-                                  </Typography>
-                                  <Typography variant="body2" color="text.secondary">
-                                    {translateVulnerabilityDescription(finding.recommendation)}
-                                  </Typography>
-                                </Box>
-                              )}
-                            </Box>
-                          }
-                        />
-                      </ListItem>
-                      {index < scanDetailsData.getSecurityScanStatus.findings.length - 1 && (
-                        <Divider variant="inset" component="li" />
-                      )}
+                (() => {
+                  const groupedFindings = groupFindingsBySeverity(scanDetailsData.getSecurityScanStatus.findings);
+                  const severityOrder = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const;
+                  
+                  return (
+                    <Box>
+                      {severityOrder.map((severity) => {
+                        const findings = groupedFindings[severity];
+                        if (findings.length === 0) return null;
+                        
+                        return (
+                          <Box key={severity} sx={{ mb: 3 }}>
+                            {/* Encabezado de severidad */}
+                            <Typography 
+                              variant="h6" 
+                              sx={{ 
+                                mb: 2, 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: 1,
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              {getSeverityIcon(severity)}
+                              {getSeverityLabel(severity)} ({findings.length})
+                            </Typography>
+                            
+                            {/* Lista de vulnerabilidades */}
+                            <List sx={{ pl: 2 }}>
+                              {findings.map((finding: SecurityFinding, index: number) => {
+                                const translatedTitle = translateVulnerabilityTitle(finding.title);
+                                const translatedDescription = translateVulnerabilityDescription(finding.description);
+                                
+                                return (
+                                  <Accordion key={finding.id} sx={{ mb: 1 }}>
+                                    <AccordionSummary expandIcon={<ExpandMore />}>
+                                      <Box display="flex" alignItems="center" gap={1} width="100%">
+                                        {getCategoryIconByType(translateCategory(finding.category))}
+                                        <Typography variant="subtitle1" sx={{ flexGrow: 1 }}>
+                                          {translatedTitle}
+                                        </Typography>
+                                        <Chip
+                                          label={translateSeverity(finding.severity)}
+                                          color={
+                                            finding.severity.toLowerCase() === 'critical' || finding.severity.toLowerCase() === 'high'
+                                              ? 'error'
+                                              : finding.severity.toLowerCase() === 'medium'
+                                              ? 'warning'
+                                              : 'info'
+                                          }
+                                          size="small"
+                                        />
+                                      </Box>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                      <Box>
+                                        <Typography variant="body2" color="text.primary" paragraph>
+                                          {translatedDescription}
+                                        </Typography>
+                                        {finding.recommendation && (
+                                          <Paper sx={{ mt: 2, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
+                                            <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                              <Typography variant="body2" fontWeight="bold" color="primary">
+                                                💡 Recomendación:
+                                              </Typography>
+                                              <Tooltip title="Copiar recomendación">
+                                                <IconButton size="small" onClick={() => navigator.clipboard?.writeText(finding.recommendation || '')}>
+                                                  <ContentCopy fontSize="small" />
+                                                </IconButton>
+                                              </Tooltip>
+                                            </Box>
+                                            <Typography variant="body2" color="text.secondary">
+                                              {translateVulnerabilityDescription(finding.recommendation)}
+                                            </Typography>
+                                          </Paper>
+                                        )}
+                                      </Box>
+                                    </AccordionDetails>
+                                  </Accordion>
+                                );
+                              })}
+                            </List>
+                          </Box>
+                        );
+                      })}
                     </Box>
-                    );
-                  })}
-                </List>
+                  );
+                })()
               ) : (
                 <Alert severity="info">
                   No se pudieron cargar los detalles de las vulnerabilidades.
@@ -809,13 +951,58 @@ export function ScansPage() {
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => {
-            setDetailsOpen(false);
-            setSelectedScanId(null);
-          }}>
-            Cerrar
-          </Button>
+        <DialogActions sx={{ p: 3, gap: 1 }}>
+          <Box display="flex" justifyContent="space-between" width="100%" flexWrap="wrap" gap={1}>
+            {/* Acciones principales */}
+            <Box display="flex" gap={1}>
+              <Button 
+                startIcon={<FileDownload />}
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  // TODO: Implementar exportación
+                  toast.success('Funcionalidad de exportación próximamente');
+                }}
+              >
+                Exportar PDF
+              </Button>
+              
+              <Button 
+                startIcon={<Assignment />}
+                variant="outlined"
+                color="info"
+                onClick={() => {
+                  // TODO: Implementar marcar como resuelto
+                  toast.success('Funcionalidad de seguimiento próximamente');
+                }}
+              >
+                Marcar como Resuelto
+              </Button>
+              
+              <Button 
+                startIcon={<PersonAdd />}
+                variant="outlined"
+                color="secondary"
+                onClick={() => {
+                  // TODO: Implementar asignación
+                  toast.success('Funcionalidad de asignación próximamente');
+                }}
+              >
+                Asignar
+              </Button>
+            </Box>
+            
+            {/* Cerrar */}
+            <Button 
+              onClick={() => {
+                setDetailsOpen(false);
+                setSelectedScanId(null);
+              }}
+              variant="contained"
+            >
+              Cerrar
+            </Button>
+          </Box>
         </DialogActions>
       </Dialog>
     </Box>
