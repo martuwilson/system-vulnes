@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import {
   Box,
@@ -165,6 +165,11 @@ export function ScansPage() {
   const [selectedScan, setSelectedScan] = useState<SecurityScan | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   
+  // Estados para feedback de escaneo
+  const [activeScanId, setActiveScanId] = useState<string | null>(null);
+  const [lastCompletedScan, setLastCompletedScan] = useState<SecurityScan | null>(null);
+  const [showCompletionAlert, setShowCompletionAlert] = useState(false);
+  
   // Filtros para el historial
   const [statusFilter, setStatusFilter] = useState('all');
   const [healthScoreFilter, setHealthScoreFilter] = useState('all');
@@ -183,7 +188,7 @@ export function ScansPage() {
   const { data: scansData, loading: scansLoading, refetch: refetchScans } = useQuery(GET_SECURITY_SCANS, {
     variables: { companyId: userCompany?.id },
     skip: !userCompany?.id,
-    pollInterval: 10000, // Poll every 10 seconds for scan updates
+    pollInterval: 3000, // Poll every 3 seconds for real-time updates
   });
 
   const [startScanQueued] = useMutation(START_SCAN_QUEUED);
@@ -208,6 +213,45 @@ export function ScansPage() {
     return true;
   });
 
+  // Detectar escaneos en progreso
+  const activeScans = allScans.filter(scan => 
+    scan.status.toLowerCase() === 'in_progress' || 
+    scan.status.toLowerCase() === 'queued'
+  );
+  const hasActiveScans = activeScans.length > 0;
+
+  // Detectar cuando se completa un escaneo
+  useEffect(() => {
+    if (activeScanId) {
+      const completedScan = allScans.find(scan => 
+        scan.id === activeScanId && 
+        (scan.status.toLowerCase() === 'completed' || scan.status.toLowerCase() === 'failed')
+      );
+      
+      if (completedScan) {
+        setLastCompletedScan(completedScan);
+        setShowCompletionAlert(true);
+        setActiveScanId(null);
+        
+        // Notificación de finalización
+        if (completedScan.status.toLowerCase() === 'completed') {
+          toast.success(
+            `✅ Escaneo completado para ${completedScan.domain}! Health Score: ${completedScan.healthScore}%`,
+            { duration: 6000 }
+          );
+        } else {
+          toast.error(
+            `❌ Escaneo falló para ${completedScan.domain}`,
+            { duration: 5000 }
+          );
+        }
+        
+        // Auto-hide completion alert after 10 seconds
+        setTimeout(() => setShowCompletionAlert(false), 10000);
+      }
+    }
+  }, [allScans, activeScanId]);
+
   const handleStartScan = async () => {
     if (!selectedDomain) return;
     
@@ -229,7 +273,18 @@ export function ScansPage() {
       });
       
       if (result.data?.startSecurityScanQueued?.success) {
-        toast.success(`Escaneo iniciado para ${selectedDomain}`);
+        const scanId = result.data.startSecurityScanQueued.scanId;
+        
+        // Feedback inmediato
+        toast.success(`🚀 Escaneo iniciado para ${selectedDomain} - Monitoreando progreso...`, {
+          duration: 4000,
+        });
+        
+        // Establecer el ID del escaneo activo para seguimiento
+        if (scanId) {
+          setActiveScanId(scanId);
+        }
+        
         refetch(); // Refresh assets
         refetchScans(); // Refresh scans list
       } else {
@@ -284,6 +339,62 @@ export function ScansPage() {
           Actualizar
         </Button>
       </Box>
+
+      {/* Banner de escaneos activos */}
+      {hasActiveScans && (
+        <Alert 
+          severity="info" 
+          icon={<CircularProgress size={20} />}
+          sx={{ mb: 3 }}
+          action={
+            <Button size="small" color="inherit" onClick={() => refetchScans()}>
+              Actualizar Estado
+            </Button>
+          }
+        >
+          <Box>
+            <Typography variant="body2" fontWeight="bold">
+              {activeScans.length === 1 
+                ? `Hay 1 escaneo en progreso` 
+                : `Hay ${activeScans.length} escaneos en progreso`
+              }
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Los resultados se actualizarán automáticamente cuando finalicen
+            </Typography>
+          </Box>
+        </Alert>
+      )}
+
+      {/* Alert de escaneo completado */}
+      {showCompletionAlert && lastCompletedScan && (
+        <Alert 
+          severity={lastCompletedScan.status.toLowerCase() === 'completed' ? 'success' : 'error'}
+          onClose={() => setShowCompletionAlert(false)}
+          sx={{ mb: 3 }}
+          action={
+            <Button 
+              size="small" 
+              color="inherit" 
+              onClick={() => handleViewDetails(lastCompletedScan)}
+            >
+              Ver Detalles
+            </Button>
+          }
+        >
+          <Typography variant="body2" fontWeight="bold">
+            {lastCompletedScan.status.toLowerCase() === 'completed' 
+              ? `✅ Escaneo completado: ${lastCompletedScan.domain}`
+              : `❌ Escaneo falló: ${lastCompletedScan.domain}`
+            }
+          </Typography>
+          {lastCompletedScan.status.toLowerCase() === 'completed' && (
+            <Typography variant="caption" color="text.secondary">
+              Health Score: {lastCompletedScan.healthScore}% | {formatVulnerabilitySummary(lastCompletedScan)}
+            </Typography>
+          )}
+        </Alert>
+      )}
 
       {/* Start New Scan */}
       <Card sx={{ mb: 3 }}>
