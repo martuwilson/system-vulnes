@@ -297,6 +297,7 @@ export function ScansPage() {
   // Filtros para el historial
   const [statusFilter, setStatusFilter] = useState('all');
   const [healthScoreFilter, setHealthScoreFilter] = useState('all');
+  const [domainFilter, setDomainFilter] = useState('all'); // Nuevo filtro por dominio
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
 
   // Obtener las empresas del usuario
@@ -328,9 +329,15 @@ export function ScansPage() {
   
   // Aplicar filtros
   const filteredScans = allScans.filter(scan => {
+    // Filtro por dominio
+    if (domainFilter !== 'all' && scan.domain !== domainFilter) {
+      return false;
+    }
+    // Filtro por estado
     if (statusFilter !== 'all' && scan.status.toLowerCase() !== statusFilter) {
       return false;
     }
+    // Filtro por health score
     if (healthScoreFilter !== 'all') {
       const score = scan.healthScore || 0;
       switch (healthScoreFilter) {
@@ -586,6 +593,22 @@ export function ScansPage() {
             
             <Box display="flex" gap={2} alignItems="center">
               <FormControl size="small" sx={{ minWidth: 120 }}>
+                <InputLabel>Dominio</InputLabel>
+                <Select
+                  value={domainFilter}
+                  onChange={(e) => setDomainFilter(e.target.value)}
+                  label="Dominio"
+                >
+                  <MenuItem value="all">Todos los dominios</MenuItem>
+                  {assets.map((asset) => (
+                    <MenuItem key={asset.id} value={asset.domain}>
+                      {asset.domain}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl size="small" sx={{ minWidth: 120 }}>
                 <InputLabel>Estado</InputLabel>
                 <Select
                   value={statusFilter}
@@ -618,7 +641,10 @@ export function ScansPage() {
           
           {filteredScans.length === 0 ? (
             <Alert severity="info">
-              No hay escaneos ejecutados aún. Inicia tu primer escaneo de seguridad.
+              {domainFilter === 'all' 
+                ? "No hay escaneos ejecutados aún. Inicia tu primer escaneo de seguridad."
+                : `No hay escaneos para el dominio "${domainFilter}". Selecciona este dominio e inicia un escaneo.`
+              }
             </Alert>
           ) : (
             <Grid container spacing={2}>
@@ -639,24 +665,6 @@ export function ScansPage() {
                       }}
                       onClick={() => handleViewDetails(scan)}
                     >
-                      {index === 0 && (
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            top: 8,
-                            right: 8,
-                            backgroundColor: 'primary.main',
-                            color: 'white',
-                            px: 1,
-                            py: 0.5,
-                            borderRadius: 1,
-                            fontSize: '0.75rem',
-                            fontWeight: 'bold'
-                          }}
-                        >
-                          Más reciente
-                        </Box>
-                      )}
                       <CardContent>
                         <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
                           <Box>

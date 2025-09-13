@@ -389,11 +389,6 @@ export class SecurityResolver {
               category: true,
               title: true
             }
-          },
-          company: {
-            select: {
-              domain: true
-            }
           }
         },
         orderBy: {
@@ -405,7 +400,7 @@ export class SecurityResolver {
       return scans.map(scan => ({
         id: scan.id,
         assetId: 0, // No hay assetId en este modelo
-        domain: scan.company.domain,
+        domain: scan.domain, // Usar el dominio específico del scan
         healthScore: scan.healthScore,
         findingsCount: scan.findings?.length || 0,
         criticalFindings: scan.findings?.filter(f => f.severity === 'CRITICAL').length || 0,

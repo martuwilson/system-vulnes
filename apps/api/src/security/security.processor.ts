@@ -45,7 +45,7 @@ export class SecurityProcessor {
 
     try {
       // Actualizar el scan como "en progreso"
-      await this.updateScanStatus(scanId, ScanStatus.RUNNING, companyId);
+      await this.updateScanStatus(scanId, ScanStatus.RUNNING, companyId, domain);
 
       // Ejecutar todos los scanners en paralelo
       const [
@@ -72,10 +72,10 @@ export class SecurityProcessor {
       const healthScore = this.calculateHealthScore(allFindings);
 
       // Guardar resultados en la base de datos
-      await this.saveResults(scanId, assetId, companyId, allFindings, healthScore);
+      await this.saveResults(scanId, assetId, companyId, domain, allFindings, healthScore);
 
       // Actualizar el scan como completado
-      await this.updateScanStatus(scanId, ScanStatus.COMPLETED, companyId);
+      await this.updateScanStatus(scanId, ScanStatus.COMPLETED, companyId, domain);
 
       this.logger.log(`Security scan completed for ${domain}: ${allFindings.length} findings, health score: ${healthScore}`);
 
@@ -91,7 +91,7 @@ export class SecurityProcessor {
       this.logger.error(`Security scan failed for ${domain}:`, error);
       
       // Actualizar el scan como fallido
-      await this.updateScanStatus(scanId, ScanStatus.FAILED, companyId);
+      await this.updateScanStatus(scanId, ScanStatus.FAILED, companyId, domain);
       
       throw error;
     }
@@ -206,6 +206,7 @@ export class SecurityProcessor {
     scanId: string,
     assetId: string,
     companyId: string,
+    domain: string,
     findings: SecurityFinding[],
     healthScore: number
   ): Promise<void> {
@@ -216,6 +217,7 @@ export class SecurityProcessor {
         create: {
           id: scanId,
           companyId,
+          domain,
           status: ScanStatus.COMPLETED,
           healthScore,
           createdAt: new Date(),
@@ -253,13 +255,14 @@ export class SecurityProcessor {
     }
   }
 
-  private async updateScanStatus(scanId: string, status: ScanStatus, companyId: string): Promise<void> {
+  private async updateScanStatus(scanId: string, status: ScanStatus, companyId: string, domain: string): Promise<void> {
     try {
       await this.prisma.securityScan.upsert({
         where: { id: scanId },
         create: {
           id: scanId,
           companyId: companyId,
+          domain: domain,
           status: status,
           healthScore: 0,
           createdAt: new Date(),

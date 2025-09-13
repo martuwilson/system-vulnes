@@ -63,11 +63,13 @@ const GET_ASSETS = gql`
 
 const GET_COMPANY_SCANS = gql`
   query GetSecurityScans($companyId: String!) {
-    securityScans(companyId: $companyId, limit: 5) {
+    securityScans(companyId: $companyId, limit: 10) {
       id
+      domain
       createdAt
       status
       healthScore
+      findingsCount
     }
   }
 `;
@@ -116,8 +118,7 @@ export function CompaniesPage() {
     onError: (error) => {
       console.error('Error en GET_ASSETS query:', error);
       if (error.message.includes('Unauthorized')) {
-        console.log('Error de autorización - token posiblemente expirado');
-        console.log('Token actual:', localStorage.getItem('accessToken') ? 'Presente' : 'Ausente');
+        // Manejar error de autorización si es necesario
       }
     }
   });
@@ -136,7 +137,14 @@ export function CompaniesPage() {
   });
 
   const assets: Asset[] = data?.companyAssets || [];
-  const latestScan = scansData?.securityScans?.[0]; // Último scan de la empresa
+  const allScans = scansData?.securityScans || [];
+
+  // Función helper para obtener el último escaneo de un dominio específico
+  const getLatestScanForDomain = (domain: string) => {
+    const filtered = allScans.filter((scan: any) => scan.domain === domain);
+    const latest = filtered.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0] || null;
+    return latest;
+  };
 
   const handleSubmit = async () => {
     if (!domain.trim()) return;
@@ -315,7 +323,10 @@ export function CompaniesPage() {
             </Alert>
           ) : (
             <List sx={{ '& .MuiListItem-root': { borderRadius: 2, mb: 1 } }}>
-              {assets.map((asset) => (
+              {assets.map((asset) => {
+                const latestScan = getLatestScanForDomain(asset.domain);
+                
+                return (
                 <ListItem key={asset.id} divider sx={{ py: 3 }}>
                   <ListItemIcon sx={{ minWidth: 56 }}>
                     <Language color="primary" sx={{ fontSize: 32 }} />
@@ -415,7 +426,8 @@ export function CompaniesPage() {
                     </Box>
                   </ListItemSecondaryAction>
                 </ListItem>
-              ))}
+                );
+              })}
             </List>
           )}
         </CardContent>

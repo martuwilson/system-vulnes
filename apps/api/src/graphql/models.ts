@@ -181,6 +181,9 @@ export class SecurityScan {
   @Field()
   companyId: string;
 
+  @Field()
+  domain: string;
+
   @Field(() => ScanStatus)
   status: ScanStatus;
 

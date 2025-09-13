@@ -111,8 +111,9 @@ export class SecurityService {
 
   /**
    * Iniciar un escaneo completo de seguridad para una empresa
+   * Ahora crea un scan por cada asset activo
    */
-  async startScan(companyId: string): Promise<string> {
+  async startScan(companyId: string): Promise<string[]> {
     this.logger.log(`Starting security scan for company: ${companyId}`);
 
     try {
@@ -134,19 +135,28 @@ export class SecurityService {
         throw new Error(`No active assets found for company: ${companyId}`);
       }
 
-      // Crear un nuevo scan
-      const scan = await this.prisma.securityScan.create({
-        data: {
-          companyId,
-          status: ScanStatus.RUNNING,
-          healthScore: 0,
-        }
-      });
+      const scanIds: string[] = [];
 
-      // Ejecutar escaneos en background
-      this.executeCompanyScan(scan.id, company.assets);
+      // Crear un scan por cada asset
+      for (const asset of company.assets) {
+        const scan = await this.prisma.securityScan.create({
+          data: {
+            companyId,
+            domain: asset.domain,
+            status: ScanStatus.RUNNING,
+            healthScore: 0,
+          }
+        });
 
-      return scan.id;
+        scanIds.push(scan.id);
+
+        // Ejecutar escaneo en background para este asset específico
+        this.executeAssetScan(scan.id, asset).catch(error => {
+          this.logger.error(`Failed to execute asset scan for ${asset.domain}:`, error);
+        });
+      }
+
+      return scanIds;
 
     } catch (error) {
       this.logger.error(`Failed to start scan for company ${companyId}:`, error);
@@ -181,6 +191,7 @@ export class SecurityService {
       const scan = await this.prisma.securityScan.create({
         data: {
           companyId: asset.companyId,
+          domain: asset.domain,
           status: ScanStatus.RUNNING,
           healthScore: 0,
           startedAt: new Date(),
@@ -310,6 +321,57 @@ export class SecurityService {
 
     } catch (error) {
       this.logger.error(`Scan execution failed: ${scanId}`, error);
+      
+      // Marcar scan como fallido
+      await this.prisma.securityScan.update({
+        where: { id: scanId },
+        data: {
+          status: ScanStatus.FAILED,
+          completedAt: new Date()
+        }
+      });
+    }
+  }
+
+  /**
+   * Ejecutar escaneo para un asset específico de forma asíncrona
+   */
+  private async executeAssetScan(scanId: string, asset: any) {
+    try {
+      this.logger.log(`Executing asset scan ${scanId} for domain: ${asset.domain}`);
+
+      // Ejecutar escaneo
+      const result = await this.executeScan(asset.domain);
+
+      // Actualizar registro con resultados
+      await this.prisma.securityScan.update({
+        where: { id: scanId },
+        data: {
+          status: ScanStatus.COMPLETED,
+          healthScore: result.healthScore,
+          completedAt: new Date(),
+        },
+      });
+
+      // Crear findings en la base de datos
+      if (result.findings.length > 0) {
+        await this.prisma.finding.createMany({
+          data: result.findings.map(finding => ({
+            scanId: scanId,
+            category: finding.category,
+            severity: finding.severity,
+            title: finding.title,
+            description: finding.description,
+            recommendation: finding.recommendation,
+            status: finding.status,
+          })),
+        });
+      }
+
+      this.logger.log(`Asset scan completed successfully: ${scanId} for ${asset.domain}, Health Score: ${result.healthScore}/100`);
+
+    } catch (error) {
+      this.logger.error(`Asset scan execution failed for ${asset.domain}:`, error);
       
       // Marcar scan como fallido
       await this.prisma.securityScan.update({

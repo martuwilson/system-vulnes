@@ -61,6 +61,7 @@ model SecurityScan {
   id          String    @id @default(cuid())
   companyId   String
   company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  domain      String    // Dominio escaneado
   status      ScanStatus
   healthScore Int       @default(0)
   startedAt   DateTime  @default(now())

@@ -11,13 +11,6 @@ const httpLink = createHttpLink({
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('accessToken');
   
-  // Debug: verificar si el token existe
-  if (token) {
-    console.log('🔑 Token found, sending in headers');
-  } else {
-    console.log('❌ No token found in localStorage');
-  }
-  
   return {
     headers: {
       ...headers,
@@ -28,11 +21,7 @@ const authLink = setContext((_, { headers }) => {
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path, extensions }) => {
-      console.log(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      );
-      
+    graphQLErrors.forEach(({ message, extensions }) => {
       // Si el error es de autenticación, limpiar tokens y redirigir al login
       if (extensions?.code === 'UNAUTHENTICATED' || message.includes('Unauthorized')) {
         localStorage.removeItem('accessToken');
@@ -49,8 +38,6 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
   
   if (networkError) {
-    console.log(`[Network error]: ${networkError}`);
-    
     // Si es un error 401, también manejar como error de autenticación
     if ('statusCode' in networkError && networkError.statusCode === 401) {
       localStorage.removeItem('accessToken');
