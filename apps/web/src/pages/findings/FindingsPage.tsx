@@ -13,7 +13,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
   Tooltip,
   Alert,
   LinearProgress,
@@ -124,6 +123,7 @@ export function FindingsPage() {
   const [severityFilter, setSeverityFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+  const [domainFilter, setDomainFilter] = useState<string>('ALL');
   const [selectedFinding, setSelectedFinding] = useState<Finding | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
@@ -155,9 +155,10 @@ export function FindingsPage() {
       if (severityFilter !== 'ALL' && finding.severity !== severityFilter) return false;
       if (statusFilter !== 'ALL' && finding.status !== statusFilter) return false;
       if (categoryFilter !== 'ALL' && finding.category !== categoryFilter) return false;
+      if (domainFilter !== 'ALL' && (finding.asset?.domain || 'Sin dominio') !== domainFilter) return false;
       return true;
     });
-  }, [findings, severityFilter, statusFilter, categoryFilter]);
+  }, [findings, severityFilter, statusFilter, categoryFilter, domainFilter]);
 
   // Estadísticas
   const stats = useMemo(() => {
@@ -208,7 +209,7 @@ export function FindingsPage() {
     switch (severity) {
       case 'CRITICAL': return 'error';
       case 'HIGH': return 'warning';
-      case 'MEDIUM': return 'info';
+      case 'MEDIUM': return 'warning';
       case 'LOW': return 'success';
       default: return 'default';
     }
@@ -347,34 +348,57 @@ export function FindingsPage() {
 
       {/* Estadísticas */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2.4}>
           <Card>
             <CardContent>
-              <Typography variant="h6" color="text.secondary">Total</Typography>
-              <Typography variant="h4" fontWeight="bold">{stats.total}</Typography>
+              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                <Box sx={{ fontSize: '1.2rem' }}>📊</Box>
+                <Typography variant="h6" color="primary.main">Total</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight="bold" color="primary.main">{stats.total}</Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2.4}>
           <Card>
             <CardContent>
-              <Typography variant="h6" color="error.main">Críticas</Typography>
+              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                <Box sx={{ fontSize: '1.2rem' }}>🔴</Box>
+                <Typography variant="h6" color="error.main">Críticas</Typography>
+              </Box>
               <Typography variant="h4" fontWeight="bold" color="error.main">{stats.critical}</Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2.4}>
           <Card>
             <CardContent>
-              <Typography variant="h6" color="warning.main">Altas</Typography>
+              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                <Box sx={{ fontSize: '1.2rem' }}>🟠</Box>
+                <Typography variant="h6" color="warning.main">Altas</Typography>
+              </Box>
               <Typography variant="h4" fontWeight="bold" color="warning.main">{stats.high}</Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2.4}>
           <Card>
             <CardContent>
-              <Typography variant="h6" color="success.main">Resueltas</Typography>
+              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                <Box sx={{ fontSize: '1.2rem' }}>🔵</Box>
+                <Typography variant="h6" color="info.main">Medias</Typography>
+              </Box>
+              <Typography variant="h4" fontWeight="bold" color="info.main">{stats.medium}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={2.4}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                <Box sx={{ fontSize: '1.2rem' }}>🟢</Box>
+                <Typography variant="h6" color="success.main">Resueltas</Typography>
+              </Box>
               <Typography variant="h4" fontWeight="bold" color="success.main">{stats.resolved}</Typography>
             </CardContent>
           </Card>
@@ -390,43 +414,102 @@ export function FindingsPage() {
               <Typography variant="h6">Vulnerabilidades por Dominio</Typography>
             </Box>
             <Grid container spacing={2}>
-              {domainStats.map((domainStat) => (
-                <Grid item xs={12} sm={6} md={4} key={domainStat.domain}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" noWrap>
-                        {domainStat.domain}
-                      </Typography>
-                      <Typography variant="h5" color="primary.main" sx={{ mb: 1 }}>
-                        {domainStat.total}
-                      </Typography>
-                      <Stack direction="row" spacing={1} flexWrap="wrap">
-                        {domainStat.critical > 0 && (
-                          <Chip
-                            size="small"
-                            label={`${domainStat.critical} Críticas`}
-                            color="error"
-                          />
-                        )}
-                        {domainStat.high > 0 && (
-                          <Chip
-                            size="small"
-                            label={`${domainStat.high} Altas`}
-                            color="warning"
-                          />
-                        )}
-                        {domainStat.open > 0 && (
-                          <Chip
-                            size="small"
-                            label={`${domainStat.open} Abiertas`}
-                            color="info"
-                          />
-                        )}
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+              {domainStats.map((domainStat) => {
+                const healthScore = domainStat.total > 0 
+                  ? Math.round(((domainStat.resolved / domainStat.total) * 100))
+                  : 100;
+                
+                const getHealthColor = (score: number) => {
+                  if (score >= 80) return 'success.main';
+                  if (score >= 60) return 'warning.main';
+                  return 'error.main';
+                };
+
+                const getHealthEmoji = (score: number) => {
+                  if (score >= 80) return '🟢';
+                  if (score >= 60) return '🟡';
+                  return '🔴';
+                };
+
+                return (
+                  <Grid item xs={12} sm={6} md={4} key={domainStat.domain}>
+                    <Card 
+                      variant="outlined" 
+                      sx={{ 
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        '&:hover': {
+                          elevation: 4,
+                          transform: 'translateY(-2px)',
+                          bgcolor: 'action.hover'
+                        },
+                        border: domainFilter === domainStat.domain ? 2 : 1,
+                        borderColor: domainFilter === domainStat.domain ? 'primary.main' : 'divider'
+                      }}
+                      onClick={() => setDomainFilter(domainFilter === domainStat.domain ? 'ALL' : domainStat.domain)}
+                    >
+                      <CardContent>
+                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                          <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                            🌐 {domainStat.domain}
+                          </Typography>
+                          <Box display="flex" alignItems="center" gap={0.5}>
+                            <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
+                              {getHealthEmoji(healthScore)}
+                            </Typography>
+                            <Typography 
+                              variant="body2" 
+                              color={getHealthColor(healthScore)}
+                              fontWeight="bold"
+                            >
+                              {healthScore}%
+                            </Typography>
+                          </Box>
+                        </Box>
+                        
+                        <Typography variant="h5" color="primary.main" sx={{ mb: 1 }}>
+                          {domainStat.total} vulnerabilidades
+                        </Typography>
+                        
+                        <Stack direction="row" spacing={1} flexWrap="wrap" gap={0.5}>
+                          {domainStat.critical > 0 && (
+                            <Chip
+                              size="small"
+                              label={`🔴 ${domainStat.critical}`}
+                              color="error"
+                              variant="outlined"
+                            />
+                          )}
+                          {domainStat.high > 0 && (
+                            <Chip
+                              size="small"
+                              label={`🟠 ${domainStat.high}`}
+                              color="warning"
+                              variant="outlined"
+                            />
+                          )}
+                          {domainStat.medium > 0 && (
+                            <Chip
+                              size="small"
+                              label={`🔵 ${domainStat.medium}`}
+                              color="info"
+                              variant="outlined"
+                            />
+                          )}
+                          {domainStat.resolved > 0 && (
+                            <Chip
+                              size="small"
+                              label={`✅ ${domainStat.resolved}`}
+                              color="success"
+                              variant="outlined"
+                            />
+                          )}
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
             </Grid>
           </CardContent>
         </Card>
@@ -488,6 +571,23 @@ export function FindingsPage() {
                 </Select>
               </FormControl>
             </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <FormControl fullWidth>
+                <InputLabel>Dominio</InputLabel>
+                <Select
+                  value={domainFilter}
+                  label="Dominio"
+                  onChange={(e: SelectChangeEvent) => setDomainFilter(e.target.value)}
+                >
+                  <MenuItem value="ALL">🌐 Todos los dominios</MenuItem>
+                  {domainStats.map((domain) => (
+                    <MenuItem key={domain.domain} value={domain.domain}>
+                      🌐 {domain.domain} ({domain.total})
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
         </CardContent>
       </Card>
@@ -495,9 +595,42 @@ export function FindingsPage() {
       {/* Tabla de Vulnerabilidades */}
       <Card>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Vulnerabilidades ({filteredFindings.length})
-          </Typography>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                📋 Vulnerabilidades encontradas
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Mostrando {filteredFindings.length} de {findings.length} vulnerabilidades
+                {domainFilter !== 'ALL' && ` • Filtrado por: ${domainFilter}`}
+                {severityFilter !== 'ALL' && ` • Severidad: ${severityFilter}`}
+                {statusFilter !== 'ALL' && ` • Estado: ${statusFilter}`}
+                {categoryFilter !== 'ALL' && ` • Categoría: ${categoryFilter}`}
+              </Typography>
+            </Box>
+            {filteredFindings.length > 0 && (
+              <Box display="flex" gap={1}>
+                <Chip 
+                  label={`🔴 ${filteredFindings.filter(f => f.severity === 'CRITICAL').length}`} 
+                  size="small" 
+                  color="error" 
+                  variant="outlined" 
+                />
+                <Chip 
+                  label={`🟠 ${filteredFindings.filter(f => f.severity === 'HIGH').length}`} 
+                  size="small" 
+                  color="warning" 
+                  variant="outlined" 
+                />
+                <Chip 
+                  label={`✅ ${filteredFindings.filter(f => f.status === 'RESOLVED').length}`} 
+                  size="small" 
+                  color="success" 
+                  variant="outlined" 
+                />
+              </Box>
+            )}
+          </Box>
           <TableContainer component={Paper} variant="outlined">
             <Table>
               <TableHead>
@@ -550,35 +683,53 @@ export function FindingsPage() {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Stack direction="row" spacing={0.5}>
+                      <Stack direction="row" spacing={1}>
                         <Tooltip title="Ver detalles">
-                          <IconButton
+                          <Chip
                             size="small"
+                            label="Ver"
+                            variant="outlined"
+                            icon={<Visibility />}
                             onClick={() => handleViewDetails(finding)}
-                          >
-                            <Visibility />
-                          </IconButton>
+                            sx={{ cursor: 'pointer' }}
+                          />
                         </Tooltip>
                         {finding.status === 'OPEN' && (
                           <Tooltip title="Marcar como resuelta">
-                            <IconButton
+                            <Chip
                               size="small"
+                              label="Resolver"
                               color="success"
+                              variant="outlined"
+                              icon={<CheckCircle />}
                               onClick={() => handleStatusChange(finding.id, 'RESOLVED')}
-                            >
-                              <CheckCircle />
-                            </IconButton>
+                              sx={{ cursor: 'pointer' }}
+                            />
                           </Tooltip>
                         )}
-                        {finding.status !== 'IGNORED' && (
-                          <Tooltip title="Ignorar">
-                            <IconButton
+                        {finding.status === 'RESOLVED' && (
+                          <Tooltip title="Reabrir vulnerabilidad">
+                            <Chip
                               size="small"
-                              color="default"
+                              label="Reabrir"
+                              color="error"
+                              variant="outlined"
+                              onClick={() => handleStatusChange(finding.id, 'OPEN')}
+                              sx={{ cursor: 'pointer' }}
+                            />
+                          </Tooltip>
+                        )}
+                        {finding.status !== 'IGNORED' && finding.status !== 'RESOLVED' && (
+                          <Tooltip title="Ignorar vulnerabilidad">
+                            <Chip
+                              size="small"
+                              label="Ignorar"
+                              color="error"
+                              variant="outlined"
+                              icon={<Cancel />}
                               onClick={() => handleStatusChange(finding.id, 'IGNORED')}
-                            >
-                              <Cancel />
-                            </IconButton>
+                              sx={{ cursor: 'pointer' }}
+                            />
                           </Tooltip>
                         )}
                       </Stack>
@@ -611,103 +762,262 @@ export function FindingsPage() {
         fullWidth
       >
         <DialogTitle>
-          Detalles de Vulnerabilidad
+          <Box display="flex" alignItems="center" gap={2}>
+            <ErrorIcon color="error" />
+            <Typography variant="h6" fontWeight="600">Detalles de Vulnerabilidad</Typography>
+          </Box>
         </DialogTitle>
         <DialogContent>
           {selectedFinding && (
             <Box>
-              <Stack spacing={2}>
+              <Stack spacing={3}>
+                {/* Título destacado con ícono de severidad */}
                 <Box>
-                  <Typography variant="subtitle2" color="text.secondary">Título</Typography>
-                  <Typography variant="body1">{translateVulnerabilityTitle(selectedFinding.title)}</Typography>
+                  <Box display="flex" alignItems="center" gap={2} mb={1}>
+                    {getSeverityIcon(selectedFinding.severity)}
+                    <Typography variant="h5" fontWeight="700" color="text.primary">
+                      {translateVulnerabilityTitle(selectedFinding.title)}
+                    </Typography>
+                  </Box>
                 </Box>
+
+                {/* Impacto */}
                 <Box>
-                  <Typography variant="subtitle2" color="text.secondary">Descripción</Typography>
-                  <Typography variant="body1">{translateVulnerabilityDescription(selectedFinding.description)}</Typography>
+                  <Box display="flex" alignItems="center" gap={1} mb={2}>
+                    <Warning color="error" />
+                    <Typography variant="h6" color="error.main" gutterBottom={false} fontWeight="600">
+                      Impacto de Seguridad
+                    </Typography>
+                  </Box>
+                  <Paper 
+                    variant="outlined" 
+                    sx={{ 
+                      p: 3, 
+                      bgcolor: '#FFEAEA', 
+                      borderLeft: 4, 
+                      borderLeftColor: 'error.main',
+                      border: '1px solid #FFCDD2'
+                    }}
+                  >
+                    <Typography variant="body1" lineHeight={1.6} color="text.primary">
+                      {translateVulnerabilityDescription(selectedFinding.description)}
+                    </Typography>
+                  </Paper>
                 </Box>
+
+                {/* Recomendación */}
                 <Box>
-                  <Typography variant="subtitle2" color="text.secondary">Recomendación</Typography>
-                  <Typography variant="body1">{selectedFinding.recommendation}</Typography>
+                  <Box display="flex" alignItems="center" gap={1} mb={2}>
+                    <BugReport color="primary" />
+                    <Typography variant="h6" color="primary.main" gutterBottom={false} fontWeight="600">
+                      Acción Recomendada
+                    </Typography>
+                  </Box>
+                  <Paper 
+                    variant="outlined" 
+                    sx={{ 
+                      p: 3, 
+                      bgcolor: '#E8F3FF', 
+                      borderLeft: 4, 
+                      borderLeftColor: 'primary.main',
+                      border: '1px solid #BBDEFB'
+                    }}
+                  >
+                    <Typography variant="body1" lineHeight={1.6} color="text.primary">
+                      {selectedFinding.recommendation}
+                    </Typography>
+                  </Paper>
                 </Box>
-                <Divider />
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle2" color="text.secondary">Severidad</Typography>
-                    <Chip
-                      icon={getSeverityIcon(selectedFinding.severity)}
-                      label={translateSeverity(selectedFinding.severity)}
-                      color={getSeverityColor(selectedFinding.severity) as any}
-                    />
+
+                <Divider sx={{ my: 2 }} />
+
+                {/* Información técnica */}
+                <Box>
+                  <Typography variant="h6" gutterBottom fontWeight="600" color="text.primary">
+                    Información Técnica
+                  </Typography>
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight="500">
+                        Nivel de Severidad
+                      </Typography>
+                      <Chip
+                        icon={getSeverityIcon(selectedFinding.severity)}
+                        label={translateSeverity(selectedFinding.severity)}
+                        color={getSeverityColor(selectedFinding.severity) as any}
+                        size="medium"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight="500">
+                        Estado de Resolución
+                      </Typography>
+                      <Chip
+                        label={translateStatus(selectedFinding.status)}
+                        color={getStatusColor(selectedFinding.status) as any}
+                        size="medium"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight="500">
+                        Categoría de Vulnerabilidad
+                      </Typography>
+                      <Typography variant="body1" fontWeight="500">{translateCategory(selectedFinding.category)}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight="500">
+                        Activo Afectado
+                      </Typography>
+                      <Typography variant="body1" color="primary" fontWeight="600">
+                        {selectedFinding.asset.domain}
+                      </Typography>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle2" color="text.secondary">Estado</Typography>
-                    <Chip
-                      label={translateStatus(selectedFinding.status)}
-                      color={getStatusColor(selectedFinding.status) as any}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle2" color="text.secondary">Categoría</Typography>
-                    <Typography variant="body1">{translateCategory(selectedFinding.category)}</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle2" color="text.secondary">Dominio</Typography>
-                    <Typography variant="body1" color="primary">{selectedFinding.asset.domain}</Typography>
-                  </Grid>
-                </Grid>
+                </Box>
               </Stack>
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDetailsOpen(false)}>Cerrar</Button>
-          {selectedFinding?.status === 'OPEN' && (
-            <>
+        <DialogActions sx={{ p: 3, borderTop: 1, borderColor: 'divider', bgcolor: 'grey.50' }}>
+          <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
+            {/* Navegación y botón cerrar */}
+            <Box display="flex" alignItems="center" gap={3}>
+              {/* Botón Cerrar - Acción secundaria separada */}
+              <Button 
+                onClick={() => setDetailsOpen(false)}
+                color="inherit"
+                variant="outlined"
+                sx={{ color: 'text.secondary' }}
+              >
+                Cerrar
+              </Button>
+
+              {/* Navegación entre vulnerabilidades */}
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant="body2" color="text.secondary" fontWeight="500">
+                  Mostrando {filteredFindings.findIndex(f => f.id === selectedFinding?.id) + 1}/{filteredFindings.length}
+                </Typography>
+                <Box display="flex" gap={1}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    disabled={filteredFindings.findIndex(f => f.id === selectedFinding?.id) === 0}
+                    onClick={() => {
+                      const currentIndex = filteredFindings.findIndex(f => f.id === selectedFinding?.id);
+                      if (currentIndex > 0) {
+                        setSelectedFinding(filteredFindings[currentIndex - 1]);
+                      }
+                    }}
+                    sx={{ minWidth: 40 }}
+                  >
+                    ‹
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    disabled={filteredFindings.findIndex(f => f.id === selectedFinding?.id) === filteredFindings.length - 1}
+                    onClick={() => {
+                      const currentIndex = filteredFindings.findIndex(f => f.id === selectedFinding?.id);
+                      if (currentIndex < filteredFindings.length - 1) {
+                        setSelectedFinding(filteredFindings[currentIndex + 1]);
+                      }
+                    }}
+                    sx={{ minWidth: 40 }}
+                  >
+                    ›
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Acciones principales agrupadas */}
+            <Box display="flex" gap={2}>
+              {/* Botón de exportar */}
               <Button
                 variant="outlined"
-                color="warning"
+                color="inherit"
+                startIcon={<Visibility />}
                 onClick={() => {
-                  handleStatusChange(selectedFinding.id, 'IN_PROGRESS');
-                  setDetailsOpen(false);
+                  const exportText = `
+REPORTE DE VULNERABILIDAD
+========================
+
+VULNERABILIDAD: ${translateVulnerabilityTitle(selectedFinding?.title || '')}
+SEVERIDAD: ${translateSeverity(selectedFinding?.severity || '')}
+ESTADO: ${translateStatus(selectedFinding?.status || '')}
+ACTIVO: ${selectedFinding?.asset.domain}
+CATEGORÍA: ${translateCategory(selectedFinding?.category || '')}
+
+IMPACTO DE SEGURIDAD:
+${translateVulnerabilityDescription(selectedFinding?.description || '')}
+
+ACCIÓN RECOMENDADA:
+${selectedFinding?.recommendation}
+                  `.trim();
+                  
+                  navigator.clipboard.writeText(exportText);
+                  // TODO: Mostrar toast de confirmación
                 }}
+                title="Exportar reporte"
               >
-                En Progreso
+                Exportar
               </Button>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => {
-                  handleStatusChange(selectedFinding.id, 'RESOLVED');
-                  setDetailsOpen(false);
-                }}
-              >
-                Marcar como Resuelta
-              </Button>
-            </>
-          )}
-          {selectedFinding?.status === 'IN_PROGRESS' && (
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => {
-                handleStatusChange(selectedFinding.id, 'RESOLVED');
-                setDetailsOpen(false);
-              }}
-            >
-              Marcar como Resuelta
-            </Button>
-          )}
-          {selectedFinding?.status === 'RESOLVED' && (
-            <Button
-              variant="outlined"
-              onClick={() => {
-                handleStatusChange(selectedFinding.id, 'OPEN');
-                setDetailsOpen(false);
-              }}
-            >
-              Reabrir
-            </Button>
-          )}
+
+              {/* Acciones según estado */}
+              {selectedFinding?.status === 'OPEN' && (
+                <>
+                  <Button
+                    variant="outlined"
+                    color="warning"
+                    startIcon={<Info />}
+                    onClick={() => {
+                      handleStatusChange(selectedFinding.id, 'IN_PROGRESS');
+                    }}
+                  >
+                    En Progreso
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="success"
+                    startIcon={<CheckCircle />}
+                    onClick={() => {
+                      handleStatusChange(selectedFinding.id, 'RESOLVED');
+                    }}
+                  >
+                    Resolver Vulnerabilidad
+                  </Button>
+                </>
+              )}
+              
+              {selectedFinding?.status === 'IN_PROGRESS' && (
+                <Button
+                  variant="outlined"
+                  color="success"
+                  startIcon={<CheckCircle />}
+                  onClick={() => {
+                    handleStatusChange(selectedFinding.id, 'RESOLVED');
+                  }}
+                >
+                  Resolver Vulnerabilidad
+                </Button>
+              )}
+              
+              {selectedFinding?.status === 'RESOLVED' && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  startIcon={<Cancel />}
+                  onClick={() => {
+                    handleStatusChange(selectedFinding.id, 'OPEN');
+                  }}
+                >
+                  Reabrir Vulnerabilidad
+                </Button>
+              )}
+            </Box>
+          </Box>
         </DialogActions>
       </Dialog>
     </Box>
