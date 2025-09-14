@@ -109,6 +109,98 @@ async function main() {
   });
   console.log(`✅ Created test user: ${testUser.email}`);
 
+  // Get the created company to add security scans
+  const testCompany = await prisma.company.findFirst({
+    where: { userId: testUser.id }
+  });
+
+  if (testCompany) {
+    // Create security scans with findings
+    const scan1 = await prisma.securityScan.create({
+      data: {
+        companyId: testCompany.id,
+        domain: 'dalone.com.ar',
+        status: 'COMPLETED',
+        healthScore: 75,
+        findings: {
+          create: [
+            {
+              category: 'SSL_CERTIFICATE',
+              severity: 'HIGH',
+              title: 'SSL Certificate Expired',
+              description: 'The SSL certificate for dalone.com.ar has expired and needs immediate renewal.',
+              recommendation: 'Renew the SSL certificate immediately to ensure secure connections.',
+              status: 'OPEN'
+            },
+            {
+              category: 'WEB_SECURITY',
+              severity: 'MEDIUM',
+              title: 'Missing Security Headers',
+              description: 'X-Frame-Options header is missing, potentially enabling clickjacking attacks.',
+              recommendation: 'Add X-Frame-Options: DENY header to prevent iframe embedding.',
+              status: 'OPEN'
+            },
+            {
+              category: 'NETWORK_SECURITY',
+              severity: 'LOW',
+              title: 'Open Port Detected',
+              description: 'Web service detected on non-standard port 8080.',
+              recommendation: 'Verify that the service on port 8080 is intended for public access and properly secured.',
+              status: 'RESOLVED'
+            }
+          ]
+        }
+      }
+    });
+
+    const scan2 = await prisma.securityScan.create({
+      data: {
+        companyId: testCompany.id,
+        domain: 'laburen.com',
+        status: 'COMPLETED',
+        healthScore: 60,
+        findings: {
+          create: [
+            {
+              category: 'SSL_CERTIFICATE',
+              severity: 'CRITICAL',
+              title: 'Weak SSL/TLS Configuration',
+              description: 'Weak SSL/TLS configuration detected with outdated cipher suites.',
+              recommendation: 'Update SSL/TLS configuration to use modern, secure cipher suites.',
+              status: 'OPEN'
+            },
+            {
+              category: 'EMAIL_SECURITY',
+              severity: 'HIGH',
+              title: 'Missing DMARC Record',
+              description: 'DMARC lookup failed: queryTxt ENOTFOUND _dmarc.laburen.com',
+              recommendation: 'Configure a DMARC policy starting with "p=none" to monitor email authentication.',
+              status: 'IN_PROGRESS'
+            },
+            {
+              category: 'WEB_SECURITY',
+              severity: 'MEDIUM',
+              title: 'Content-Security-Policy Missing',
+              description: 'Content Security Policy header is missing, leaving the site vulnerable to XSS attacks.',
+              recommendation: 'Implement a CSP header starting with "default-src \'self\'" and gradually refine it.',
+              status: 'OPEN'
+            },
+            {
+              category: 'NETWORK_SECURITY',
+              severity: 'LOW',
+              title: 'Web Service on Non-Standard Port 3000',
+              description: 'Web service detected on non-standard port 3000. This might be intentional but could indicate a development interface.',
+              recommendation: 'Verify that the service on port 3000 is intended for public access and properly secured.',
+              status: 'RESOLVED'
+            }
+          ]
+        }
+      }
+    });
+
+    console.log(`✅ Created security scans with findings for ${testCompany.name}`);
+  }
+
   console.log('🎉 Database seeded successfully!');
 }
 

@@ -135,25 +135,7 @@ export class SecurityResolver {
           recommendation: finding.recommendation,
           status: finding.status as any,
           assetId: input.assetId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })),
-      };
-
-      return {
-        success: true,
-        scanId: "test-scan-" + Date.now(),
-        message: 'Security scan completed successfully',
-        healthScore: result.healthScore,
-        findings: result.findings.map(finding => ({
-          id: finding.id || '',
-          category: finding.category as any,
-          severity: finding.severity as any,
-          title: finding.title,
-          description: finding.description,
-          recommendation: finding.recommendation,
-          status: finding.status as any,
-          assetId: input.assetId,
+          asset: { domain: asset.domain },
           createdAt: new Date(),
           updatedAt: new Date(),
         })),
@@ -213,6 +195,7 @@ export class SecurityResolver {
           recommendation: finding.recommendation,
           status: finding.status as any,
           assetId: assetId.toString(),
+          asset: { domain: '' }, // TODO: obtener dominio real
           createdAt: finding.createdAt,
           updatedAt: finding.updatedAt,
         })),
@@ -250,6 +233,7 @@ export class SecurityResolver {
       return scans.map(scan => ({
         id: scan.id,
         assetId: assetId,
+        domain: 'unknown', // TODO: obtener dominio del scan
         healthScore: scan.healthScore,
         findingsCount: scan._count?.findings || 0,
         criticalFindings: scan.findings?.filter(f => f.severity === 'CRITICAL').length || 0,
@@ -289,6 +273,7 @@ export class SecurityResolver {
         recommendation: finding.recommendation,
         status: finding.status as any,
         assetId: scanId, // Temporal - necesitaríamos relacionar finding -> scan -> asset
+        asset: { domain: 'unknown' }, // TODO: obtener dominio real
         createdAt: finding.createdAt,
         updatedAt: finding.updatedAt,
       }));
@@ -349,6 +334,7 @@ export class SecurityResolver {
           description: f.description,
           recommendation: f.recommendation,
           status: f.status as any,
+          asset: { domain: 'unknown' }, // TODO: obtener dominio real
           createdAt: f.createdAt,
           updatedAt: f.createdAt, // usar createdAt como fallback
         })) || []
@@ -475,6 +461,140 @@ export class SecurityResolver {
     } catch (error) {
       console.error('Error retrieving company security findings:', error);
       return [];
+    }
+  }
+
+  /**
+   * Query para obtener todos los findings de una empresa (para la página de Vulnerabilidades)
+   */
+  @Query(() => [SecurityFinding])
+  async getAllFindings(
+    @Args('companyId', { type: () => String }) companyId: string,
+    @CurrentUser() user: User,
+  ): Promise<SecurityFinding[]> {
+    try {
+      const userWithCompany = await this.getCurrentUserWithCompany(user.id);
+      
+      if (!userWithCompany?.companyId || userWithCompany.companyId !== companyId) {
+        return [];
+      }
+
+      // Obtener todos los findings de los scans de la empresa
+      const findings = await this.prisma.finding.findMany({
+        where: {
+          scan: {
+            companyId: companyId
+          }
+        },
+        include: {
+          scan: {
+            select: {
+              id: true,
+              domain: true,
+              createdAt: true
+            }
+          }
+        },
+        orderBy: [
+          { severity: 'desc' }, // CRITICAL primero
+          { createdAt: 'desc' }
+        ]
+      });
+
+      return findings.map(finding => ({
+        id: finding.id,
+        category: finding.category as any,
+        severity: finding.severity as any,
+        title: finding.title,
+        description: finding.description,
+        recommendation: finding.recommendation,
+        status: finding.status as any,
+        assetId: '', // No tenemos assetId en este contexto
+        asset: { domain: finding.scan.domain }, // Usar el dominio del scan
+        createdAt: finding.createdAt,
+        updatedAt: finding.updatedAt,
+      }));
+
+    } catch (error) {
+      console.error('Error retrieving all findings:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Mutation para actualizar el estado de un finding (específico para la página de Vulnerabilidades)
+   */
+  @Mutation(() => SecurityFinding)
+  async updateFindingStatusDetailed(
+    @Args('findingId', { type: () => String }) findingId: string,
+    @Args('status', { type: () => String }) status: string,
+    @CurrentUser() user: User,
+  ): Promise<SecurityFinding | null> {
+    try {
+      const userWithCompany = await this.getCurrentUserWithCompany(user.id);
+      
+      if (!userWithCompany?.companyId) {
+        throw new Error('User is not associated with any company');
+      }
+
+      // Verificar que el finding pertenece a la empresa del usuario
+      const finding = await this.prisma.finding.findFirst({
+        where: {
+          id: findingId,
+          scan: {
+            companyId: userWithCompany.companyId
+          }
+        },
+        include: {
+          scan: {
+            select: {
+              id: true,
+              domain: true,
+              createdAt: true
+            }
+          }
+        }
+      });
+
+      if (!finding) {
+        throw new Error('Finding not found or access denied');
+      }
+
+      // Actualizar el status
+      const updatedFinding = await this.prisma.finding.update({
+        where: { id: findingId },
+        data: { 
+          status: status as any,
+          updatedAt: new Date()
+        },
+        include: {
+          scan: {
+            select: {
+              id: true,
+              domain: true,
+              createdAt: true
+            }
+          }
+        }
+      });
+
+      return {
+        id: updatedFinding.id,
+        category: updatedFinding.category as any,
+        severity: updatedFinding.severity as any,
+        title: updatedFinding.title,
+        description: updatedFinding.description,
+        recommendation: updatedFinding.recommendation,
+        status: updatedFinding.status as any,
+        assetId: '',
+        asset: { domain: updatedFinding.scan.domain },
+        createdAt: updatedFinding.createdAt,
+        updatedAt: updatedFinding.updatedAt,
+      };
+
+    } catch (error) {
+      console.error('Error updating finding status:', error);
+      throw error;
     }
   }
 
