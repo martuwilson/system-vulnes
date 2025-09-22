@@ -249,6 +249,375 @@ export function LandingPage() {
         </Grid>
       </Container>
 
+      {/* Pricing Section */}
+      <Box sx={{ py: 8 }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" component="h2" textAlign="center" gutterBottom>
+            Planes y Precios
+          </Typography>
+          <Typography variant="h6" textAlign="center" color="text.secondary" sx={{ mb: 6 }}>
+            Elige el plan que mejor se adapte a tu negocio
+          </Typography>
+
+          <Grid container spacing={4} justifyContent="center">
+            {/* Trial Plan */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card 
+                elevation={3}
+                sx={{ 
+                  height: '100%',
+                  position: 'relative',
+                  border: '2px solid',
+                  borderColor: 'success.main',
+                  '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s' }
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: -10,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    bgcolor: 'success.main',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 1,
+                    fontSize: '0.875rem',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  GRATIS
+                </Box>
+                <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
+                    Trial
+                  </Typography>
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="h3" fontWeight="bold" color="success.main">
+                      $0
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      por 14 días
+                    </Typography>
+                  </Box>
+                  
+                  <List dense>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="success" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="1 dominio" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="success" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Escaneo semanal" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="success" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Reportes PDF" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="success" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="1 usuario" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                  </List>
+
+                  <Button
+                    variant="contained"
+                    color="success"
+                    fullWidth
+                    size="large"
+                    sx={{ mt: 3 }}
+                    onClick={() => navigate('/auth/register')}
+                  >
+                    Empezar Gratis
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Starter Plan */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card 
+                elevation={3}
+                sx={{ 
+                  height: '100%',
+                  position: 'relative',
+                  border: '2px solid',
+                  borderColor: 'primary.main',
+                  '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s' }
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: -10,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: 1,
+                    fontSize: '0.875rem',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  POPULAR
+                </Box>
+                <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ mt: 2 }}>
+                    Starter
+                  </Typography>
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="h3" fontWeight="bold" color="primary.main">
+                      $29
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      USD por mes
+                    </Typography>
+                  </Box>
+                  
+                  <List dense>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="primary" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="1 dominio" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="primary" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Escaneo semanal" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="primary" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Reportes PDF" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="primary" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="1 usuario" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="primary" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Ideal para PyMEs" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                  </List>
+
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    sx={{ mt: 3 }}
+                    onClick={() => navigate('/auth/register')}
+                  >
+                    Comenzar
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Growth Plan */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card 
+                elevation={3}
+                sx={{ 
+                  height: '100%',
+                  '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s' }
+                }}
+              >
+                <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography variant="h5" fontWeight="bold" gutterBottom>
+                    Growth
+                  </Typography>
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="h3" fontWeight="bold" color="warning.main">
+                      $99
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      USD por mes
+                    </Typography>
+                  </Box>
+                  
+                  <List dense>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="warning" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="5 dominios" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="warning" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Escaneo diario" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="warning" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Integraciones Slack/Teams" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="warning" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Reportes PDF + CSV" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="warning" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Usuarios ilimitados" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle color="warning" fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Tendencias históricas" primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                    </ListItem>
+                  </List>
+
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    fullWidth
+                    size="large"
+                    sx={{ mt: 3 }}
+                    onClick={() => navigate('/auth/register')}
+                  >
+                    Elegir Growth
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Pro Plan */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card 
+                elevation={3}
+                sx={{ 
+                  height: '100%',
+                  bgcolor: 'grey.900',
+                  color: 'white',
+                  '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s' }
+                }}
+              >
+                <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography variant="h5" fontWeight="bold" gutterBottom>
+                    Pro
+                  </Typography>
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="h3" fontWeight="bold" sx={{ color: '#FFD700' }}>
+                      $249
+                    </Typography>
+                    <Typography variant="body2" color="grey.400">
+                      USD por mes
+                    </Typography>
+                  </Box>
+                  
+                  <List dense>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle sx={{ color: '#FFD700' }} fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="Dominios ilimitados" 
+                        primaryTypographyProps={{ fontSize: '0.9rem', color: 'white' }} 
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle sx={{ color: '#FFD700' }} fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="Escaneo cada 6 horas" 
+                        primaryTypographyProps={{ fontSize: '0.9rem', color: 'white' }} 
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle sx={{ color: '#FFD700' }} fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="Todas las integraciones" 
+                        primaryTypographyProps={{ fontSize: '0.9rem', color: 'white' }} 
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle sx={{ color: '#FFD700' }} fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="Reportes de compliance" 
+                        primaryTypographyProps={{ fontSize: '0.9rem', color: 'white' }} 
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle sx={{ color: '#FFD700' }} fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="Acceso auditor" 
+                        primaryTypographyProps={{ fontSize: '0.9rem', color: 'white' }} 
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        <CheckCircle sx={{ color: '#FFD700' }} fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="Soporte prioritario" 
+                        primaryTypographyProps={{ fontSize: '0.9rem', color: 'white' }} 
+                      />
+                    </ListItem>
+                  </List>
+
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    sx={{ 
+                      mt: 3,
+                      bgcolor: '#FFD700',
+                      color: 'black',
+                      '&:hover': { bgcolor: '#FFC107' }
+                    }}
+                    onClick={() => navigate('/auth/register')}
+                  >
+                    Elegir Pro
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          {/* Additional Info */}
+          <Box sx={{ mt: 6, textAlign: 'center' }}>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+              🔒 Todos los planes incluyen seguridad de nivel empresarial
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              💳 Pagos seguros procesados por Stripe • 🔄 Cancela cuando quieras • 💬 Soporte en español
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
+
       {/* CTA Section */}
       <Box
         sx={{
