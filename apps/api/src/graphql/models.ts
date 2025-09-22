@@ -472,6 +472,30 @@ export class SecurityScanResult {
 }
 
 @ObjectType()
+export class SecurityScanStatus {
+  @Field()
+  id: string;
+
+  @Field(() => ScanStatus)
+  status: ScanStatus;
+
+  @Field()
+  healthScore: number;
+
+  @Field(() => [SecurityFinding])
+  findings: SecurityFinding[];
+
+  @Field()
+  domain: string;
+
+  @Field()
+  createdAt: Date;
+
+  @Field({ nullable: true })
+  completedAt?: Date;
+}
+
+@ObjectType()
 export class SecurityScanSummary {
   @Field()
   id: string;

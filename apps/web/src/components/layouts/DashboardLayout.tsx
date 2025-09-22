@@ -39,31 +39,31 @@ const menuItems = [
   {
     text: 'Dashboard',
     icon: <Insights />,
-    path: '/dashboard',
+    path: '/app/dashboard',
     description: 'Resumen general de seguridad',
   },
   {
     text: 'Empresas',
     icon: <Business />,
-    path: '/companies',
+    path: '/app/companies',
     description: 'Gestión de empresas',
   },
   {
     text: 'Escaneos',
     icon: <Scanner />,
-    path: '/scans',
+    path: '/app/scans',
     description: 'Historial de escaneos',
   },
   {
     text: 'Vulnerabilidades',
     icon: <Warning />,
-    path: '/findings',
+    path: '/app/findings',
     description: 'Problemas encontrados',
   },
   {
     text: 'Configuración',
     icon: <Settings />,
-    path: '/settings',
+    path: '/app/settings',
     description: 'Configurar sistema',
   },
 ];
@@ -288,6 +288,21 @@ export function DashboardLayout() {
               {menuItems.find(item => item.path === location.pathname)?.description || 'Resumen general de seguridad'}
             </Typography>
           </Box>
+
+          {/* Botón para ir al Home/Landing */}
+          <IconButton 
+            color="inherit" 
+            onClick={() => navigate('/')}
+            sx={{ 
+              mr: 2,
+              '&:hover': {
+                backgroundColor: '#f1f5f9',
+              },
+            }}
+            title="Ir al inicio"
+          >
+            <Shield sx={{ fontSize: 24 }} />
+          </IconButton>
 
           {/* Notificaciones mejoradas */}
           <IconButton 

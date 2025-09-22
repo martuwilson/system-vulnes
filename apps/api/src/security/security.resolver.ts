@@ -7,6 +7,7 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from '@prisma/client';
 import { 
   SecurityScanResult,
+  SecurityScanStatus,
   SecurityScanSummary,
   SecurityFinding
 } from '../graphql/models';
@@ -308,36 +309,54 @@ export class SecurityResolver {
     }
   }
 
-  @Query(() => SecurityScanResult, { nullable: true })
+  @Query(() => SecurityScanStatus, { nullable: true })
   async getSecurityScanStatus(
-    @Args('scanId') scanId: string,
+    @Args('scanId', { type: () => String }) scanId: string,
     @CurrentUser() user: User,
-  ): Promise<SecurityScanResult | null> {
+  ): Promise<SecurityScanStatus | null> {
     try {
-      const scanStatus = await this.securityService.getScanStatus(scanId);
+      const userWithCompany = await this.getCurrentUserWithCompany(user.id);
       
-      if (!scanStatus) {
+      if (!userWithCompany?.companyId) {
+        return null;
+      }
+
+      const scan = await this.prisma.securityScan.findFirst({
+        where: {
+          id: scanId,
+          companyId: userWithCompany.companyId,
+        },
+        include: {
+          findings: {
+            orderBy: { createdAt: 'desc' }
+          }
+        }
+      });
+
+      if (!scan) {
         return null;
       }
 
       return {
-        success: scanStatus.status === 'COMPLETED',
-        scanId: scanStatus.id,
-        message: `Scan status: ${scanStatus.status}`,
-        healthScore: scanStatus.healthScore,
-        findings: scanStatus.findings.map(f => ({
-          id: f.id,
-          assetId: '', // TODO: obtener del scan
-          category: f.category as any,
-          severity: f.severity as any,
-          title: f.title,
-          description: f.description,
-          recommendation: f.recommendation,
-          status: f.status as any,
-          asset: { domain: 'unknown' }, // TODO: obtener dominio real
-          createdAt: f.createdAt,
-          updatedAt: f.createdAt, // usar createdAt como fallback
-        })) || []
+        id: scan.id,
+        status: scan.status as any,
+        healthScore: scan.healthScore,
+        domain: scan.domain,
+        createdAt: scan.createdAt,
+        completedAt: scan.completedAt,
+        findings: scan.findings.map(finding => ({
+          id: finding.id,
+          category: finding.category as any,
+          severity: finding.severity as any,
+          title: finding.title,
+          description: finding.description,
+          recommendation: finding.recommendation,
+          status: finding.status as any,
+          assetId: '',
+          asset: { domain: scan.domain },
+          createdAt: finding.createdAt,
+          updatedAt: finding.updatedAt,
+        })),
       };
 
     } catch (error) {

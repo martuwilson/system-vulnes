@@ -24,36 +24,26 @@ const client = new ApolloClient({
 
 // Mutations y Queries
 const REGISTER_MUTATION = gql`
-  mutation Register($input: CreateUserInput!) {
+  mutation Register($input: RegisterInput!) {
     register(input: $input) {
       accessToken
       user {
         id
         email
-        name
-        company {
-          id
-          name
-          domain
-        }
+        firstName
       }
     }
   }
 `;
 
 const LOGIN_MUTATION = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+  mutation Login($input: LoginInput!) {
+    login(input: $input) {
       accessToken
       user {
         id
         email
-        name
-        company {
-          id
-          name
-          domain
-        }
+        firstName
       }
     }
   }
@@ -64,16 +54,16 @@ const CREATE_ASSET_MUTATION = gql`
     createAsset(input: $input) {
       id
       domain
-      type
+      isActive
     }
   }
 `;
 
 const START_SECURITY_SCAN_QUEUED = gql`
-  mutation StartSecurityScanQueued($domain: String!) {
-    startSecurityScanQueued(domain: $domain) {
+  mutation StartSecurityScanQueued($input: SecurityScanInput!) {
+    startSecurityScanQueued(input: $input) {
+      success
       scanId
-      status
       message
     }
   }
@@ -82,12 +72,13 @@ const START_SECURITY_SCAN_QUEUED = gql`
 const GET_SECURITY_SCAN_STATUS = gql`
   query GetSecurityScanStatus($scanId: String!) {
     getSecurityScanStatus(scanId: $scanId) {
-      scanId
+      id
       status
       healthScore
+      domain
       findings {
         id
-        type
+        category
         severity
         title
         description
@@ -118,7 +109,22 @@ async function testCompleteFlow() {
     authToken = registerResult.data.register.accessToken;
     const user = registerResult.data.register.user;
     console.log('✅ Usuario registrado:', user.email);
-    console.log('✅ Empresa creada:', user.company.name);
+    
+    // Obtener información de la empresa creada
+    const myCompanies = await client.query({
+      query: gql`
+        query GetMyCompanies {
+          myCompanies {
+            id
+            name
+            domain
+          }
+        }
+      `,
+    });
+    
+    const company = myCompanies.data.myCompanies[0];
+    console.log('✅ Empresa creada:', company.name);
     
     // Test 2: Crear asset
     console.log('\n2. 🌐 Creando asset para escaneo...');
@@ -126,9 +132,9 @@ async function testCompleteFlow() {
       mutation: CREATE_ASSET_MUTATION,
       variables: {
         input: {
-          companyId: user.company.id,
+          companyId: company.id,
           domain: 'google.com',
-          type: 'DOMAIN',
+          isActive: true,
         },
       },
     });
@@ -139,13 +145,15 @@ async function testCompleteFlow() {
     const scanResult = await client.mutate({
       mutation: START_SECURITY_SCAN_QUEUED,
       variables: {
-        domain: 'google.com',
+        input: {
+          assetId: assetResult.data.createAsset.id,
+        },
       },
     });
     
     const scanId = scanResult.data.startSecurityScanQueued.scanId;
     console.log('✅ Escaneo iniciado con ID:', scanId);
-    console.log('✅ Estado inicial:', scanResult.data.startSecurityScanQueued.status);
+    console.log('✅ Estado inicial:', scanResult.data.startSecurityScanQueued.success ? 'SUCCESS' : 'FAILED');
     
     // Test 4: Monitorear progreso del escaneo
     console.log('\n4. ⏳ Monitoreando progreso del escaneo...');

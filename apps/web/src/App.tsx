@@ -5,6 +5,9 @@ import { Box } from '@mui/material';
 import { AuthLayout } from './components/layouts/AuthLayout';
 import { DashboardLayout } from './components/layouts/DashboardLayout';
 
+// Public pages
+import { LandingPage } from './pages/landing/LandingPage';
+
 // Auth pages
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
@@ -42,6 +45,9 @@ function App() {
 
   return (
     <Routes>
+      {/* Public Landing Page */}
+      <Route path="/" element={<LandingPage />} />
+
       {/* Auth Routes */}
       <Route
         path="/auth/*"
@@ -60,7 +66,7 @@ function App() {
 
       {/* Protected Routes */}
       <Route
-        path="/*"
+        path="/app/*"
         element={
           isAuthenticated ? (
             <DashboardLayout />
@@ -74,19 +80,15 @@ function App() {
         <Route path="scans" element={<ScansPage />} />
         <Route path="findings" element={<FindingsPage />} />
         <Route path="settings" element={<SettingsPage />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/app/dashboard" replace />} />
       </Route>
 
-      {/* Root redirect */}
-      <Route
-        path="/"
-        element={
-          <Navigate
-            to={isAuthenticated ? "/dashboard" : "/auth/login"}
-            replace
-          />
-        }
-      />
+      {/* Legacy redirects */}
+      <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+      <Route path="/companies" element={<Navigate to="/app/companies" replace />} />
+      <Route path="/scans" element={<Navigate to="/app/scans" replace />} />
+      <Route path="/findings" element={<Navigate to="/app/findings" replace />} />
+      <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
     </Routes>
   );
 }
