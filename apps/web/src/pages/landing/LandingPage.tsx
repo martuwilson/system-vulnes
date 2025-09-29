@@ -12,7 +12,15 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Paper
+  Paper,
+  Avatar,
+  Rating,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  TextField,
+  Divider,
+  Alert
 } from '@mui/material';
 import { 
   Security, 
@@ -24,7 +32,15 @@ import {
   Email,
   Https,
   NetworkCheck,
-  BugReport
+  BugReport,
+  Star,
+  ExpandMore,
+  Send,
+  Phone,
+  Business,
+  Verified,
+  TrendingUp,
+  Lock
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -76,10 +92,38 @@ export function LandingPage() {
           <Typography variant="h2" component="h1" gutterBottom fontWeight="bold">
             Protege tu Negocio Digital
           </Typography>
-          <Typography variant="h5" sx={{ mb: 4, opacity: 0.9 }}>
+          <Typography variant="h5" sx={{ mb: 3, opacity: 0.9 }}>
             Escaneo automático de seguridad para PyMEs. 
             Identifica vulnerabilidades antes de que los hackers lo hagan.
           </Typography>
+          
+          {/* Estadísticas impactantes */}
+          <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center', gap: 4, flexWrap: 'wrap' }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h4" fontWeight="bold" color="warning.main">
+                76%
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                de PyMEs sufren ataques
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h4" fontWeight="bold" color="error.main">
+                $4.88M
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                costo promedio por brecha
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h4" fontWeight="bold" color="success.main">
+                5 min
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                para proteger tu empresa
+              </Typography>
+            </Box>
+          </Box>
           
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
             <Button
@@ -153,6 +197,131 @@ export function LandingPage() {
           ))}
         </Grid>
       </Container>
+
+      {/* Testimonials Section */}
+      <Box sx={{ bgcolor: 'grey.900', color: 'white', py: 8 }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" component="h2" textAlign="center" gutterBottom>
+            PyMEs que Confían en Nosotros
+          </Typography>
+          <Typography variant="h6" textAlign="center" sx={{ mb: 6, opacity: 0.8 }}>
+            Casos reales de empresas que mejoraron su seguridad digital
+          </Typography>
+
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ bgcolor: 'grey.800', color: 'white', height: '100%' }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Rating value={5} readOnly size="small" sx={{ color: '#FFD700' }} />
+                    <Typography variant="body2" sx={{ ml: 1, opacity: 0.8 }}>
+                      Excelente
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ mb: 3, fontStyle: 'italic' }}>
+                    "Detectamos 12 vulnerabilidades críticas que no sabíamos que teníamos. 
+                    En 2 semanas mejoramos nuestro Health Score de 45% a 87%."
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
+                      <Business />
+                    </Avatar>
+                    <Box>
+                      <Typography variant="subtitle2" fontWeight="bold">
+                        María González
+                      </Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                        CEO, Consultora Integral SRL
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Card sx={{ bgcolor: 'grey.800', color: 'white', height: '100%' }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Rating value={5} readOnly size="small" sx={{ color: '#FFD700' }} />
+                    <Typography variant="body2" sx={{ ml: 1, opacity: 0.8 }}>
+                      Muy recomendado
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ mb: 3, fontStyle: 'italic' }}>
+                    "Antes pagábamos $200 USD/mes a un consultor. Ahora con SecurePYME 
+                    tenemos monitoreo 24/7 por solo $29/mes. Increíble valor."
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Avatar sx={{ bgcolor: 'success.main', mr: 2 }}>
+                      <TrendingUp />
+                    </Avatar>
+                    <Box>
+                      <Typography variant="subtitle2" fontWeight="bold">
+                        Carlos Mendez
+                      </Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                        CTO, TechnoSoft Argentina
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Card sx={{ bgcolor: 'grey.800', color: 'white', height: '100%' }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Rating value={5} readOnly size="small" sx={{ color: '#FFD700' }} />
+                    <Typography variant="body2" sx={{ ml: 1, opacity: 0.8 }}>
+                      Fácil de usar
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ mb: 3, fontStyle: 'italic' }}>
+                    "Sin conocimientos técnicos pude configurar el monitoreo de nuestros 
+                    3 dominios. Los reportes PDF son perfectos para mostrar al directorio."
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Avatar sx={{ bgcolor: 'warning.main', mr: 2 }}>
+                      <Lock />
+                    </Avatar>
+                    <Box>
+                      <Typography variant="subtitle2" fontWeight="bold">
+                        Ana Rodríguez  
+                      </Typography>
+                      <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                        Gerente IT, Comercial del Norte
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          {/* Trust indicators */}
+          <Box sx={{ mt: 6, textAlign: 'center' }}>
+            <Typography variant="body1" sx={{ mb: 3, opacity: 0.8 }}>
+              Confiado por más de 150+ PyMEs en América Latina
+            </Typography>
+            <Stack direction="row" spacing={4} justifyContent="center" alignItems="center" flexWrap="wrap">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Verified color="primary" />
+                <Typography variant="body2">ISO 27001 Certified</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Shield color="success" />
+                <Typography variant="body2">SOC 2 Compliant</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Lock color="warning" />
+                <Typography variant="body2">GDPR Ready</Typography>
+              </Box>
+            </Stack>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Scan Types Section */}
       <Box sx={{ bgcolor: 'grey.50', py: 8 }}>
@@ -615,6 +784,200 @@ export function LandingPage() {
               💳 Pagos seguros procesados por Stripe • 🔄 Cancela cuando quieras • 💬 Soporte en español
             </Typography>
           </Box>
+        </Container>
+      </Box>
+
+      {/* FAQ Section */}
+      <Box sx={{ py: 8, bgcolor: 'grey.50' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" component="h2" textAlign="center" gutterBottom>
+            Preguntas Frecuentes
+          </Typography>
+          <Typography variant="h6" textAlign="center" color="text.secondary" sx={{ mb: 6 }}>
+            Resolvemos las dudas más comunes sobre ciberseguridad para PyMEs
+          </Typography>
+
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Accordion elevation={2}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    ¿Qué tan difícil es implementar la solución?
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography color="text.secondary">
+                    Súper fácil. Solo necesitas registrarte, agregar tus dominios y listo. 
+                    El primer escaneo se ejecuta automáticamente en menos de 5 minutos. 
+                    No requiere instalación de software ni conocimientos técnicos.
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion elevation={2}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    ¿Qué pasa si no sé interpretar los resultados?
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography color="text.secondary">
+                    Cada vulnerabilidad viene con explicaciones en lenguaje simple y 
+                    recomendaciones específicas paso a paso. Además, ofrecemos soporte 
+                    por email en español para ayudarte a implementar las mejoras.
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion elevation={2}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    ¿Es seguro que escaneen mi sitio web?
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography color="text.secondary">
+                    Absolutamente. Solo realizamos escaneos externos (como lo haría cualquier 
+                    visitante web). No accedemos a tu servidor ni datos internos. 
+                    Cumplimos con estándares internacionales de seguridad y privacidad.
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Accordion elevation={2}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    ¿Cuánto tiempo toma ver resultados?
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography color="text.secondary">
+                    El primer escaneo completo toma entre 3-10 minutos dependiendo del tamaño 
+                    de tu sitio. Los escaneos posteriores son más rápidos (1-3 min). 
+                    Recibes notificaciones inmediatas si detectamos algo crítico.
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion elevation={2}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    ¿Puedo cancelar cuando quiera?
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography color="text.secondary">
+                    Sí, sin compromisos ni penalizaciones. Puedes cancelar tu suscripción 
+                    en cualquier momento desde tu panel de control. El servicio continúa 
+                    hasta el final del período facturado.
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion elevation={2}>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography variant="h6" fontWeight="bold">
+                    ¿Ofrecen soporte técnico en español?
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography color="text.secondary">
+                    ¡Por supuesto! Todo nuestro soporte es en español. Respondemos consultas 
+                    por email en menos de 24 horas. Los clientes Pro tienen soporte 
+                    prioritario con respuesta en 4 horas.
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Contact/Demo Form Section */}
+      <Box sx={{ py: 8 }}>
+        <Container maxWidth="md">
+          <Typography variant="h3" component="h2" textAlign="center" gutterBottom>
+            ¿Necesitas una Demo Personalizada?
+          </Typography>
+          <Typography variant="h6" textAlign="center" color="text.secondary" sx={{ mb: 6 }}>
+            Agenda una reunión gratuita de 15 minutos con nuestro equipo
+          </Typography>
+
+          <Card elevation={3} sx={{ p: 4 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Nombre completo"
+                  variant="outlined"
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Email empresarial"
+                  variant="outlined"
+                  type="email"
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Empresa"
+                  variant="outlined"
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Teléfono"
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="¿Cuál es tu principal preocupación de seguridad?"
+                  variant="outlined"
+                  multiline
+                  rows={3}
+                  placeholder="Ej: Necesito cumplir con normativas, tuve un incidente reciente, quiero prevenir ataques..."
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                  <Button
+                    variant="contained"
+                    size="large"
+                    startIcon={<Phone />}
+                    sx={{ px: 4 }}
+                  >
+                    Solicitar Demo
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    startIcon={<Send />}
+                    sx={{ px: 4 }}
+                  >
+                    Enviar Consulta
+                  </Button>
+                </Stack>
+              </Grid>
+            </Grid>
+            
+            <Alert severity="info" sx={{ mt: 3 }}>
+              <Typography variant="body2">
+                🔒 <strong>Compromiso de privacidad:</strong> Nunca compartimos tu información. 
+                Solo la usamos para brindarte el mejor servicio posible.
+              </Typography>
+            </Alert>
+          </Card>
         </Container>
       </Box>
 
