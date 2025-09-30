@@ -82,19 +82,71 @@ export function LandingPage() {
       {/* Hero Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%)',
           color: 'white',
-          py: 12,
-          textAlign: 'center'
+          py: { xs: 8, md: 12 },
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'radial-gradient(circle at 20% 50%, rgba(255, 71, 87, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0, 184, 217, 0.1) 0%, transparent 50%)',
+            zIndex: 1
+          }
         }}
       >
-        <Container maxWidth="lg">
-          <Typography variant="h2" component="h1" gutterBottom fontWeight="bold">
-            Protege tu Negocio Digital
-          </Typography>
-          <Typography variant="h5" sx={{ mb: 3, opacity: 0.9 }}>
-            Escaneo automático de seguridad para PyMEs. 
-            Identifica vulnerabilidades antes de que los hackers lo hagan.
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Typography 
+              variant="h1" 
+              component="h1" 
+              sx={{ 
+                fontWeight: 900,
+                fontSize: { xs: '2.5rem', md: '4rem', lg: '4.5rem' },
+                lineHeight: 1.1,
+                mb: 3,
+                background: 'linear-gradient(135deg, #ff4757 0%, #ff6b7a  50%, #c44569 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textShadow: '0 0 30px rgba(255, 71, 87, 0.3)'
+              }}
+            >
+              STOP CIBERATAQUES
+            </Typography>
+            <Typography 
+              variant="h2" 
+              component="h2" 
+              sx={{ 
+                fontWeight: 700,
+                fontSize: { xs: '1.8rem', md: '2.5rem' },
+                mb: 3,
+                color: 'white'
+              }}
+            >
+              Antes de que Destruyan tu PyME
+            </Typography>
+          </Box>
+          
+          <Typography 
+            variant="h5" 
+            sx={{ 
+              mb: 4, 
+              opacity: 0.9, 
+              maxWidth: '800px', 
+              mx: 'auto',
+              fontSize: { xs: '1.1rem', md: '1.3rem' },
+              fontWeight: 400
+            }}
+          >
+            Detección automatizada de vulnerabilidades críticas en tiempo real. 
+            <Box component="span" sx={{ color: '#ff4757', fontWeight: 600 }}>
+              Sin instalaciones complejas.
+            </Box> Solo resultados que salvan tu negocio.
           </Typography>
           
           {/* Estadísticas impactantes */}
@@ -125,37 +177,55 @@ export function LandingPage() {
             </Box>
           </Box>
           
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} justifyContent="center" sx={{ mb: 4 }}>
             <Button
               variant="contained"
               size="large"
               endIcon={<ArrowForward />}
               onClick={() => navigate('/auth/register')}
               sx={{
-                bgcolor: 'white',
-                color: 'primary.main',
-                px: 4,
-                py: 1.5,
-                fontSize: '1.1rem',
-                '&:hover': { bgcolor: 'grey.100' }
+                bgcolor: '#ff4757',
+                color: 'white',
+                px: 6,
+                py: 2,
+                fontSize: '1.2rem',
+                fontWeight: 700,
+                borderRadius: 2,
+                textTransform: 'uppercase',
+                boxShadow: '0 8px 32px rgba(255, 71, 87, 0.4)',
+                '&:hover': { 
+                  bgcolor: '#ff3742',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 12px 40px rgba(255, 71, 87, 0.6)'
+                },
+                transition: 'all 0.3s ease'
               }}
             >
-              Comenzar Gratis
+              Escaneo Gratuito Ya
             </Button>
             <Button
               variant="outlined"
               size="large"
+              startIcon={<Phone />}
               onClick={() => navigate('/auth/login')}
               sx={{
                 color: 'white',
-                borderColor: 'white',
-                px: 4,
-                py: 1.5,
+                borderColor: 'rgba(255,255,255,0.3)',
+                px: 6,
+                py: 2,
                 fontSize: '1.1rem',
-                '&:hover': { borderColor: 'grey.300', bgcolor: 'rgba(255,255,255,0.1)' }
+                fontWeight: 600,
+                borderRadius: 2,
+                backdropFilter: 'blur(10px)',
+                '&:hover': { 
+                  borderColor: 'white', 
+                  bgcolor: 'rgba(255,255,255,0.1)',
+                  transform: 'translateY(-2px)'
+                },
+                transition: 'all 0.3s ease'
               }}
             >
-              Iniciar Sesión
+              Demo en Vivo
             </Button>
           </Stack>
 
@@ -164,6 +234,135 @@ export function LandingPage() {
               label="✨ MVP Listo - Test Gratuito" 
               sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 'bold' }}
             />
+          </Box>
+        </Container>
+      </Box>
+
+      {/* How It Works Section */}
+      <Box sx={{ py: 8, bgcolor: 'white' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" component="h2" textAlign="center" gutterBottom sx={{ fontWeight: 700 }}>
+            Cómo Funciona SecurePYME
+          </Typography>
+          <Typography variant="h6" textAlign="center" color="text.secondary" sx={{ mb: 6 }}>
+            Protección empresarial en 3 pasos simples
+          </Typography>
+
+          <Grid container spacing={6} alignItems="center">
+            <Grid item xs={12} md={4}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box 
+                  sx={{ 
+                    width: 80, 
+                    height: 80, 
+                    borderRadius: '50%', 
+                    bgcolor: '#ff4757', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    mx: 'auto',
+                    mb: 3,
+                    boxShadow: '0 8px 32px rgba(255, 71, 87, 0.3)'
+                  }}
+                >
+                  <Typography variant="h4" fontWeight="bold" color="white">1</Typography>
+                </Box>
+                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                  Conecta tus Dominios
+                </Typography>
+                <Typography color="text.secondary" sx={{ mb: 3 }}>
+                  Simplemente ingresa las URLs de tu empresa. Sin instalaciones, sin código, sin complicaciones técnicas.
+                </Typography>
+                <Paper elevation={2} sx={{ p: 2, bgcolor: 'grey.50' }}>
+                  <Typography variant="body2" sx={{ fontFamily: 'monospace', color: 'primary.main' }}>
+                    tuempresa.com.ar ✓<br/>
+                    tienda.tuempresa.com ✓<br/>
+                    mail.tuempresa.com ✓
+                  </Typography>
+                </Paper>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box 
+                  sx={{ 
+                    width: 80, 
+                    height: 80, 
+                    borderRadius: '50%', 
+                    bgcolor: '#00b8d9', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    mx: 'auto',
+                    mb: 3,
+                    boxShadow: '0 8px 32px rgba(0, 184, 217, 0.3)'
+                  }}
+                >
+                  <Typography variant="h4" fontWeight="bold" color="white">2</Typography>
+                </Box>
+                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                  Escaneamos Todo
+                </Typography>
+                <Typography color="text.secondary" sx={{ mb: 3 }}>
+                  Nuestros robots analizan SSL, DNS, headers de seguridad, puertos y configuraciones críticas 24/7.
+                </Typography>
+                <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap">
+                  <Chip icon={<Https />} label="SSL/TLS" size="small" color="primary" />
+                  <Chip icon={<Email />} label="Email Sec" size="small" color="primary" />
+                  <Chip icon={<NetworkCheck />} label="Headers" size="small" color="primary" />
+                  <Chip icon={<BugReport />} label="Puertos" size="small" color="primary" />
+                </Stack>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box 
+                  sx={{ 
+                    width: 80, 
+                    height: 80, 
+                    borderRadius: '50%', 
+                    bgcolor: '#2ecc71', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    mx: 'auto',
+                    mb: 3,
+                    boxShadow: '0 8px 32px rgba(46, 204, 113, 0.3)'
+                  }}
+                >
+                  <Typography variant="h4" fontWeight="bold" color="white">3</Typography>
+                </Box>
+                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                  Actúas con Confianza
+                </Typography>
+                <Typography color="text.secondary" sx={{ mb: 3 }}>
+                  Recibes alertas inmediatas + recomendaciones específicas + reportes PDF para implementar.
+                </Typography>
+                <Alert severity="success" sx={{ textAlign: 'left' }}>
+                  <Typography variant="body2" fontWeight="bold">
+                    🚨 SSL vence en 7 días
+                  </Typography>
+                  <Typography variant="caption">
+                    → Renueva con tu proveedor hosting
+                  </Typography>
+                </Alert>
+              </Box>
+            </Grid>
+          </Grid>
+
+          {/* ROI Guarantee Section */}
+          <Box sx={{ mt: 8, textAlign: 'center', bgcolor: 'primary.main', color: 'white', p: 4, borderRadius: 2 }}>
+            <Typography variant="h5" fontWeight="bold" gutterBottom>
+              💰 Garantía de ROI
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              Si no mejoramos tu seguridad en 30 días, te devolvemos tu dinero.
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+              Promedio: las empresas ahorran $2,840 USD en su primer mes evitando una sola brecha
+            </Typography>
           </Box>
         </Container>
       </Box>
@@ -1017,45 +1216,270 @@ export function LandingPage() {
         </Container>
       </Box>
 
+      {/* Resources Section */}
+      <Box sx={{ py: 8, bgcolor: 'grey.100' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" component="h2" textAlign="center" gutterBottom sx={{ fontWeight: 700 }}>
+            Recursos Gratuitos para PyMEs
+          </Typography>
+          <Typography variant="h6" textAlign="center" color="text.secondary" sx={{ mb: 6 }}>
+            Educación continua en ciberseguridad
+          </Typography>
+
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Card elevation={3} sx={{ height: '100%', '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s' } }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Box 
+                      sx={{ 
+                        p: 1, 
+                        borderRadius: 1, 
+                        bgcolor: 'error.main', 
+                        color: 'white', 
+                        mr: 2 
+                      }}
+                    >
+                      <Shield />
+                    </Box>
+                    <Typography variant="h6" fontWeight="bold">
+                      Guía de Seguridad 2025
+                    </Typography>
+                  </Box>
+                  <Typography color="text.secondary" sx={{ mb: 3 }}>
+                    Checklist completo de 47 puntos para proteger tu PyME. 
+                    Incluye plantillas y casos reales de Argentina.
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    fullWidth 
+                    sx={{ bgcolor: '#ff4757', '&:hover': { bgcolor: '#ff3742' } }}
+                  >
+                    Descargar PDF
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Card elevation={3} sx={{ height: '100%', '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s' } }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Box 
+                      sx={{ 
+                        p: 1, 
+                        borderRadius: 1, 
+                        bgcolor: 'warning.main', 
+                        color: 'white', 
+                        mr: 2 
+                      }}
+                    >
+                      <Analytics />
+                    </Box>
+                    <Typography variant="h6" fontWeight="bold">
+                      Reporte Global 2025
+                    </Typography>
+                  </Box>
+                  <Typography color="text.secondary" sx={{ mb: 3 }}>
+                    Estado de la ciberseguridad en PyMEs latinoamericanas. 
+                    Tendencias, costos y predicciones para 2025.
+                  </Typography>
+                  <Button 
+                    variant="outlined" 
+                    fullWidth
+                    sx={{ borderColor: '#ff4757', color: '#ff4757', '&:hover': { bgcolor: 'rgba(255, 71, 87, 0.1)' } }}
+                  >
+                    Leer Reporte
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Card elevation={3} sx={{ height: '100%', '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.3s' } }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Box 
+                      sx={{ 
+                        p: 1, 
+                        borderRadius: 1, 
+                        bgcolor: 'success.main', 
+                        color: 'white', 
+                        mr: 2 
+                      }}
+                    >
+                      <Speed />
+                    </Box>
+                    <Typography variant="h6" fontWeight="bold">
+                      Webinar Mensual
+                    </Typography>
+                  </Box>
+                  <Typography color="text.secondary" sx={{ mb: 3 }}>
+                    "Cómo crear un plan de respuesta a incidentes". 
+                    Próximo webinar: 15 de octubre, 16:00 hs ART.
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    color="success"
+                    fullWidth
+                  >
+                    Registrarme Gratis
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          {/* Newsletter Signup */}
+          <Box sx={{ mt: 6, textAlign: 'center', bgcolor: 'white', p: 4, borderRadius: 2, boxShadow: 2 }}>
+            <Typography variant="h5" fontWeight="bold" gutterBottom>
+              📧 Newsletter de Seguridad
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+              Recibe tips semanales, alertas de vulnerabilidades y casos de estudio. Sin spam.
+            </Typography>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center">
+              <TextField
+                placeholder="tu@empresa.com.ar"
+                variant="outlined"
+                size="medium"
+                sx={{ minWidth: 300 }}
+              />
+              <Button
+                variant="contained"
+                size="large"
+                startIcon={<Send />}
+                sx={{ 
+                  bgcolor: '#ff4757', 
+                  px: 4,
+                  '&:hover': { bgcolor: '#ff3742' }
+                }}
+              >
+                Suscribirme
+              </Button>
+            </Stack>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
+              📊 Únete a 2,400+ PyMEs que ya reciben nuestro newsletter
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
+
       {/* Footer */}
       <Box sx={{ bgcolor: 'grey.900', color: 'white', py: 6 }}>
         <Container maxWidth="lg">
+          {/* Trust Bar */}
+          <Box sx={{ textAlign: 'center', mb: 6, pb: 4, borderBottom: '1px solid #333' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#ff4757' }}>
+              Certificaciones y Compliance
+            </Typography>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4} justifyContent="center" alignItems="center">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Verified sx={{ color: '#2ecc71' }} />
+                <Typography variant="body2">ISO 27001:2022</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Shield sx={{ color: '#00b8d9' }} />
+                <Typography variant="body2">SOC 2 Type II</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Lock sx={{ color: '#ffa726' }} />
+                <Typography variant="body2">GDPR Compliant</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Security sx={{ color: '#e91e63' }} />
+                <Typography variant="body2">OWASP Aligned</Typography>
+              </Box>
+            </Stack>
+          </Box>
+
           <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6" gutterBottom>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" gutterBottom sx={{ color: '#ff4757' }}>
                 SecurePYME
               </Typography>
-              <Typography variant="body2" color="grey.400">
-                Seguridad digital accesible para pequeñas y medianas empresas.
-                Protege tu negocio con tecnología empresarial.
+              <Typography variant="body2" color="grey.400" sx={{ mb: 3 }}>
+                Líder en ciberseguridad para PyMEs en América Latina. 
+                Protege tu negocio con tecnología empresarial al alcance de todos.
               </Typography>
+              <Stack spacing={1}>
+                <Typography variant="body2">🏢 +150 empresas protegidas</Typography>
+                <Typography variant="body2">🛡️ +2,400 vulnerabilidades detectadas</Typography>
+                <Typography variant="body2">⚡ 99.9% uptime garantizado</Typography>
+              </Stack>
             </Grid>
-            <Grid item xs={12} md={3}>
+            
+            <Grid item xs={12} md={2}>
               <Typography variant="h6" gutterBottom>
                 Producto
               </Typography>
               <Stack spacing={1}>
-                <Typography variant="body2" color="grey.400">Features</Typography>
-                <Typography variant="body2" color="grey.400">Precios</Typography>
-                <Typography variant="body2" color="grey.400">Documentación</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Features</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Precios</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Integraciones</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>API Docs</Typography>
               </Stack>
             </Grid>
-            <Grid item xs={12} md={3}>
+            
+            <Grid item xs={12} md={2}>
+              <Typography variant="h6" gutterBottom>
+                Recursos
+              </Typography>
+              <Stack spacing={1}>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Blog</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Guías</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Webinars</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Casos de Éxito</Typography>
+              </Stack>
+            </Grid>
+            
+            <Grid item xs={12} md={2}>
               <Typography variant="h6" gutterBottom>
                 Soporte
               </Typography>
               <Stack spacing={1}>
-                <Typography variant="body2" color="grey.400">Contacto</Typography>
-                <Typography variant="body2" color="grey.400">FAQ</Typography>
-                <Typography variant="body2" color="grey.400">Status</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Centro de Ayuda</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>FAQ</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Status del Sistema</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Contacto</Typography>
+              </Stack>
+            </Grid>
+            
+            <Grid item xs={12} md={2}>
+              <Typography variant="h6" gutterBottom>
+                Legal
+              </Typography>
+              <Stack spacing={1}>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Términos de Uso</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Privacidad</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>Cookies</Typography>
+                <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'white' } }}>SLA</Typography>
               </Stack>
             </Grid>
           </Grid>
           
-          <Box sx={{ borderTop: '1px solid #333', mt: 4, pt: 4, textAlign: 'center' }}>
-            <Typography variant="body2" color="grey.500">
-              © 2025 SecurePYME. Todos los derechos reservados.
-            </Typography>
+          <Box sx={{ borderTop: '1px solid #333', mt: 6, pt: 4 }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} md={6}>
+                <Typography variant="body2" color="grey.500">
+                  © 2025 SecurePYME. Todos los derechos reservados. | Hecho con ❤️ en Argentina 🇦🇷
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'center', md: 'right' } }}>
+                <Stack direction="row" spacing={2} justifyContent={{ xs: 'center', md: 'flex-end' }}>
+                  <Typography variant="body2" color="grey.500">Síguenos:</Typography>
+                  <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: '#ff4757' } }}>
+                    LinkedIn
+                  </Typography>
+                  <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: '#ff4757' } }}>
+                    Twitter
+                  </Typography>
+                  <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: '#ff4757' } }}>
+                    YouTube
+                  </Typography>
+                </Stack>
+              </Grid>
+            </Grid>
           </Box>
         </Container>
       </Box>
