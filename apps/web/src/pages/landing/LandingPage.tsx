@@ -286,12 +286,6 @@ export function LandingPage() {
             </Button>
           </Stack>
 
-          <Box sx={{ mt: 6 }}>
-            <Chip 
-              label="✨ MVP Listo - Test Gratuito" 
-              sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 'bold' }}
-            />
-          </Box>
         </Container>
       </Box>
 
