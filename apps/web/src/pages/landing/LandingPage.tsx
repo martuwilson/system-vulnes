@@ -7,7 +7,6 @@ import {
   Card, 
   CardContent,
   Stack,
-  Chip,
   List,
   ListItem,
   ListItemIcon,
@@ -38,14 +37,20 @@ import {
   Send,
   Phone,
   Verified,
-  TrendingUp,
   Lock,
   AttachMoney,
   LocalFireDepartment,
   Cancel,
   BarChart,
   FlashOn,
-  AccountBalance
+  AccountBalance,
+  Warning,
+  ArrowRight,
+  ShowChart,
+  Savings,
+  Schedule,
+  Favorite,
+  Flag
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import SecuryxLogo from '../../components/common/SecuryxLogo';
@@ -423,16 +428,26 @@ export function LandingPage() {
 
           {/* Trust Indicators */}
           <Box sx={{ textAlign: 'center', opacity: 0.8, mb: 8 }}>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: 'rgba(255, 255, 255, 0.7)',
-                mb: 2,
-                fontWeight: 500
-              }}
-            >
-              ✓ Sin tarjeta de crédito ✓ 14 días gratis ✓ Soporte en español
-            </Typography>
+            <Stack direction="row" spacing={3} justifyContent="center" flexWrap="wrap" sx={{ mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }}>
+                  Sin tarjeta de crédito
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }}>
+                  14 días gratis
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }}>
+                  Soporte en español
+                </Typography>
+              </Box>
+            </Stack>
             <Typography 
               variant="caption" 
               sx={{ 
@@ -1088,17 +1103,9 @@ export function LandingPage() {
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                      <Box 
-                        sx={{ 
-                          width: 12, 
-                          height: 12, 
-                          borderRadius: '50%', 
-                          bgcolor: '#f59e0b',
-                          animation: 'pulse 2s infinite'
-                        }} 
-                      />
+                      <Warning sx={{ color: '#f59e0b', fontSize: 20 }} />
                       <Typography variant="body1" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                        🚨 SSL vence en 7 días
+                        SSL vence en 7 días
                       </Typography>
                     </Box>
                     
@@ -1106,12 +1113,18 @@ export function LandingPage() {
                       <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
                         <strong>Acción recomendada:</strong>
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                        → Renovar con tu proveedor hosting
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                        → Guía paso a paso incluida
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                        <ArrowRight sx={{ color: '#10b981', fontSize: 16 }} />
+                        <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
+                          Renovar con tu proveedor hosting
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <ArrowRight sx={{ color: '#10b981', fontSize: 16 }} />
+                        <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
+                          Guía paso a paso incluida
+                        </Typography>
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
@@ -1148,9 +1161,9 @@ export function LandingPage() {
 
               <Box sx={{ position: 'relative' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, mb: 3 }}>
-                  <TrendingUp sx={{ fontSize: 40 }} />
+                  <ShowChart sx={{ fontSize: 40 }} />
                   <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                    📈 Garantía de ROI
+                    Garantía de ROI
                   </Typography>
                 </Box>
                 
@@ -1569,9 +1582,12 @@ export function LandingPage() {
                     border: '1px solid rgba(16, 185, 129, 0.2)'
                   }}
                 >
-                  <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                    📈 Mejora del Health Score: +42 puntos
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <BarChart sx={{ color: '#10b981', fontSize: 18 }} />
+                    <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
+                      Mejora del Health Score: +42 puntos
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             </Grid>
@@ -1690,9 +1706,12 @@ export function LandingPage() {
                     border: '1px solid rgba(16, 185, 129, 0.2)'
                   }}
                 >
-                  <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                    💰 Ahorro mensual: $171 USD (-85%)
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Savings sx={{ color: '#10b981', fontSize: 18 }} />
+                    <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
+                      Ahorro mensual: $171 USD (-85%)
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             </Grid>
@@ -1811,9 +1830,12 @@ export function LandingPage() {
                     border: '1px solid rgba(16, 185, 129, 0.2)'
                   }}
                 >
-                  <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                    ⚡ Setup time: 15 minutos vs 2 días
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Schedule sx={{ color: '#10b981', fontSize: 18 }} />
+                    <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
+                      Setup time: 15 minutos vs 2 días
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             </Grid>
@@ -1833,9 +1855,12 @@ export function LandingPage() {
                 mb: 8
               }}
             >
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 700, mb: 2 }}>
-                4.9/5 ⭐
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2 }}>
+                <Typography variant="h4" sx={{ color: 'white', fontWeight: 700 }}>
+                  4.9/5
+                </Typography>
+                <Star sx={{ color: '#fbbf24', fontSize: 32 }} />
+              </Box>
               <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 4 }}>
                 Calificación promedio de 247 reseñas verificadas
               </Typography>
@@ -3070,9 +3095,16 @@ export function LandingPage() {
           <Box sx={{ borderTop: '1px solid #333', mt: 6, pt: 4 }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} md={6}>
-                <Typography variant="body2" color="grey.500">
-                  © 2025 Securyx. Todos los derechos reservados. | Hecho con ❤️ en Argentina 🇦🇷
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: { xs: 'center', md: 'flex-start' } }}>
+                  <Typography variant="body2" color="grey.500">
+                    © 2025 Securyx. Todos los derechos reservados. | Hecho con
+                  </Typography>
+                  <Favorite sx={{ color: '#ef4444', fontSize: 16 }} />
+                  <Typography variant="body2" color="grey.500">
+                    en Argentina
+                  </Typography>
+                  <Flag sx={{ color: '#3b82f6', fontSize: 16 }} />
+                </Box>
               </Grid>
               <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'center', md: 'right' } }}>
                 <Stack direction="row" spacing={2} justifyContent={{ xs: 'center', md: 'flex-end' }}>
