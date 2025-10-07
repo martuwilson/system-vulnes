@@ -18,7 +18,10 @@ import {
   AccordionSummary,
   AccordionDetails,
   TextField,
-  Alert
+  Alert,
+  AppBar,
+  Toolbar,
+  Link
 } from '@mui/material';
 import { 
   Security, 
@@ -90,6 +93,117 @@ export function LandingPage() {
 
   return (
     <Box>
+      {/* Navigation Bar */}
+      <AppBar 
+        position="fixed" 
+        elevation={0}
+        sx={{ 
+          background: 'rgba(15, 23, 42, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          zIndex: 1100
+        }}
+      >
+        <Container maxWidth="lg">
+          <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
+            {/* Logo */}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <SecuryxLogo />
+            </Box>
+
+            {/* Navigation Menu */}
+            <Stack direction="row" spacing={4} sx={{ display: { xs: 'none', md: 'flex' } }}>
+              <Link 
+                href="#home" 
+                sx={{ 
+                  color: 'white', 
+                  textDecoration: 'none', 
+                  fontWeight: 500,
+                  transition: 'color 0.3s ease',
+                  '&:hover': { color: '#3b82f6' }
+                }}
+              >
+                Home
+              </Link>
+              <Link 
+                href="#como-funciona" 
+                sx={{ 
+                  color: 'white', 
+                  textDecoration: 'none', 
+                  fontWeight: 500,
+                  transition: 'color 0.3s ease',
+                  '&:hover': { color: '#3b82f6' }
+                }}
+              >
+                Cómo Funciona
+              </Link>
+              <Link 
+                href="#por-que-elegirnos" 
+                sx={{ 
+                  color: 'white', 
+                  textDecoration: 'none', 
+                  fontWeight: 500,
+                  transition: 'color 0.3s ease',
+                  '&:hover': { color: '#3b82f6' }
+                }}
+              >
+                Por qué Elegirnos
+              </Link>
+              <Link 
+                href="#tipos-escaneos" 
+                sx={{ 
+                  color: 'white', 
+                  textDecoration: 'none', 
+                  fontWeight: 500,
+                  transition: 'color 0.3s ease',
+                  '&:hover': { color: '#3b82f6' }
+                }}
+              >
+                Tipos de Escaneos
+              </Link>
+              <Link 
+                href="#precios" 
+                sx={{ 
+                  color: 'white', 
+                  textDecoration: 'none', 
+                  fontWeight: 500,
+                  transition: 'color 0.3s ease',
+                  '&:hover': { color: '#3b82f6' }
+                }}
+              >
+                Precios
+              </Link>
+              <Link 
+                href="#faq" 
+                sx={{ 
+                  color: 'white', 
+                  textDecoration: 'none', 
+                  fontWeight: 500,
+                  transition: 'color 0.3s ease',
+                  '&:hover': { color: '#3b82f6' }
+                }}
+              >
+                FAQ
+              </Link>
+            </Stack>
+
+            {/* CTA Button */}
+            <Button 
+              variant="contained" 
+              size="small"
+              sx={{ 
+                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+                display: { xs: 'none', sm: 'flex' }
+              }}
+              onClick={() => navigate('/dashboard')}
+            >
+              Empezar Gratis
+            </Button>
+          </Toolbar>
+        </Container>
+      </AppBar>
+
       <style>
         {`
           @keyframes pulse {
@@ -110,10 +224,12 @@ export function LandingPage() {
       </style>
       {/* Hero Section */}
       <Box
+        id="home"
         sx={{
           background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%)',
           color: 'white',
-          py: { xs: 10, md: 16 },
+          pt: { xs: 14, md: 18 },
+          pb: { xs: 10, md: 16 },
           position: 'relative',
           overflow: 'hidden',
           minHeight: '100vh',
@@ -697,6 +813,7 @@ export function LandingPage() {
 
       {/* How It Works Section */}
       <Box 
+        id="como-funciona"
         sx={{ 
           py: 12, 
           background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
@@ -1182,6 +1299,7 @@ export function LandingPage() {
 
       {/* Features Section */}
       <Box 
+        id="por-que-elegirnos"
         sx={{ 
           background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%)',
           py: 12,
@@ -2001,7 +2119,7 @@ export function LandingPage() {
       </Box>
 
       {/* Scan Types Section */}
-      <Box sx={{ bgcolor: 'grey.50', py: 8 }}>
+      <Box id="tipos-escaneos" sx={{ bgcolor: 'grey.50', py: 8 }}>
         <Container maxWidth="lg">
           <Typography variant="h3" component="h2" textAlign="center" gutterBottom>
             Tipos de Escaneo
@@ -2101,6 +2219,7 @@ export function LandingPage() {
 
       {/* Pricing Section */}
       <Box 
+        id="precios"
         sx={{ 
           py: 10,
           background: 'linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%)',
@@ -2582,7 +2701,7 @@ export function LandingPage() {
       </Box>
 
       {/* FAQ Section */}
-      <Box sx={{ py: 8, bgcolor: 'grey.50' }}>
+      <Box id="faq" sx={{ py: 8, bgcolor: 'grey.50' }}>
         <Container maxWidth="lg">
           <Typography variant="h3" component="h2" textAlign="center" gutterBottom>
             Preguntas Frecuentes
