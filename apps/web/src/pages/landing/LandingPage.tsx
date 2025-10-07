@@ -45,17 +45,7 @@ import {
   Cancel,
   BarChart,
   FlashOn,
-  AccountBalance,
-  Terminal,
-  Code,
-  DataObject,
-  Memory,
-  Api,
-  Storage,
-  DeveloperMode,
-  IntegrationInstructions,
-  Webhook,
-  Integration
+  AccountBalance
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import SecuryxLogo from '../../components/common/SecuryxLogo';
@@ -65,32 +55,32 @@ export function LandingPage() {
 
   const features = [
     {
-      icon: <Terminal sx={{ fontSize: 40, color: 'primary.main' }} />,
+      icon: <Security sx={{ fontSize: 40, color: 'primary.main' }} />,
       title: 'Escaneo Completo de Protección Digital',
-      description: 'Análisis automatizado de SSL, DNS, headers de seguridad y puertos abiertos ejecutado desde terminal especializado'
+      description: 'Análisis automatizado de SSL, DNS, headers de seguridad y puertos abiertos para tu tranquilidad'
     },
     {
-      icon: <Api sx={{ fontSize: 40, color: 'success.main' }} />,
-      title: 'API REST en Tiempo Real',
-      description: 'Procesamiento asíncrono con colas Redis y APIs GraphQL para escaneos rápidos y eficientes'
+      icon: <Speed sx={{ fontSize: 40, color: 'success.main' }} />,
+      title: 'Resultados en Tiempo Real',
+      description: 'Procesamiento asíncrono con colas Redis para escaneos rápidos y eficientes, sin esperas'
     },
     {
-      icon: <BarChart sx={{ fontSize: 40, color: 'info.main' }} />,
-      title: 'Dashboard con Métricas Avanzadas',
-      description: 'Visualización de datos con charts interactivos, health score y gestión centralizada de vulnerabilidades'
+      icon: <Analytics sx={{ fontSize: 40, color: 'info.main' }} />,
+      title: 'Dashboard Intuitivo',
+      description: 'Métricas claras, health score y gestión centralizada de vulnerabilidades sin complicaciones técnicas'
     },
     {
-      icon: <Storage sx={{ fontSize: 40, color: 'warning.main' }} />,
-      title: 'Base de Datos Persistente',
-      description: 'Almacenamiento en PostgreSQL con histórico completo y supervisión 24/7 de tus dominios'
+      icon: <Shield sx={{ fontSize: 40, color: 'warning.main' }} />,
+      title: 'Monitoreo Continuo',
+      description: 'Supervisión 24/7 de tus dominios con alertas automáticas que no te dejan dormir mal'
     }
   ];
 
   const scanTypes = [
-    { icon: <Integration />, name: 'Email Security', description: 'SPF, DKIM, DMARC' },
+    { icon: <Email />, name: 'Email Security', description: 'SPF, DKIM, DMARC' },
     { icon: <Https />, name: 'SSL Certificate', description: 'Validez y expiración' },
-    { icon: <Webhook />, name: 'Security Headers', description: 'HSTS, CSP, X-Frame' },
-    { icon: <Terminal />, name: 'Port Scanner', description: 'Puertos críticos abiertos' }
+    { icon: <NetworkCheck />, name: 'Security Headers', description: 'HSTS, CSP, X-Frame' },
+    { icon: <BugReport />, name: 'Port Scanner', description: 'Puertos críticos abiertos' }
   ];
 
   return (
@@ -118,10 +108,10 @@ export function LandingPage() {
         sx={{
           background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%)',
           color: 'white',
-          py: { xs: 6, md: 8 },
+          py: { xs: 10, md: 16 },
           position: 'relative',
           overflow: 'hidden',
-          minHeight: { xs: '85vh', md: '80vh' },
+          minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
           '&::before': {
@@ -154,9 +144,9 @@ export function LandingPage() {
       >
         <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 2 }}>
           {/* Logo Securyx */}
-          <Box sx={{ textAlign: 'center', mb: { xs: 4, md: 5 } }}>
-            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center' }}>
-              <SecuryxLogo height={60} />
+          <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 8 } }}>
+            <Box sx={{ mb: 6, display: 'flex', justifyContent: 'center' }}>
+              <SecuryxLogo height={70} />
             </Box>
             
             {/* Modern Typography Hierarchy */}
@@ -165,9 +155,9 @@ export function LandingPage() {
               component="h1" 
               sx={{ 
                 fontWeight: 800,
-                fontSize: { xs: '2.5rem', md: '4rem', lg: '4.5rem' },
+                fontSize: { xs: '3rem', md: '5rem', lg: '6rem' },
                 lineHeight: { xs: 1.1, md: 1.05 },
-                mb: { xs: 2, md: 3 },
+                mb: { xs: 3, md: 4 },
                 letterSpacing: { xs: '-0.02em', md: '-0.04em' },
                 background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #cbd5e1 100%)',
                 backgroundClip: 'text',
@@ -690,740 +680,132 @@ export function LandingPage() {
         </Container>
       </Box>
 
-      {/* Tech Stack Section */}
-      <Box sx={{ py: 10, bgcolor: '#f8fafc' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#64748b',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                mb: 2
-              }}
-            >
-              Stack Tecnológico
-            </Typography>
-            <Typography 
-              variant="h3" 
-              component="h2" 
-              sx={{ 
-                fontWeight: 700,
-                color: '#1e293b',
-                mb: 3
-              }}
-            >
-              Tecnologías de Última Generación
-            </Typography>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                color: '#64748b',
-                maxWidth: '600px',
-                mx: 'auto'
-              }}
-            >
-              Construido con las mejores herramientas y frameworks del ecosistema moderno
-            </Typography>
-          </Box>
-
-          <Grid container spacing={3}>
-            <Grid item xs={6} sm={4} md={2}>
-              <Box sx={{ textAlign: 'center', p: 2 }}>
-                <Box 
-                  sx={{ 
-                    width: 60, 
-                    height: 60, 
-                    borderRadius: 2,
-                    bgcolor: 'rgba(59, 130, 246, 0.1)',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mx: 'auto',
-                    mb: 2,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      bgcolor: 'rgba(59, 130, 246, 0.2)',
-                      transform: 'translateY(-4px)'
-                    }
-                  }}
-                >
-                  <Api sx={{ color: '#3b82f6', fontSize: 28 }} />
-                </Box>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                  GraphQL API
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={2}>
-              <Box sx={{ textAlign: 'center', p: 2 }}>
-                <Box 
-                  sx={{ 
-                    width: 60, 
-                    height: 60, 
-                    borderRadius: 2,
-                    bgcolor: 'rgba(16, 185, 129, 0.1)',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mx: 'auto',
-                    mb: 2,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      bgcolor: 'rgba(16, 185, 129, 0.2)',
-                      transform: 'translateY(-4px)'
-                    }
-                  }}
-                >
-                  <Storage sx={{ color: '#10b981', fontSize: 28 }} />
-                </Box>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                  PostgreSQL
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={2}>
-              <Box sx={{ textAlign: 'center', p: 2 }}>
-                <Box 
-                  sx={{ 
-                    width: 60, 
-                    height: 60, 
-                    borderRadius: 2,
-                    bgcolor: 'rgba(239, 68, 68, 0.1)',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mx: 'auto',
-                    mb: 2,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      bgcolor: 'rgba(239, 68, 68, 0.2)',
-                      transform: 'translateY(-4px)'
-                    }
-                  }}
-                >
-                  <FlashOn sx={{ color: '#ef4444', fontSize: 28 }} />
-                </Box>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                  Redis Queue
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={2}>
-              <Box sx={{ textAlign: 'center', p: 2 }}>
-                <Box 
-                  sx={{ 
-                    width: 60, 
-                    height: 60, 
-                    borderRadius: 2,
-                    bgcolor: 'rgba(245, 158, 11, 0.1)',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mx: 'auto',
-                    mb: 2,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      bgcolor: 'rgba(245, 158, 11, 0.2)',
-                      transform: 'translateY(-4px)'
-                    }
-                  }}
-                >
-                  <Code sx={{ color: '#f59e0b', fontSize: 28 }} />
-                </Box>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                  TypeScript
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={2}>
-              <Box sx={{ textAlign: 'center', p: 2 }}>
-                <Box 
-                  sx={{ 
-                    width: 60, 
-                    height: 60, 
-                    borderRadius: 2,
-                    bgcolor: 'rgba(139, 69, 193, 0.1)',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mx: 'auto',
-                    mb: 2,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      bgcolor: 'rgba(139, 69, 193, 0.2)',
-                      transform: 'translateY(-4px)'
-                    }
-                  }}
-                >
-                  <Terminal sx={{ color: '#8b45c1', fontSize: 28 }} />
-                </Box>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                  Node.js
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item xs={6} sm={4} md={2}>
-              <Box sx={{ textAlign: 'center', p: 2 }}>
-                <Box 
-                  sx={{ 
-                    width: 60, 
-                    height: 60, 
-                    borderRadius: 2,
-                    bgcolor: 'rgba(6, 182, 212, 0.1)',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mx: 'auto',
-                    mb: 2,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      bgcolor: 'rgba(6, 182, 212, 0.2)',
-                      transform: 'translateY(-4px)'
-                    }
-                  }}
-                >
-                  <Webhook sx={{ color: '#06b6d4', fontSize: 28 }} />
-                </Box>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                  Prisma ORM
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-
-          <Box sx={{ textAlign: 'center', mt: 6 }}>
-            <Typography variant="body1" sx={{ color: '#64748b', fontWeight: 500 }}>
-              💻 Arquitectura moderna • 🚀 Escalable • 🔒 Seguro por diseño
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
-
       {/* How It Works Section */}
-      <Box 
-        sx={{ 
-          py: 12, 
-          background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-      >
-        {/* Background Pattern */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.03) 0%, transparent 50%)',
-            pointerEvents: 'none'
-          }}
-        />
+      <Box sx={{ py: 8, bgcolor: 'white' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" component="h2" textAlign="center" gutterBottom sx={{ fontWeight: 700 }}>
+            Cómo Funciona Securyx
+          </Typography>
+          <Typography variant="h6" textAlign="center" color="text.secondary" sx={{ mb: 6 }}>
+            Protección digital empresarial en 3 pasos simples
+          </Typography>
 
-        <Container maxWidth="lg" sx={{ position: 'relative' }}>
-          <Box sx={{ textAlign: 'center', mb: 10 }}>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#3b82f6',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '2px',
-                mb: 2
-              }}
-            >
-              Proceso Simplificado
-            </Typography>
-            <Typography 
-              variant="h2" 
-              component="h2" 
-              sx={{ 
-                fontWeight: 800,
-                fontSize: { xs: '2.5rem', md: '3.5rem' },
-                background: 'linear-gradient(135deg, #1e293b 0%, #3b82f6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                mb: 3
-              }}
-            >
-              Cómo Funciona Securyx
-            </Typography>
-            <Typography 
-              variant="h5" 
-              sx={{ 
-                color: '#64748b',
-                fontWeight: 400,
-                maxWidth: '700px',
-                mx: 'auto',
-                lineHeight: 1.6
-              }}
-            >
-              Protección digital empresarial en 3 pasos simples, sin complicaciones técnicas
-            </Typography>
-          </Box>
-
-          <Grid container spacing={6} alignItems="stretch">
-            {/* Step 1 */}
+          <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={4}>
-              <Box
-                sx={{
-                  height: '100%',
-                  p: 4,
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: 3,
-                  position: 'relative',
-                  overflow: 'hidden',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(239, 68, 68, 0.15)',
-                    borderColor: 'rgba(239, 68, 68, 0.2)',
-                    '& .step-number': {
-                      transform: 'scale(1.1)',
-                      boxShadow: '0 12px 32px rgba(239, 68, 68, 0.4)'
-                    }
-                  }
-                }}
-              >
-                {/* Background Decoration */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: -20,
-                    right: -20,
-                    width: 100,
-                    height: 100,
-                    background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, transparent 70%)',
-                    borderRadius: '50%'
+              <Box sx={{ textAlign: 'center' }}>
+                <Box 
+                  sx={{ 
+                    width: 80, 
+                    height: 80, 
+                    borderRadius: '50%', 
+                    bgcolor: '#ff4757', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    mx: 'auto',
+                    mb: 3,
+                    boxShadow: '0 8px 32px rgba(255, 71, 87, 0.3)'
                   }}
-                />
-
-                <Box sx={{ textAlign: 'center', position: 'relative' }}>
-                  <Box 
-                    className="step-number"
-                    sx={{ 
-                      width: 100, 
-                      height: 100, 
-                      borderRadius: 3,
-                      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      mx: 'auto',
-                      mb: 4,
-                      boxShadow: '0 8px 32px rgba(239, 68, 68, 0.3)',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                    }}
-                  >
-                    <Typography variant="h3" sx={{ fontWeight: 900, color: 'white' }}>1</Typography>
-                  </Box>
-                  
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 3 }}>
-                    Conectá tus Dominios
-                  </Typography>
-                  
-                  <Typography sx={{ color: '#64748b', mb: 4, lineHeight: 1.7, fontSize: '1.1rem' }}>
-                    Simplemente ingresá las URLs de tu empresa. Sin instalaciones, sin código, sin complicaciones técnicas.
-                  </Typography>
-
-                  {/* Example URLs */}
-                  <Box 
-                    sx={{ 
-                      p: 3, 
-                      bgcolor: 'rgba(59, 130, 246, 0.05)', 
-                      borderRadius: 2,
-                      border: '1px solid rgba(59, 130, 246, 0.1)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: 3,
-                        background: 'linear-gradient(90deg, #3b82f6 0%, #1e40af 100%)'
-                      }}
-                    />
-                    <Stack spacing={1.5}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
-                        <Typography variant="body1" sx={{ fontFamily: 'monospace', color: '#3b82f6', fontWeight: 600 }}>
-                          tuempresa.com.ar
-                        </Typography>
-                        <CheckCircle sx={{ color: '#10b981', fontSize: 20 }} />
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
-                        <Typography variant="body1" sx={{ fontFamily: 'monospace', color: '#3b82f6', fontWeight: 600 }}>
-                          tienda.tuempresa.com
-                        </Typography>
-                        <CheckCircle sx={{ color: '#10b981', fontSize: 20 }} />
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
-                        <Typography variant="body1" sx={{ fontFamily: 'monospace', color: '#3b82f6', fontWeight: 600 }}>
-                          mail.tuempresa.com
-                        </Typography>
-                        <CheckCircle sx={{ color: '#10b981', fontSize: 20 }} />
-                      </Box>
-                    </Stack>
-                  </Box>
+                >
+                  <Typography variant="h4" fontWeight="bold" color="white">1</Typography>
                 </Box>
+                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                  Conecta tus Dominios
+                </Typography>
+                <Typography color="text.secondary" sx={{ mb: 3 }}>
+                  Simplemente ingresa las URLs de tu empresa. Sin instalaciones, sin código, sin complicaciones técnicas.
+                </Typography>
+                <Paper elevation={2} sx={{ p: 2, bgcolor: 'grey.50' }}>
+                  <Typography variant="body2" sx={{ fontFamily: 'monospace', color: 'primary.main' }}>
+                    tuempresa.com.ar ✓<br/>
+                    tienda.tuempresa.com ✓<br/>
+                    mail.tuempresa.com ✓
+                  </Typography>
+                </Paper>
               </Box>
             </Grid>
 
-            {/* Step 2 */}
             <Grid item xs={12} md={4}>
-              <Box
-                sx={{
-                  height: '100%',
-                  p: 4,
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: 3,
-                  position: 'relative',
-                  overflow: 'hidden',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(59, 130, 246, 0.15)',
-                    borderColor: 'rgba(59, 130, 246, 0.2)',
-                    '& .step-number': {
-                      transform: 'scale(1.1)',
-                      boxShadow: '0 12px 32px rgba(59, 130, 246, 0.4)'
-                    }
-                  }
-                }}
-              >
-                {/* Background Decoration */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: -20,
-                    right: -20,
-                    width: 100,
-                    height: 100,
-                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 70%)',
-                    borderRadius: '50%'
+              <Box sx={{ textAlign: 'center' }}>
+                <Box 
+                  sx={{ 
+                    width: 80, 
+                    height: 80, 
+                    borderRadius: '50%', 
+                    bgcolor: '#00b8d9', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    mx: 'auto',
+                    mb: 3,
+                    boxShadow: '0 8px 32px rgba(0, 184, 217, 0.3)'
                   }}
-                />
-
-                <Box sx={{ textAlign: 'center', position: 'relative' }}>
-                  <Box 
-                    className="step-number"
-                    sx={{ 
-                      width: 100, 
-                      height: 100, 
-                      borderRadius: 3,
-                      background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      mx: 'auto',
-                      mb: 4,
-                      boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                    }}
-                  >
-                    <Typography variant="h3" sx={{ fontWeight: 900, color: 'white' }}>2</Typography>
-                  </Box>
-                  
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 3 }}>
-                    Escaneamos Todo
-                  </Typography>
-                  
-                  <Typography sx={{ color: '#64748b', mb: 4, lineHeight: 1.7, fontSize: '1.1rem' }}>
-                    Nuestros robots analizan SSL, DNS, headers de seguridad, puertos y configuraciones críticas 24/7.
-                  </Typography>
-
-                  {/* Security Badges */}
-                  <Grid container spacing={1.5}>
-                    <Grid item xs={6}>
-                      <Box 
-                        sx={{ 
-                          p: 2, 
-                          bgcolor: 'rgba(16, 185, 129, 0.1)', 
-                          borderRadius: 2,
-                          border: '1px solid rgba(16, 185, 129, 0.2)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            bgcolor: 'rgba(16, 185, 129, 0.15)',
-                            transform: 'translateY(-2px)'
-                          }
-                        }}
-                      >
-                        <Https sx={{ color: '#10b981', mb: 1 }} />
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                          SSL/TLS
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Box 
-                        sx={{ 
-                          p: 2, 
-                          bgcolor: 'rgba(245, 158, 11, 0.1)', 
-                          borderRadius: 2,
-                          border: '1px solid rgba(245, 158, 11, 0.2)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            bgcolor: 'rgba(245, 158, 11, 0.15)',
-                            transform: 'translateY(-2px)'
-                          }
-                        }}
-                      >
-                        <Email sx={{ color: '#f59e0b', mb: 1 }} />
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                          Email Sec
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Box 
-                        sx={{ 
-                          p: 2, 
-                          bgcolor: 'rgba(139, 69, 193, 0.1)', 
-                          borderRadius: 2,
-                          border: '1px solid rgba(139, 69, 193, 0.2)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            bgcolor: 'rgba(139, 69, 193, 0.15)',
-                            transform: 'translateY(-2px)'
-                          }
-                        }}
-                      >
-                        <Webhook sx={{ color: '#8b45c1', mb: 1 }} />
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                          Headers
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Box 
-                        sx={{ 
-                          p: 2, 
-                          bgcolor: 'rgba(239, 68, 68, 0.1)', 
-                          borderRadius: 2,
-                          border: '1px solid rgba(239, 68, 68, 0.2)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            bgcolor: 'rgba(239, 68, 68, 0.15)',
-                            transform: 'translateY(-2px)'
-                          }
-                        }}
-                      >
-                        <Code sx={{ color: '#ef4444', mb: 1 }} />
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                          Puertos
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  </Grid>
+                >
+                  <Typography variant="h4" fontWeight="bold" color="white">2</Typography>
                 </Box>
+                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                  Escaneamos Todo
+                </Typography>
+                <Typography color="text.secondary" sx={{ mb: 3 }}>
+                  Nuestros robots analizan SSL, DNS, headers de seguridad, puertos y configuraciones críticas 24/7.
+                </Typography>
+                <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap">
+                  <Chip icon={<Https />} label="SSL/TLS" size="small" color="primary" />
+                  <Chip icon={<Email />} label="Email Sec" size="small" color="primary" />
+                  <Chip icon={<NetworkCheck />} label="Headers" size="small" color="primary" />
+                  <Chip icon={<BugReport />} label="Puertos" size="small" color="primary" />
+                </Stack>
               </Box>
             </Grid>
 
-            {/* Step 3 */}
             <Grid item xs={12} md={4}>
-              <Box
-                sx={{
-                  height: '100%',
-                  p: 4,
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: 3,
-                  position: 'relative',
-                  overflow: 'hidden',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(16, 185, 129, 0.15)',
-                    borderColor: 'rgba(16, 185, 129, 0.2)',
-                    '& .step-number': {
-                      transform: 'scale(1.1)',
-                      boxShadow: '0 12px 32px rgba(16, 185, 129, 0.4)'
-                    }
-                  }
-                }}
-              >
-                {/* Background Decoration */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: -20,
-                    right: -20,
-                    width: 100,
-                    height: 100,
-                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
-                    borderRadius: '50%'
+              <Box sx={{ textAlign: 'center' }}>
+                <Box 
+                  sx={{ 
+                    width: 80, 
+                    height: 80, 
+                    borderRadius: '50%', 
+                    bgcolor: '#2ecc71', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    mx: 'auto',
+                    mb: 3,
+                    boxShadow: '0 8px 32px rgba(46, 204, 113, 0.3)'
                   }}
-                />
-
-                <Box sx={{ textAlign: 'center', position: 'relative' }}>
-                  <Box 
-                    className="step-number"
-                    sx={{ 
-                      width: 100, 
-                      height: 100, 
-                      borderRadius: 3,
-                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      mx: 'auto',
-                      mb: 4,
-                      boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                    }}
-                  >
-                    <Typography variant="h3" sx={{ fontWeight: 900, color: 'white' }}>3</Typography>
-                  </Box>
-                  
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 3 }}>
-                    Actuás con Confianza
-                  </Typography>
-                  
-                  <Typography sx={{ color: '#64748b', mb: 4, lineHeight: 1.7, fontSize: '1.1rem' }}>
-                    Recibís alertas inmediatas + recomendaciones específicas + reportes PDF para implementar.
-                  </Typography>
-
-                  {/* Alert Example */}
-                  <Box 
-                    sx={{ 
-                      p: 3, 
-                      bgcolor: 'rgba(16, 185, 129, 0.05)', 
-                      borderRadius: 2,
-                      border: '1px solid rgba(16, 185, 129, 0.2)',
-                      position: 'relative',
-                      textAlign: 'left'
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                      <Box 
-                        sx={{ 
-                          width: 12, 
-                          height: 12, 
-                          borderRadius: '50%', 
-                          bgcolor: '#f59e0b',
-                          animation: 'pulse 2s infinite'
-                        }} 
-                      />
-                      <Typography variant="body1" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                        🚨 SSL vence en 7 días
-                      </Typography>
-                    </Box>
-                    
-                    <Box sx={{ pl: 3, borderLeft: '2px solid #10b981' }}>
-                      <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
-                        <strong>Acción recomendada:</strong>
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                        → Renovar con tu proveedor hosting
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                        → Guía paso a paso incluida
-                      </Typography>
-                    </Box>
-                  </Box>
+                >
+                  <Typography variant="h4" fontWeight="bold" color="white">3</Typography>
                 </Box>
+                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                  Actúas con Confianza
+                </Typography>
+                <Typography color="text.secondary" sx={{ mb: 3 }}>
+                  Recibes alertas inmediatas + recomendaciones específicas + reportes PDF para implementar.
+                </Typography>
+                <Alert severity="success" sx={{ textAlign: 'left' }}>
+                  <Typography variant="body2" fontWeight="bold">
+                    🚨 SSL vence en 7 días
+                  </Typography>
+                  <Typography variant="caption">
+                    → Renueva con tu proveedor hosting
+                  </Typography>
+                </Alert>
               </Box>
             </Grid>
           </Grid>
-
-          {/* Connecting Lines - Only visible on desktop */}
-          <Box 
-            sx={{ 
-              display: { xs: 'none', md: 'block' },
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '80%',
-              height: 2,
-              mt: -1
-            }}
-          >
-            <Box
-              sx={{
-                width: '100%',
-                height: '100%',
-                background: 'linear-gradient(90deg, #ef4444 0%, #3b82f6 50%, #10b981 100%)',
-                borderRadius: 1,
-                opacity: 0.3
-              }}
-            />
-          </Box>
 
           {/* ROI Guarantee Section */}
-          <Box sx={{ mt: 12 }}>
-            <Box 
-              sx={{ 
-                textAlign: 'center',
-                p: 6,
-                background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
-                color: 'white',
-                borderRadius: 4,
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)'
-              }}
-            >
-              {/* Background Pattern */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: 'radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)',
-                  pointerEvents: 'none'
-                }}
-              />
-
-              <Box sx={{ position: 'relative' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, mb: 3 }}>
-                  <TrendingUp sx={{ fontSize: 40 }} />
-                  <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                    📈 Garantía de ROI
-                  </Typography>
-                </Box>
-                
-                <Typography variant="h6" sx={{ mb: 3, fontWeight: 500 }}>
-                  Si no mejoramos tu seguridad en 30 días, te devolvemos tu dinero.
-                </Typography>
-                
-                <Box 
-                  sx={{ 
-                    display: 'inline-block',
-                    p: 3,
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: 3,
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
-                  }}
-                >
-                  <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                    💰 Promedio: las empresas ahorran <strong>$2,840 USD</strong> en su primer mes evitando una sola brecha
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
+          <Box sx={{ mt: 8, textAlign: 'center', bgcolor: 'primary.main', color: 'white', p: 4, borderRadius: 2 }}>
+            <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+              <TrendingUp />
+              Garantía de ROI
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              Si no mejoramos tu seguridad en 30 días, te devolvemos tu dinero.
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.8 }}>
+              Promedio: las empresas ahorran $2,840 USD en su primer mes evitando una sola brecha
+            </Typography>
           </Box>
         </Container>
       </Box>
@@ -2193,7 +1575,7 @@ export function LandingPage() {
                     }
                   }}
                 >
-                  <DeveloperMode sx={{ color: '#3b82f6', fontSize: 28 }} />
+                  <Shield sx={{ color: '#3b82f6', fontSize: 28 }} />
                   <Box>
                     <Typography variant="body1" sx={{ color: 'white', fontWeight: 600 }}>
                       SOC 2
@@ -2232,363 +1614,6 @@ export function LandingPage() {
                 </Box>
               </Stack>
             </Box>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* Interactive Demo Section */}
-      <Box 
-        sx={{ 
-          background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
-          py: 12,
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-      >
-        {/* Background Pattern */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.03) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(16, 185, 129, 0.03) 0%, transparent 50%)',
-            pointerEvents: 'none'
-          }}
-        />
-        
-        <Container maxWidth="lg" sx={{ position: 'relative' }}>
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#3b82f6',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '2px',
-                mb: 2
-              }}
-            >
-              Demo en Vivo
-            </Typography>
-            <Typography 
-              variant="h2" 
-              component="h2" 
-              sx={{ 
-                fontWeight: 800,
-                fontSize: { xs: '2.5rem', md: '3.5rem' },
-                background: 'linear-gradient(135deg, #1e293b 0%, #3b82f6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                mb: 3
-              }}
-            >
-              Ve Securyx en Acción
-            </Typography>
-            <Typography 
-              variant="h5" 
-              sx={{ 
-                color: '#64748b',
-                fontWeight: 400,
-                maxWidth: '700px',
-                mx: 'auto',
-                lineHeight: 1.6,
-                mb: 6
-              }}
-            >
-              Simulación interactiva de un escaneo completo de seguridad
-            </Typography>
-          </Box>
-
-          <Grid container spacing={6} alignItems="center">
-            {/* Left Side - Demo Controls */}
-            <Grid item xs={12} md={5}>
-              <Box
-                sx={{
-                  p: 4,
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: 3,
-                  boxShadow: '0 20px 40px rgba(59, 130, 246, 0.1)'
-                }}
-              >
-                <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b', mb: 3 }}>
-                  🎯 Escanear tu Sitio Web
-                </Typography>
-                
-                <Box sx={{ mb: 4 }}>
-                  <Typography variant="body2" sx={{ color: '#64748b', mb: 2, fontWeight: 500 }}>
-                    Ingresa tu dominio para ver una demo:
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    placeholder="ejemplo: miempresa.com"
-                    variant="outlined"
-                    defaultValue="demo.securyx.com"
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        bgcolor: 'white',
-                        '& fieldset': {
-                          borderColor: 'rgba(59, 130, 246, 0.2)',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: 'rgba(59, 130, 246, 0.4)',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#3b82f6',
-                        }
-                      }
-                    }}
-                  />
-                </Box>
-
-                <Button
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  sx={{
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
-                    color: 'white',
-                    py: 2,
-                    borderRadius: 2,
-                    fontSize: '1.1rem',
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
-                    mb: 4,
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 12px 40px rgba(59, 130, 246, 0.4)'
-                    }
-                  }}
-                >
-                  🚀 Iniciar Escaneo Demo
-                </Button>
-
-                {/* Quick Stats */}
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'rgba(16, 185, 129, 0.1)', borderRadius: 2 }}>
-                      <Typography variant="h6" sx={{ color: '#10b981', fontWeight: 700 }}>
-                        ~30s
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: '#064e3b' }}>
-                        Tiempo de escaneo
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'rgba(59, 130, 246, 0.1)', borderRadius: 2 }}>
-                      <Typography variant="h6" sx={{ color: '#3b82f6', fontWeight: 700 }}>
-                        15+
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: '#1e3a8a' }}>
-                        Checks de seguridad
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Grid>
-
-            {/* Right Side - Simulated Dashboard */}
-            <Grid item xs={12} md={7}>
-              <Box
-                sx={{
-                  position: 'relative',
-                  background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                  borderRadius: 3,
-                  overflow: 'hidden',
-                  boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
-                }}
-              >
-                {/* Dashboard Header */}
-                <Box sx={{ p: 3, borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#ef4444' }} />
-                      <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#f59e0b' }} />
-                      <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#10b981' }} />
-                    </Box>
-                  </Box>
-                  <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
-                    🛡️ Securyx Dashboard - demo.securyx.com
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                    Último escaneo: hace 2 minutos
-                  </Typography>
-                </Box>
-
-                {/* Dashboard Content */}
-                <Box sx={{ p: 3 }}>
-                  {/* Health Score */}
-                  <Box sx={{ mb: 4 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'between', mb: 2 }}>
-                      <Typography variant="body1" sx={{ color: 'white', fontWeight: 600 }}>
-                        Health Score
-                      </Typography>
-                      <Typography variant="h4" sx={{ color: '#10b981', fontWeight: 700 }}>
-                        87%
-                      </Typography>
-                    </Box>
-                    <Box 
-                      sx={{ 
-                        height: 8, 
-                        bgcolor: 'rgba(255, 255, 255, 0.1)', 
-                        borderRadius: 4,
-                        overflow: 'hidden'
-                      }}
-                    >
-                      <Box 
-                        sx={{ 
-                          width: '87%', 
-                          height: '100%', 
-                          background: 'linear-gradient(90deg, #10b981 0%, #34d399 100%)',
-                          transition: 'width 2s ease'
-                        }} 
-                      />
-                    </Box>
-                  </Box>
-
-                  {/* Security Checks */}
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Box sx={{ p: 2, bgcolor: 'rgba(16, 185, 129, 0.2)', borderRadius: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <CheckCircle sx={{ color: '#10b981', fontSize: 20 }} />
-                          <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                            SSL Certificate
-                          </Typography>
-                        </Box>
-                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                          Válido hasta 2026
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    
-                    <Grid item xs={6}>
-                      <Box sx={{ p: 2, bgcolor: 'rgba(239, 68, 68, 0.2)', borderRadius: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <Box sx={{ width: 16, height: 16, borderRadius: '50%', bgcolor: '#ef4444' }} />
-                          <Typography variant="body2" sx={{ color: '#ef4444', fontWeight: 600 }}>
-                            Security Headers
-                          </Typography>
-                        </Box>
-                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                          2 headers faltantes
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    
-                    <Grid item xs={6}>
-                      <Box sx={{ p: 2, bgcolor: 'rgba(16, 185, 129, 0.2)', borderRadius: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <CheckCircle sx={{ color: '#10b981', fontSize: 20 }} />
-                          <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                            DNS Configuration
-                          </Typography>
-                        </Box>
-                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                          Configuración óptima
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    
-                    <Grid item xs={6}>
-                      <Box sx={{ p: 2, bgcolor: 'rgba(245, 158, 11, 0.2)', borderRadius: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <Box sx={{ width: 16, height: 16, borderRadius: '50%', bgcolor: '#f59e0b' }} />
-                          <Typography variant="body2" sx={{ color: '#f59e0b', fontWeight: 600 }}>
-                            Open Ports
-                          </Typography>
-                        </Box>
-                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                          Puerto 22 abierto
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  </Grid>
-
-                  {/* Scanning Animation */}
-                  <Box sx={{ mt: 3, p: 2, bgcolor: 'rgba(59, 130, 246, 0.1)', borderRadius: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Box
-                        sx={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: '50%',
-                          bgcolor: '#3b82f6',
-                          animation: 'pulse 1.5s infinite'
-                        }}
-                      />
-                      <Typography variant="body2" sx={{ color: '#3b82f6', fontWeight: 600 }}>
-                        Escaneando vulnerabilidades OWASP...
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              </Box>
-
-              {/* Floating Actions */}
-              <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'center' }}>
-                <Chip
-                  label="📊 Ver Reporte Completo"
-                  sx={{
-                    bgcolor: 'rgba(59, 130, 246, 0.1)',
-                    color: '#3b82f6',
-                    fontWeight: 600,
-                    '&:hover': { bgcolor: 'rgba(59, 130, 246, 0.2)' }
-                  }}
-                />
-                <Chip
-                  label="📧 Recibir por Email"
-                  sx={{
-                    bgcolor: 'rgba(16, 185, 129, 0.1)',
-                    color: '#10b981',
-                    fontWeight: 600,
-                    '&:hover': { bgcolor: 'rgba(16, 185, 129, 0.2)' }
-                  }}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-
-          {/* Bottom CTA */}
-          <Box sx={{ textAlign: 'center', mt: 8 }}>
-            <Typography variant="h6" sx={{ color: '#64748b', mb: 3 }}>
-              ¿Impresionado? Esto es solo el comienzo...
-            </Typography>
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={() => navigate('/signup')}
-              sx={{
-                borderColor: '#3b82f6',
-                color: '#3b82f6',
-                px: 6,
-                py: 2,
-                borderRadius: 3,
-                fontSize: '1.1rem',
-                fontWeight: 600,
-                textTransform: 'none',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                '&:hover': {
-                  bgcolor: '#3b82f6',
-                  color: 'white',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)'
-                }
-              }}
-            >
-              Crear Mi Cuenta Gratuita
-              <ArrowForward sx={{ ml: 1 }} />
-            </Button>
           </Box>
         </Container>
       </Box>
@@ -2695,65 +1720,49 @@ export function LandingPage() {
       {/* Pricing Section */}
       <Box 
         sx={{ 
-          py: 12,
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%)',
+          py: 10,
+          background: 'linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%)',
           color: 'white',
           position: 'relative',
-          overflow: 'hidden'
-        }}
-      >
-        {/* Background Pattern */}
-        <Box
-          sx={{
+          '&::before': {
+            content: '""',
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)',
-            pointerEvents: 'none'
-          }}
-        />
-        <Container maxWidth="lg" sx={{ position: 'relative' }}>
-          <Box sx={{ textAlign: 'center', mb: 10 }}>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#10b981',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '2px',
-                mb: 2
-              }}
-            >
-              Planes y Precios
-            </Typography>
+            background: 'radial-gradient(circle at 30% 40%, rgba(255, 71, 87, 0.1) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(0, 184, 217, 0.1) 0%, transparent 50%)',
+            zIndex: 1
+          }
+        }}
+      >
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
             <Typography 
               variant="h2" 
               component="h2" 
               sx={{ 
                 fontWeight: 800,
                 fontSize: { xs: '2.5rem', md: '3.5rem' },
-                background: 'linear-gradient(135deg, #ffffff 0%, #10b981 100%)',
+                mb: 3,
+                background: 'linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%)',
+                backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                mb: 4
+                WebkitTextFillColor: 'transparent'
               }}
             >
-              Protección Profesional al Alcance de PyMEs
+              Protección Digital Empresarial
             </Typography>
             <Typography 
               variant="h5" 
               sx={{ 
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontWeight: 400,
-                maxWidth: '700px',
-                mx: 'auto',
-                lineHeight: 1.6,
-                mb: 6
+                color: 'rgba(255,255,255,0.8)',
+                mb: 4,
+                maxWidth: '600px',
+                mx: 'auto'
               }}
             >
-              Elegí el plan perfecto para el tamaño y necesidades de tu empresa
+              Elegí el nivel de protección que tu PyME necesita
             </Typography>
             
             {/* Value Proposition */}
@@ -2770,7 +1779,7 @@ export function LandingPage() {
                 border: '1px solid rgba(255, 71, 87, 0.3)'
               }}
             >
-              <DataObject sx={{ color: '#ff4757' }} />
+              <Shield sx={{ color: '#ff4757' }} />
               <Typography variant="body1" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <AttachMoney sx={{ color: '#ff4757' }} />
                 Ahorrá hasta $50,000 USD evitando una sola brecha
@@ -3146,7 +2155,7 @@ export function LandingPage() {
               alignItems="center"
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Api sx={{ color: '#2ecc71' }} />
+                <Shield sx={{ color: '#2ecc71' }} />
                 <Typography variant="body1" color="rgba(255,255,255,0.8)">
                   Pagos seguros con Stripe
                 </Typography>
@@ -3486,7 +2495,7 @@ export function LandingPage() {
                         mr: 2 
                       }}
                     >
-                      <BarChart />
+                      <Analytics />
                     </Box>
                     <Typography variant="h6" fontWeight="bold">
                       Reporte Global 2025
@@ -3520,7 +2529,7 @@ export function LandingPage() {
                         mr: 2 
                       }}
                     >
-                      <Code />
+                      <Speed />
                     </Box>
                     <Typography variant="h6" fontWeight="bold">
                       Webinar Mensual
@@ -3592,7 +2601,7 @@ export function LandingPage() {
                 <Typography variant="body2">ISO 27001:2022</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Terminal sx={{ color: '#00b8d9' }} />
+                <Shield sx={{ color: '#00b8d9' }} />
                 <Typography variant="body2">SOC 2 Type II</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -3600,7 +2609,7 @@ export function LandingPage() {
                 <Typography variant="body2">GDPR Compliant</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IntegrationInstructions sx={{ color: '#e91e63' }} />
+                <Security sx={{ color: '#e91e63' }} />
                 <Typography variant="body2">OWASP Aligned</Typography>
               </Box>
             </Stack>
@@ -3642,7 +2651,7 @@ export function LandingPage() {
                   +150 empresas protegidas
                 </Typography>
                 <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <BugReport fontSize="small" />
+                  <Shield fontSize="small" />
                   +2,400 vulnerabilidades detectadas
                 </Typography>
                 <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
