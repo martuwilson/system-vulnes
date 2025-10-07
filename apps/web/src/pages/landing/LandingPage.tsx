@@ -48,6 +48,7 @@ import {
   AccountBalance
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import SecuryxLogo from '../../components/common/SecuryxLogo';
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -87,11 +88,14 @@ export function LandingPage() {
       {/* Hero Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%)',
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%)',
           color: 'white',
-          py: { xs: 8, md: 12 },
+          py: { xs: 10, md: 16 },
           position: 'relative',
           overflow: 'hidden',
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -99,192 +103,328 @@ export function LandingPage() {
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'radial-gradient(circle at 20% 50%, rgba(255, 71, 87, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0, 184, 217, 0.1) 0%, transparent 50%)',
+            background: `
+              radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+              radial-gradient(circle at 75% 75%, rgba(236, 72, 153, 0.06) 0%, transparent 60%),
+              radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.04) 0%, transparent 50%)
+            `,
+            zIndex: 1
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: '15%',
+            right: '10%',
+            width: '400px',
+            height: '400px',
+            background: 'linear-gradient(45deg, rgba(59, 130, 246, 0.08), rgba(147, 51, 234, 0.06))',
+            borderRadius: '50%',
+            filter: 'blur(80px)',
             zIndex: 1
           }
         }}
       >
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+        <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 2 }}>
           {/* Logo Securyx */}
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
-            <Box sx={{ mb: 4 }}>
-              <Typography 
-                variant="h2" 
-                component="div"
-                sx={{ 
-                  fontWeight: 900,
-                  fontSize: { xs: '2.5rem', md: '3.5rem' },
-                  color: 'white',
-                  letterSpacing: '-0.02em',
-                  mb: 0.5
-                }}
-              >
-                Securyx
-              </Typography>
-              <Typography 
-                variant="h6" 
-                component="div"
-                sx={{ 
-                  fontWeight: 300,
-                  fontSize: { xs: '0.9rem', md: '1.1rem' },
-                  color: 'rgba(255,255,255,0.7)',
-                  fontStyle: 'italic',
-                  textAlign: 'right',
-                  maxWidth: '200px',
-                  mx: 'auto',
-                  position: 'relative',
-                  left: { xs: '20px', md: '30px' }
-                }}
-              >
-                PyME
-              </Typography>
+          <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 8 } }}>
+            <Box sx={{ mb: 6, display: 'flex', justifyContent: 'center' }}>
+              <SecuryxLogo height={70} />
             </Box>
             
+            {/* Modern Typography Hierarchy */}
             <Typography 
               variant="h1" 
               component="h1" 
               sx={{ 
-                fontWeight: 900,
-                fontSize: { xs: '2.5rem', md: '4rem', lg: '4.5rem' },
-                lineHeight: 1.1,
-                mb: 2,
-                background: 'linear-gradient(135deg, #ff4757 0%, #ff6b7a 50%, #c44569 100%)',
+                fontWeight: 800,
+                fontSize: { xs: '3rem', md: '5rem', lg: '6rem' },
+                lineHeight: { xs: 1.1, md: 1.05 },
+                mb: { xs: 3, md: 4 },
+                letterSpacing: { xs: '-0.02em', md: '-0.04em' },
+                background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #cbd5e1 100%)',
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                textShadow: '0 0 30px rgba(255, 71, 87, 0.3)'
+                textShadow: '0 4px 20px rgba(255, 255, 255, 0.1)',
+                maxWidth: '900px',
+                mx: 'auto'
               }}
             >
-              DETENE LAS AMENAZAS DIGITALES
-            </Typography>
-            <Typography 
-              variant="h2" 
-              component="h2" 
-              sx={{ 
-                fontWeight: 700,
-                fontSize: { xs: '1.8rem', md: '2.5rem' },
-                mb: 2,
-                color: 'white'
-              }}
-            >
-              Antes de que Destruyan tu PyME
+              Protección Digital
+              <br />
+              <Box component="span" sx={{ 
+                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                Inteligente
+              </Box>
             </Typography>
             
-            {/* Slogan oficial */}
             <Typography 
               variant="h4" 
-              component="div"
+              component="h2" 
               sx={{ 
-                fontWeight: 600,
-                fontSize: { xs: '1.3rem', md: '1.8rem' },
-                color: '#ff4757',
-                fontStyle: 'italic',
-                mb: 3,
-                textShadow: '0 2px 10px rgba(255, 71, 87, 0.3)'
+                fontWeight: 400,
+                fontSize: { xs: '1.25rem', md: '1.75rem' },
+                mb: { xs: 4, md: 6 },
+                color: 'rgba(255, 255, 255, 0.8)',
+                lineHeight: 1.6,
+                maxWidth: '700px',
+                mx: 'auto',
+                letterSpacing: '0.01em'
               }}
             >
-              "Es tu protección digital, sin vueltas."
+              Detectamos vulnerabilidades, fortalecemos defensas y protegemos tu PyME 
+              con tecnología de vanguardia y simplicidad argentina.
             </Typography>
-          </Box>
-          
-          <Typography 
-            variant="h5" 
-            sx={{ 
-              mb: 4, 
-              opacity: 0.9, 
-              maxWidth: '800px', 
-              mx: 'auto',
-              fontSize: { xs: '1.1rem', md: '1.3rem' },
-              fontWeight: 400
-            }}
-          >
-            Detección automatizada de vulnerabilidades críticas en tiempo real. 
-            <Box component="span" sx={{ color: '#ff4757', fontWeight: 600 }}>
-              Sin instalaciones complejas.
-            </Box> Solo resultados que protegen tu negocio.
-          </Typography>
-          
-          {/* Estadísticas impactantes */}
-          <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center', gap: 4, flexWrap: 'wrap' }}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" fontWeight="bold" color="warning.main">
-                76%
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                de PyMEs sufren ataques
-              </Typography>
-            </Box>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" fontWeight="bold" color="error.main">
-                $4.88M
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                costo promedio por brecha
-              </Typography>
-            </Box>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" fontWeight="bold" color="success.main">
-                5 min
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                para proteger tu empresa
+            
+            {/* Value Proposition Tagline */}
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 2,
+                bgcolor: 'rgba(59, 130, 246, 0.1)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(59, 130, 246, 0.2)',
+                borderRadius: '50px',
+                px: 4,
+                py: 2,
+                mb: { xs: 6, md: 8 }
+              }}
+            >
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  bgcolor: '#3b82f6',
+                  boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)'
+                }}
+              />
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontWeight: 500,
+                  fontSize: '1rem'
+                }}
+              >
+                Tu seguridad digital, sin complicaciones
               </Typography>
             </Box>
           </Box>
           
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} justifyContent="center" sx={{ mb: 4 }}>
+          {/* Modern Stats Cards */}
+          <Grid container spacing={3} sx={{ mb: 8, maxWidth: '900px', mx: 'auto' }}>
+            <Grid item xs={12} md={4}>
+              <Paper
+                elevation={0}
+                sx={{
+                  bgcolor: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: 3,
+                  p: 3,
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.08)',
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
+                  }
+                }}
+              >
+                <Typography 
+                  variant="h3" 
+                  fontWeight={700} 
+                  sx={{ 
+                    color: '#fbbf24',
+                    mb: 1,
+                    fontSize: { xs: '2rem', md: '2.5rem' }
+                  }}
+                >
+                  76%
+                </Typography>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontWeight: 500
+                  }}
+                >
+                  de PyMEs sufren ataques digitales
+                </Typography>
+              </Paper>
+            </Grid>
+            
+            <Grid item xs={12} md={4}>
+              <Paper
+                elevation={0}
+                sx={{
+                  bgcolor: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: 3,
+                  p: 3,
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.08)',
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
+                  }
+                }}
+              >
+                <Typography 
+                  variant="h3" 
+                  fontWeight={700} 
+                  sx={{ 
+                    color: '#ef4444',
+                    mb: 1,
+                    fontSize: { xs: '2rem', md: '2.5rem' }
+                  }}
+                >
+                  $4.88M
+                </Typography>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontWeight: 500
+                  }}
+                >
+                  costo promedio por brecha
+                </Typography>
+              </Paper>
+            </Grid>
+            
+            <Grid item xs={12} md={4}>
+              <Paper
+                elevation={0}
+                sx={{
+                  bgcolor: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: 3,
+                  p: 3,
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.08)',
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
+                  }
+                }}
+              >
+                <Typography 
+                  variant="h3" 
+                  fontWeight={700} 
+                  sx={{ 
+                    color: '#10b981',
+                    mb: 1,
+                    fontSize: { xs: '2rem', md: '2.5rem' }
+                  }}
+                >
+                  5min
+                </Typography>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontWeight: 500
+                  }}
+                >
+                  para proteger tu empresa
+                </Typography>
+              </Paper>
+            </Grid>
+          </Grid>
+          
+          {/* Modern CTA Buttons */}
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4} justifyContent="center" sx={{ mb: 6 }}>
             <Button
               variant="contained"
               size="large"
               endIcon={<ArrowForward />}
               onClick={() => navigate('/auth/register')}
               sx={{
-                bgcolor: '#ff4757',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
                 color: 'white',
-                px: 6,
-                py: 2,
-                fontSize: '1.2rem',
-                fontWeight: 700,
-                borderRadius: 2,
+                px: 8,
+                py: 3,
+                fontSize: '1.1rem',
+                fontWeight: 600,
+                borderRadius: '50px',
                 textTransform: 'none',
-                boxShadow: '0 8px 32px rgba(255, 71, 87, 0.4)',
+                letterSpacing: '0.5px',
+                boxShadow: '0 10px 40px rgba(59, 130, 246, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
                 '&:hover': { 
-                  bgcolor: '#ff3742',
-                  transform: 'translateY(-3px)',
-                  boxShadow: '0 15px 45px rgba(255, 71, 87, 0.6)'
+                  background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 15px 50px rgba(59, 130, 246, 0.4)'
                 },
                 transition: 'all 0.3s ease'
               }}
             >
-              Protegé tu PyME Gratis
+              Empezar Gratis Ahora
             </Button>
+            
             <Button
               variant="outlined"
               size="large"
               startIcon={<Phone />}
-              onClick={() => navigate('/auth/login')}
+              onClick={() => navigate('/contact')}
               sx={{
-                color: 'white',
-                borderColor: 'rgba(255,255,255,0.3)',
-                px: 6,
-                py: 2,
+                color: 'rgba(255, 255, 255, 0.9)',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(20px)',
+                bgcolor: 'rgba(255, 255, 255, 0.05)',
+                px: 8,
+                py: 3,
                 fontSize: '1.1rem',
                 fontWeight: 600,
-                borderRadius: 2,
+                borderRadius: '50px',
                 textTransform: 'none',
-                backdropFilter: 'blur(10px)',
+                letterSpacing: '0.5px',
                 '&:hover': { 
-                  borderColor: 'white', 
-                  bgcolor: 'rgba(255,255,255,0.1)',
-                  transform: 'translateY(-3px)',
-                  boxShadow: '0 8px 25px rgba(255,255,255,0.2)'
+                  borderColor: 'rgba(255, 255, 255, 0.4)', 
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 10px 30px rgba(255, 255, 255, 0.1)'
                 },
                 transition: 'all 0.3s ease'
               }}
             >
-              Solicitá tu Demo
+              Solicitar Demo
             </Button>
           </Stack>
+
+          {/* Trust Indicators */}
+          <Box sx={{ textAlign: 'center', opacity: 0.8 }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: 'rgba(255, 255, 255, 0.7)',
+                mb: 2,
+                fontWeight: 500
+              }}
+            >
+              ✓ Sin tarjeta de crédito ✓ 14 días gratis ✓ Soporte en español
+            </Typography>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontWeight: 400
+              }}
+            >
+              Más de 150 PyMEs ya confían en nosotros
+            </Typography>
+          </Box>
 
         </Container>
       </Box>
