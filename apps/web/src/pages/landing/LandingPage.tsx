@@ -20,8 +20,7 @@ import {
   TextField,
   Alert,
   AppBar,
-  Toolbar,
-  Link
+  Toolbar
 } from '@mui/material';
 import { 
   Security, 
@@ -60,6 +59,19 @@ import SecuryxLogo from '../../components/common/SecuryxLogo';
 
 export function LandingPage() {
   const navigate = useNavigate();
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const navbarHeight = 80; // Altura aproximada del navbar
+      const elementPosition = element.offsetTop - navbarHeight;
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const features = [
     {
@@ -113,78 +125,78 @@ export function LandingPage() {
 
             {/* Navigation Menu */}
             <Stack direction="row" spacing={4} sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <Link 
-                href="#home" 
+              <Typography
+                onClick={() => scrollToSection('home')}
                 sx={{ 
                   color: 'white', 
-                  textDecoration: 'none', 
                   fontWeight: 500,
+                  cursor: 'pointer',
                   transition: 'color 0.3s ease',
                   '&:hover': { color: '#3b82f6' }
                 }}
               >
                 Home
-              </Link>
-              <Link 
-                href="#como-funciona" 
+              </Typography>
+              <Typography
+                onClick={() => scrollToSection('como-funciona')}
                 sx={{ 
                   color: 'white', 
-                  textDecoration: 'none', 
                   fontWeight: 500,
+                  cursor: 'pointer',
                   transition: 'color 0.3s ease',
                   '&:hover': { color: '#3b82f6' }
                 }}
               >
                 Cómo Funciona
-              </Link>
-              <Link 
-                href="#por-que-elegirnos" 
+              </Typography>
+              <Typography
+                onClick={() => scrollToSection('por-que-elegirnos')}
                 sx={{ 
                   color: 'white', 
-                  textDecoration: 'none', 
                   fontWeight: 500,
+                  cursor: 'pointer',
                   transition: 'color 0.3s ease',
                   '&:hover': { color: '#3b82f6' }
                 }}
               >
                 Por qué Elegirnos
-              </Link>
-              <Link 
-                href="#tipos-escaneos" 
+              </Typography>
+              <Typography
+                onClick={() => scrollToSection('tipos-escaneos')}
                 sx={{ 
                   color: 'white', 
-                  textDecoration: 'none', 
                   fontWeight: 500,
+                  cursor: 'pointer',
                   transition: 'color 0.3s ease',
                   '&:hover': { color: '#3b82f6' }
                 }}
               >
                 Tipos de Escaneos
-              </Link>
-              <Link 
-                href="#precios" 
+              </Typography>
+              <Typography
+                onClick={() => scrollToSection('precios')}
                 sx={{ 
                   color: 'white', 
-                  textDecoration: 'none', 
                   fontWeight: 500,
+                  cursor: 'pointer',
                   transition: 'color 0.3s ease',
                   '&:hover': { color: '#3b82f6' }
                 }}
               >
                 Precios
-              </Link>
-              <Link 
-                href="#faq" 
+              </Typography>
+              <Typography
+                onClick={() => scrollToSection('faq')}
                 sx={{ 
                   color: 'white', 
-                  textDecoration: 'none', 
                   fontWeight: 500,
+                  cursor: 'pointer',
                   transition: 'color 0.3s ease',
                   '&:hover': { color: '#3b82f6' }
                 }}
               >
                 FAQ
-              </Link>
+              </Typography>
             </Stack>
 
             {/* CTA Button */}
@@ -206,6 +218,10 @@ export function LandingPage() {
 
       <style>
         {`
+          html {
+            scroll-behavior: smooth;
+          }
+          
           @keyframes pulse {
             0% {
               transform: scale(1);
