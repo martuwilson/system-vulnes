@@ -1,0 +1,10 @@
+export { Navbar } from './Navbar';
+export { HeroSection } from './HeroSection';
+export { HowItWorksSection } from './HowItWorksSection';
+export { FeaturesSection } from './FeaturesSection';
+export { ScanTypesSection } from './ScanTypesSection';
+export { TestimonialsSection } from './TestimonialsSection';
+export { PricingSection } from './PricingSection';
+export { FAQSection } from './FAQSection';
+export { FooterSection } from './FooterSection';
+export { PlaceholderSection } from './PlaceholderSection';

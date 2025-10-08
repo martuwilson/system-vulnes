@@ -1,15 +1,5 @@
 import { Box } from '@mui/material';
-import { 
-  Navbar, 
-  HeroSection, 
-  HowItWorksSection, 
-  FeaturesSection,
-  ScanTypesSection,
-  TestimonialsSection,
-  PricingSection,
-  FAQSection,
-  FooterSection
-} from '../../components/landing';
+import { Navbar, HeroSection, HowItWorksSection, FeaturesSection, PlaceholderSection } from '../../components/landing';
 
 export function LandingPage() {
   const scrollToSection = (sectionId: string) => {
@@ -54,11 +44,32 @@ export function LandingPage() {
       <HeroSection />
       <HowItWorksSection />
       <FeaturesSection />
-      <ScanTypesSection />
-      <TestimonialsSection />
-      <PricingSection />
-      <FAQSection />
-      <FooterSection />
+      
+      {/* Placeholder sections - to be replaced with actual components */}
+      <PlaceholderSection 
+        id="tipos-escaneos"
+        title="Tipos de Escaneos"
+        subtitle="Cobertura completa de vectores de ataque comunes"
+        background="#ffffff"
+      />
+      <PlaceholderSection 
+        id="testimonials"
+        title="Testimonios"
+        subtitle="Lo que dicen nuestros clientes"
+        background="#f8fafc"
+      />
+      <PlaceholderSection 
+        id="precios"
+        title="Precios"
+        subtitle="Planes diseñados para PyMEs"
+        background="#0a0e27"
+      />
+      <PlaceholderSection 
+        id="faq"
+        title="FAQ"
+        subtitle="Preguntas frecuentes"
+        background="#f8fafc"
+      />
     </Box>
   );
 }
