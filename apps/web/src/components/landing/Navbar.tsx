@@ -24,7 +24,14 @@ export function Navbar({ onNavigate }: NavbarProps) {
         <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
           {/* Logo */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <SecuryxLogo />
+            <SecuryxLogo 
+              width={180} 
+              height={50}
+              style={{
+                cursor: 'pointer',
+              }}
+              onClick={() => onNavigate('home')}
+            />
           </Box>
 
           {/* Navigation Menu */}
