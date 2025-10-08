@@ -5,6 +5,7 @@ import {
   Grid, 
   Stack
 } from '@mui/material';
+import SecuryxLogo from '../common/SecuryxLogo';
 import { 
   Shield, 
   Lock, 
@@ -112,28 +113,13 @@ export function FooterSection() {
           {/* Company Info */}
           <Grid item xs={12} md={4}>
             <Box sx={{ mb: 3 }}>
-              <Typography 
-                variant="h4" 
-                sx={{ 
-                  fontWeight: 900,
-                  color: '#ff4757',
-                  mb: 0.5
+              <SecuryxLogo 
+                width={200} 
+                height={60}
+                style={{
+                  filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.1))',
                 }}
-              >
-                Securyx
-              </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  fontWeight: 300,
-                  color: 'grey.500',
-                  fontStyle: 'italic',
-                  textAlign: 'left',
-                  pl: 1
-                }}
-              >
-                PyME
-              </Typography>
+              />
             </Box>
             <Typography variant="body2" color="grey.400" sx={{ mb: 3 }}>
               Líder en protección digital para PyMEs en América Latina. 
