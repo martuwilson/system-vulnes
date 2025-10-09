@@ -45,13 +45,13 @@ export function HowItWorksSection() {
             sx={{ 
               fontWeight: 800,
               fontSize: { xs: '2.5rem', md: '3.5rem' },
-              background: 'linear-gradient(135deg, #1e293b 0%, #3b82f6 100%)',
+              background: 'linear-gradient(135deg, #1E2A38 0%, #00B8D9 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               mb: 3
             }}
           >
-            Cómo Funciona Securyx
+            Cómo Protegemos Tu Negocio
           </Typography>
           <Typography 
             variant="h5" 
@@ -63,7 +63,7 @@ export function HowItWorksSection() {
               lineHeight: 1.6
             }}
           >
-            Protección digital empresarial en 3 pasos simples, sin complicaciones técnicas
+            Tranquilidad en 3 pasos, sin conocimientos técnicos
           </Typography>
         </Box>
 
@@ -83,11 +83,11 @@ export function HowItWorksSection() {
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                   transform: 'translateY(-8px)',
-                  boxShadow: '0 20px 40px rgba(239, 68, 68, 0.15)',
-                  borderColor: 'rgba(239, 68, 68, 0.2)',
+                  boxShadow: '0 20px 40px rgba(30, 42, 56, 0.15)',
+                  borderColor: 'rgba(30, 42, 56, 0.2)',
                   '& .step-number': {
                     transform: 'scale(1.1)',
-                    boxShadow: '0 12px 32px rgba(239, 68, 68, 0.4)'
+                    boxShadow: '0 12px 32px rgba(30, 42, 56, 0.4)'
                   }
                 }
               }}
@@ -100,7 +100,7 @@ export function HowItWorksSection() {
                   right: -20,
                   width: 100,
                   height: 100,
-                  background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, transparent 70%)',
+                  background: 'linear-gradient(135deg, rgba(30, 42, 56, 0.1) 0%, transparent 70%)',
                   borderRadius: '50%'
                 }}
               />
@@ -112,13 +112,13 @@ export function HowItWorksSection() {
                     width: 100, 
                     height: 100, 
                     borderRadius: 3,
-                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                    background: 'linear-gradient(135deg, #1E2A38 0%, #334155 100%)',
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
                     mx: 'auto',
                     mb: 4,
-                    boxShadow: '0 8px 32px rgba(239, 68, 68, 0.3)',
+                    boxShadow: '0 8px 32px rgba(30, 42, 56, 0.3)',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}
                 >
@@ -126,11 +126,11 @@ export function HowItWorksSection() {
                 </Box>
                 
                 <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 3 }}>
-                  Conecta tus Dominios
+                  Agregás Tu Sitio Web
                 </Typography>
                 
                 <Typography sx={{ color: '#64748b', mb: 4, lineHeight: 1.7, fontSize: '1.1rem' }}>
-                  Simplemente ingresa las URLs de tu empresa. Sin instalaciones, sin código, sin complicaciones técnicas.
+                  Solo necesitás poner la dirección de tu página web. En 30 segundos está listo, sin instalar nada.
                 </Typography>
 
                 {/* Example URLs */}
@@ -197,11 +197,11 @@ export function HowItWorksSection() {
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                   transform: 'translateY(-8px)',
-                  boxShadow: '0 20px 40px rgba(59, 130, 246, 0.15)',
-                  borderColor: 'rgba(59, 130, 246, 0.2)',
+                  boxShadow: '0 20px 40px rgba(0, 184, 217, 0.15)',
+                  borderColor: 'rgba(0, 184, 217, 0.2)',
                   '& .step-number': {
                     transform: 'scale(1.1)',
-                    boxShadow: '0 12px 32px rgba(59, 130, 246, 0.4)'
+                    boxShadow: '0 12px 32px rgba(0, 184, 217, 0.4)'
                   }
                 }
               }}
@@ -214,7 +214,7 @@ export function HowItWorksSection() {
                   right: -20,
                   width: 100,
                   height: 100,
-                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 70%)',
+                  background: 'linear-gradient(135deg, rgba(0, 184, 217, 0.1) 0%, transparent 70%)',
                   borderRadius: '50%'
                 }}
               />
@@ -226,13 +226,13 @@ export function HowItWorksSection() {
                     width: 100, 
                     height: 100, 
                     borderRadius: 3,
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
+                    background: 'linear-gradient(135deg, #00B8D9 0%, #0891b2 100%)',
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
                     mx: 'auto',
                     mb: 4,
-                    boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
+                    boxShadow: '0 8px 32px rgba(0, 184, 217, 0.3)',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}
                 >
@@ -240,11 +240,11 @@ export function HowItWorksSection() {
                 </Box>
                 
                 <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 3 }}>
-                  Escaneamos Todo
+                  Revisamos Todo por Vos
                 </Typography>
                 
                 <Typography sx={{ color: '#64748b', mb: 4, lineHeight: 1.7, fontSize: '1.1rem' }}>
-                  Nuestros robots analizan SSL, DNS, headers de seguridad, puertos y configuraciones críticas 24/7.
+                  Nuestro sistema busca problemas de seguridad las 24 horas. Como tener un guardia digital que nunca duerme.
                 </Typography>
 
                 {/* Security Badges */}
@@ -253,19 +253,19 @@ export function HowItWorksSection() {
                     <Box 
                       sx={{ 
                         p: 2, 
-                        bgcolor: 'rgba(16, 185, 129, 0.1)', 
+                        bgcolor: 'rgba(0, 184, 217, 0.1)', 
                         borderRadius: 2,
-                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                        border: '1px solid rgba(0, 184, 217, 0.2)',
                         transition: 'all 0.3s ease',
                         '&:hover': {
-                          bgcolor: 'rgba(16, 185, 129, 0.15)',
+                          bgcolor: 'rgba(0, 184, 217, 0.15)',
                           transform: 'translateY(-2px)'
                         }
                       }}
                     >
-                      <Https sx={{ color: '#10b981', mb: 1 }} />
+                      <Https sx={{ color: '#00B8D9', mb: 1 }} />
                       <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                        SSL/TLS
+                        Certificados
                       </Typography>
                     </Box>
                   </Grid>
@@ -273,19 +273,19 @@ export function HowItWorksSection() {
                     <Box 
                       sx={{ 
                         p: 2, 
-                        bgcolor: 'rgba(245, 158, 11, 0.1)', 
+                        bgcolor: 'rgba(174, 234, 0, 0.1)', 
                         borderRadius: 2,
-                        border: '1px solid rgba(245, 158, 11, 0.2)',
+                        border: '1px solid rgba(174, 234, 0, 0.2)',
                         transition: 'all 0.3s ease',
                         '&:hover': {
-                          bgcolor: 'rgba(245, 158, 11, 0.15)',
+                          bgcolor: 'rgba(174, 234, 0, 0.15)',
                           transform: 'translateY(-2px)'
                         }
                       }}
                     >
-                      <Email sx={{ color: '#f59e0b', mb: 1 }} />
+                      <Email sx={{ color: '#AEEA00', mb: 1 }} />
                       <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                        Email Sec
+                        Emails
                       </Typography>
                     </Box>
                   </Grid>
@@ -293,19 +293,19 @@ export function HowItWorksSection() {
                     <Box 
                       sx={{ 
                         p: 2, 
-                        bgcolor: 'rgba(139, 69, 193, 0.1)', 
+                        bgcolor: 'rgba(0, 184, 217, 0.1)', 
                         borderRadius: 2,
-                        border: '1px solid rgba(139, 69, 193, 0.2)',
+                        border: '1px solid rgba(0, 184, 217, 0.2)',
                         transition: 'all 0.3s ease',
                         '&:hover': {
-                          bgcolor: 'rgba(139, 69, 193, 0.15)',
+                          bgcolor: 'rgba(0, 184, 217, 0.15)',
                           transform: 'translateY(-2px)'
                         }
                       }}
                     >
-                      <NetworkCheck sx={{ color: '#8b45c1', mb: 1 }} />
+                      <NetworkCheck sx={{ color: '#00B8D9', mb: 1 }} />
                       <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                        Headers
+                        Conexiones
                       </Typography>
                     </Box>
                   </Grid>
@@ -313,19 +313,19 @@ export function HowItWorksSection() {
                     <Box 
                       sx={{ 
                         p: 2, 
-                        bgcolor: 'rgba(239, 68, 68, 0.1)', 
+                        bgcolor: 'rgba(30, 42, 56, 0.1)', 
                         borderRadius: 2,
-                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                        border: '1px solid rgba(30, 42, 56, 0.2)',
                         transition: 'all 0.3s ease',
                         '&:hover': {
-                          bgcolor: 'rgba(239, 68, 68, 0.15)',
+                          bgcolor: 'rgba(30, 42, 56, 0.15)',
                           transform: 'translateY(-2px)'
                         }
                       }}
                     >
-                      <BugReport sx={{ color: '#ef4444', mb: 1 }} />
+                      <BugReport sx={{ color: '#1E2A38', mb: 1 }} />
                       <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
-                        Puertos
+                        Vulnerab.
                       </Typography>
                     </Box>
                   </Grid>
@@ -349,11 +349,11 @@ export function HowItWorksSection() {
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                   transform: 'translateY(-8px)',
-                  boxShadow: '0 20px 40px rgba(16, 185, 129, 0.15)',
-                  borderColor: 'rgba(16, 185, 129, 0.2)',
+                  boxShadow: '0 20px 40px rgba(174, 234, 0, 0.15)',
+                  borderColor: 'rgba(174, 234, 0, 0.2)',
                   '& .step-number': {
                     transform: 'scale(1.1)',
-                    boxShadow: '0 12px 32px rgba(16, 185, 129, 0.4)'
+                    boxShadow: '0 12px 32px rgba(174, 234, 0, 0.4)'
                   }
                 }
               }}
@@ -366,7 +366,7 @@ export function HowItWorksSection() {
                   right: -20,
                   width: 100,
                   height: 100,
-                  background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
+                  background: 'linear-gradient(135deg, rgba(174, 234, 0, 0.1) 0%, transparent 70%)',
                   borderRadius: '50%'
                 }}
               />
@@ -378,34 +378,34 @@ export function HowItWorksSection() {
                     width: 100, 
                     height: 100, 
                     borderRadius: 3,
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    background: 'linear-gradient(135deg, #AEEA00 0%, #9ED600 100%)',
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
                     mx: 'auto',
                     mb: 4,
-                    boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)',
+                    boxShadow: '0 8px 32px rgba(174, 234, 0, 0.3)',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}
                 >
-                  <Typography variant="h3" sx={{ fontWeight: 900, color: 'white' }}>3</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 900, color: '#1E2A38' }}>3</Typography>
                 </Box>
                 
                 <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 3 }}>
-                  Actúas con Confianza
+                  Te Decimos Qué Hacer
                 </Typography>
                 
                 <Typography sx={{ color: '#64748b', mb: 4, lineHeight: 1.7, fontSize: '1.1rem' }}>
-                  Recibes alertas inmediatas + recomendaciones específicas + reportes PDF para implementar.
+                  Recibís un reporte claro con pasos específicos para proteger tu empresa. En español, sin complicaciones.
                 </Typography>
 
                 {/* Alert Example */}
                 <Box 
                   sx={{ 
                     p: 3, 
-                    bgcolor: 'rgba(16, 185, 129, 0.05)', 
+                    bgcolor: 'rgba(174, 234, 0, 0.05)', 
                     borderRadius: 2,
-                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    border: '1px solid rgba(174, 234, 0, 0.2)',
                     position: 'relative',
                     textAlign: 'left'
                   }}
@@ -417,20 +417,20 @@ export function HowItWorksSection() {
                     </Typography>
                   </Box>
                   
-                  <Box sx={{ pl: 3, borderLeft: '2px solid #10b981' }}>
+                  <Box sx={{ pl: 3, borderLeft: '2px solid #AEEA00' }}>
                     <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
-                      <strong>Acción recomendada:</strong>
+                      <strong>Qué tenés que hacer:</strong>
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                      <ArrowRight sx={{ color: '#10b981', fontSize: 16 }} />
-                      <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                        Renovar con tu proveedor hosting
+                      <ArrowRight sx={{ color: '#AEEA00', fontSize: 16 }} />
+                      <Typography variant="body2" sx={{ color: '#1E2A38', fontWeight: 600 }}>
+                        Llamar a tu empresa de hosting
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <ArrowRight sx={{ color: '#10b981', fontSize: 16 }} />
-                      <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
-                        Guía paso a paso incluida
+                      <ArrowRight sx={{ color: '#AEEA00', fontSize: 16 }} />
+                      <Typography variant="body2" sx={{ color: '#1E2A38', fontWeight: 600 }}>
+                        Te mandamos los pasos exactos
                       </Typography>
                     </Box>
                   </Box>
@@ -446,12 +446,12 @@ export function HowItWorksSection() {
             sx={{ 
               textAlign: 'center',
               p: 6,
-              background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
+              background: 'linear-gradient(135deg, #1E2A38 0%, #334155 100%)',
               color: 'white',
               borderRadius: 4,
               position: 'relative',
               overflow: 'hidden',
-              boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)'
+              boxShadow: '0 20px 40px rgba(30, 42, 56, 0.3)'
             }}
           >
             {/* Background Pattern */}
@@ -462,25 +462,25 @@ export function HowItWorksSection() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                background: 'radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)',
+                background: 'radial-gradient(circle at 20% 20%, rgba(174, 234, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(0, 184, 217, 0.1) 0%, transparent 50%)',
                 pointerEvents: 'none'
               }}
             />
 
             <Box sx={{ position: 'relative' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, mb: 3 }}>
-                <ShowChart sx={{ fontSize: 40 }} />
+                <ShowChart sx={{ fontSize: 40, color: '#AEEA00' }} />
                 <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                  Garantía de ROI
+                  Garantía de Resultados
                 </Typography>
               </Box>
               
-              <Typography variant="h6" sx={{ mb: 3, fontWeight: 500 }}>
-                Si no mejoramos tu seguridad en 30 días, te devolvemos tu dinero.
+              <Typography variant="h6" sx={{ mb: 3, fontWeight: 500, color: '#AEEA00' }}>
+                Si no encontramos al menos 3 problemas de seguridad en tu sitio web, te devolvemos el dinero.
               </Typography>
               
               <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: '600px', mx: 'auto' }}>
-                Promedio: las empresas ahorran $2,840 USD en su primer mes evitando una sola brecha
+                Más del 90% de las PyMEs tienen vulnerabilidades que no conocen. Probablemente vos también.
               </Typography>
             </Box>
           </Box>
