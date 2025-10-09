@@ -49,11 +49,11 @@ export function HeroSection() {
     >
       <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 2 }}>
         {/* Logo Securyx */}
-        <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 8 } }}>
-          <Box sx={{ mb: 6, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ textAlign: 'center', mb: { xs: 5, md: 6 } }}>
+          <Box sx={{ mb: 5, display: 'flex', justifyContent: 'center' }}>
             <SecuryxLogo 
-              width={240} 
-              height={80}
+              width={200} 
+              height={60}
               style={{
                 filter: 'drop-shadow(0 4px 20px rgba(255, 255, 255, 0.1))',
               }}
@@ -76,13 +76,14 @@ export function HeroSection() {
               mx: 'auto'
             }}
           >
-            Dormí Tranquilo:
+            Tu Negocio Protegido,
             <br />
             <Box component="span" sx={{ 
-              color: '#AEEA00',
+              color: '#B8FF00',
               fontWeight: 900,
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
             }}>
-              Tu PyME Está Protegida
+              Tu Mente Tranquila
             </Box>
           </Typography>
           
@@ -91,50 +92,80 @@ export function HeroSection() {
             component="h2" 
             sx={{ 
               fontWeight: 400,
-              fontSize: { xs: '1.25rem', md: '1.75rem' },
-              mb: { xs: 4, md: 6 },
+              fontSize: { xs: '1.25rem', md: '1.5rem' },
+              mb: { xs: 4, md: 5 },
               color: 'rgba(255, 255, 255, 0.9)',
               lineHeight: 1.6,
-              maxWidth: '800px',
+              maxWidth: '750px',
               mx: 'auto',
             }}
           >
-            Nosotros nos encargamos de los hackers, 
-            <Box component="span" sx={{ color: '#AEEA00', fontWeight: 600 }}>
-              vos encargáte de hacer crecer tu negocio.
+            Nosotros vigilamos las amenazas digitales, 
+            <Box component="span" sx={{ color: '#B8FF00', fontWeight: 600, textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}>
+              vos te enfocás en hacer crecer tu empresa.
             </Box>
             <br />
-            Protección digital 24/7 en piloto automático.
+            Seguridad automática que funciona sola.
           </Typography>
 
           {/* Value Proposition Tagline */}
-          <Box sx={{ mb: { xs: 6, md: 8 } }}>
-            <Box
+          <Box sx={{ mb: { xs: 5, md: 6 } }}>
+            <Stack 
+              direction={{ xs: 'column', sm: 'row' }} 
+              spacing={{ xs: 2, sm: 4 }} 
+              justifyContent="center" 
+              alignItems="center"
               sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
                 px: 4,
-                py: 2,
-                background: 'rgba(174, 234, 0, 0.1)',
+                py: 3,
+                background: 'rgba(184, 255, 0, 0.08)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(174, 234, 0, 0.3)',
-                borderRadius: '50px',
-                mb: 4
+                border: '1px solid rgba(184, 255, 0, 0.2)',
+                borderRadius: '24px',
+                maxWidth: '600px',
+                mx: 'auto'
               }}
             >
-              <Stack direction="column" spacing={1} alignItems="center">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography 
                   variant="body1" 
                   sx={{ 
                     fontWeight: 600,
-                    color: '#AEEA00',
-                    fontSize: '1rem'
+                    color: '#B8FF00',
+                    fontSize: '0.95rem',
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
                   }}
                 >
-                  ✓ Sin instalaciones complicadas • ✓ Alertas en español que entendés • ✓ Soporte humano (no bots)
+                  ✓ Setup simple
                 </Typography>
-              </Stack>
-            </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontWeight: 600,
+                    color: '#B8FF00',
+                    fontSize: '0.95rem',
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                  }}
+                >
+                  ✓ Alertas claras
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontWeight: 600,
+                    color: '#B8FF00',
+                    fontSize: '0.95rem',
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                  }}
+                >
+                  ✓ Soporte real
+                </Typography>
+              </Box>
+            </Stack>
           </Box>
 
           {/* CTA Buttons */}
@@ -153,16 +184,16 @@ export function HeroSection() {
                 py: 2,
                 fontSize: '1.1rem',
                 fontWeight: 600,
-                backgroundColor: '#AEEA00',
+                backgroundColor: '#B8FF00',
                 color: '#1E2A38',
-                boxShadow: '0 8px 32px rgba(174, 234, 0, 0.4)',
+                boxShadow: '0 8px 32px rgba(184, 255, 0, 0.4)',
                 borderRadius: '50px',
                 minWidth: '240px',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 12px 40px rgba(174, 234, 0, 0.6)',
-                  backgroundColor: '#9ED600',
+                  boxShadow: '0 12px 40px rgba(184, 255, 0, 0.6)',
+                  backgroundColor: '#A6E600',
                 }
               }}
               onClick={() => navigate('/dashboard')}
@@ -194,22 +225,22 @@ export function HeroSection() {
           </Stack>
 
           {/* Trust Indicators */}
-          <Stack direction="row" spacing={3} justifyContent="center" flexWrap="wrap" sx={{ mb: 2 }}>
+          <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap" sx={{ mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
-              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }}>
+              <CheckCircle sx={{ color: '#B8FF00', fontSize: 16 }} />
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', fontWeight: 500, fontSize: '0.9rem' }}>
                 Sin tarjeta de crédito
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
-              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }}>
+              <CheckCircle sx={{ color: '#B8FF00', fontSize: 16 }} />
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', fontWeight: 500, fontSize: '0.9rem' }}>
                 14 días gratis
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CheckCircle sx={{ color: '#10b981', fontSize: 16 }} />
-              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }}>
+              <CheckCircle sx={{ color: '#B8FF00', fontSize: 16 }} />
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', fontWeight: 500, fontSize: '0.9rem' }}>
                 Soporte en español
               </Typography>
             </Box>

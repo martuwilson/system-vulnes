@@ -115,14 +115,14 @@ export function Navbar({ onNavigate }: NavbarProps) {
             variant="contained" 
             size="small"
             sx={{ 
-              backgroundColor: '#AEEA00',
+              backgroundColor: '#B8FF00',
               color: '#1E2A38',
               fontWeight: 600,
-              boxShadow: '0 4px 12px rgba(174, 234, 0, 0.3)',
+              boxShadow: '0 4px 12px rgba(184, 255, 0, 0.3)',
               display: { xs: 'none', sm: 'flex' },
               '&:hover': {
-                backgroundColor: '#9ED600',
-                boxShadow: '0 6px 16px rgba(174, 234, 0, 0.4)',
+                backgroundColor: '#A6E600',
+                boxShadow: '0 6px 16px rgba(184, 255, 0, 0.4)',
               }
             }}
             onClick={() => navigate('/dashboard')}
