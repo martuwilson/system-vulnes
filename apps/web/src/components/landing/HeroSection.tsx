@@ -70,24 +70,19 @@ export function HeroSection() {
               lineHeight: { xs: 1.1, md: 1.05 },
               mb: { xs: 3, md: 4 },
               letterSpacing: { xs: '-0.02em', md: '-0.04em' },
-              background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #cbd5e1 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: '#FFFFFF',
               textShadow: '0 4px 20px rgba(255, 255, 255, 0.1)',
               maxWidth: '900px',
               mx: 'auto'
             }}
           >
-            Protección Digital
+            Dormí Tranquilo:
             <br />
             <Box component="span" sx={{ 
-              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: '#AEEA00',
+              fontWeight: 900,
             }}>
-              Inteligente
+              Tu PyME Está Protegida
             </Box>
           </Typography>
           
@@ -98,16 +93,18 @@ export function HeroSection() {
               fontWeight: 400,
               fontSize: { xs: '1.25rem', md: '1.75rem' },
               mb: { xs: 4, md: 6 },
-              color: 'rgba(255, 255, 255, 0.8)',
+              color: 'rgba(255, 255, 255, 0.9)',
               lineHeight: 1.6,
-              maxWidth: '700px',
+              maxWidth: '800px',
               mx: 'auto',
             }}
           >
-            Monitoreo continuo de vulnerabilidades para PyMEs. 
-            <Box component="span" sx={{ color: '#3b82f6', fontWeight: 600 }}>
-              Prevención automática
-            </Box> de brechas de seguridad.
+            Nosotros nos encargamos de los hackers, 
+            <Box component="span" sx={{ color: '#AEEA00', fontWeight: 600 }}>
+              vos encargáte de hacer crecer tu negocio.
+            </Box>
+            <br />
+            Protección digital 24/7 en piloto automático.
           </Typography>
 
           {/* Value Proposition Tagline */}
@@ -118,23 +115,25 @@ export function HeroSection() {
                 alignItems: 'center',
                 px: 4,
                 py: 2,
-                background: 'rgba(59, 130, 246, 0.1)',
+                background: 'rgba(174, 234, 0, 0.1)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(59, 130, 246, 0.2)',
+                border: '1px solid rgba(174, 234, 0, 0.3)',
                 borderRadius: '50px',
                 mb: 4
               }}
             >
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  fontWeight: 600,
-                  color: '#93c5fd',
-                  fontSize: '1.1rem'
-                }}
-              >
-                ⚡ Setup en 5 minutos • 🛡️ Protección 24/7 • 🎯 Resultados instantáneos
-              </Typography>
+              <Stack direction="column" spacing={1} alignItems="center">
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontWeight: 600,
+                    color: '#AEEA00',
+                    fontSize: '1rem'
+                  }}
+                >
+                  ✓ Sin instalaciones complicadas • ✓ Alertas en español que entendés • ✓ Soporte humano (no bots)
+                </Typography>
+              </Stack>
             </Box>
           </Box>
 
@@ -154,20 +153,21 @@ export function HeroSection() {
                 py: 2,
                 fontSize: '1.1rem',
                 fontWeight: 600,
-                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-                boxShadow: '0 8px 32px rgba(59, 130, 246, 0.4)',
+                backgroundColor: '#AEEA00',
+                color: '#1E2A38',
+                boxShadow: '0 8px 32px rgba(174, 234, 0, 0.4)',
                 borderRadius: '50px',
-                minWidth: '200px',
+                minWidth: '240px',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 12px 40px rgba(59, 130, 246, 0.5)',
-                  background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
+                  boxShadow: '0 12px 40px rgba(174, 234, 0, 0.6)',
+                  backgroundColor: '#9ED600',
                 }
               }}
               onClick={() => navigate('/dashboard')}
             >
-              Empezar Gratis Ahora
+              Proteger Mi Negocio Gratis
             </Button>
             <Button
               variant="outlined"
@@ -177,19 +177,19 @@ export function HeroSection() {
                 py: 2,
                 fontSize: '1.1rem',
                 fontWeight: 600,
-                borderColor: 'rgba(255, 255, 255, 0.3)',
-                color: 'white',
+                borderColor: '#00B8D9',
+                color: '#00B8D9',
                 borderRadius: '50px',
                 minWidth: '200px',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: '#3b82f6',
-                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                  borderColor: '#00B8D9',
+                  backgroundColor: 'rgba(0, 184, 217, 0.1)',
                   transform: 'translateY(-2px)'
                 }
               }}
             >
-              Ver Demo en Vivo
+              Ver Cómo Funciona
             </Button>
           </Stack>
 
@@ -218,11 +218,12 @@ export function HeroSection() {
           <Typography 
             variant="caption" 
             sx={{ 
-              color: 'rgba(255, 255, 255, 0.5)',
-              fontSize: '0.9rem'
+              color: '#F5F5F5',
+              fontSize: '0.9rem',
+              fontWeight: 500
             }}
           >
-            Únete a +500 empresas argentinas que ya protegen su infraestructura digital
+            Más de 500 dueños de PyMEs argentinas ya duermen tranquilos con Securyx
           </Typography>
         </Box>
       </Container>
