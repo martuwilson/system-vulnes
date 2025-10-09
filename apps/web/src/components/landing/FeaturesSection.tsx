@@ -4,24 +4,24 @@ import { Security, Speed, Analytics, Shield } from '@mui/icons-material';
 export function FeaturesSection() {
   const features = [
     {
-      icon: <Security sx={{ fontSize: 40, color: 'primary.main' }} />,
-      title: 'Escaneo Completo de Protección Digital',
-      description: 'Análisis automatizado de SSL, DNS, headers de seguridad y puertos abiertos para tu tranquilidad'
+      icon: <Security sx={{ fontSize: 40, color: '#1E2A38' }} />,
+      title: 'Revisamos Todo por Vos',
+      description: 'Chequeamos si tu sitio web, emails y certificados tienen problemas. Vos solo esperás el reporte, sin tocar nada técnico.'
     },
     {
-      icon: <Speed sx={{ fontSize: 40, color: 'success.main' }} />,
-      title: 'Resultados en Tiempo Real',
-      description: 'Procesamiento asíncrono con colas Redis para escaneos rápidos y eficientes, sin esperas'
+      icon: <Speed sx={{ fontSize: 40, color: '#AEEA00' }} />,
+      title: 'Resultados al Instante',
+      description: 'No esperás horas ni días. En minutos tenés todo listo y sabés exactamente qué está pasando con la seguridad de tu empresa.'
     },
     {
-      icon: <Analytics sx={{ fontSize: 40, color: 'warning.main' }} />,
-      title: 'Reportes Inteligentes',
-      description: 'Dashboard ejecutivo con métricas claras y recomendaciones accionables para decisiones informadas'
+      icon: <Analytics sx={{ fontSize: 40, color: '#00B8D9' }} />,
+      title: 'Te Decimos Qué Hacer',
+      description: 'Cada problema viene con la solución paso a paso. Sin tecnicismos, con ejemplos reales y en español que entendés.'
     },
     {
-      icon: <Shield sx={{ fontSize: 40, color: 'error.main' }} />,
-      title: 'Monitoreo Continuo',
-      description: 'Vigilancia 24/7 de tu infraestructura digital con alertas automáticas ante vulnerabilidades'
+      icon: <Shield sx={{ fontSize: 40, color: '#1E2A38' }} />,
+      title: 'Trabajamos Mientras Dormís',
+      description: 'Vigilamos tu negocio 24/7. Si algo sale mal, te avisamos inmediatamente por email o WhatsApp.'
     }
   ];
 
@@ -43,7 +43,7 @@ export function FeaturesSection() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%)',
+          background: 'radial-gradient(circle at 20% 80%, rgba(0, 184, 217, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(174, 234, 0, 0.05) 0%, transparent 50%)',
           pointerEvents: 'none'
         }}
       />
@@ -53,14 +53,14 @@ export function FeaturesSection() {
           <Typography 
             variant="body2" 
             sx={{ 
-              color: '#3b82f6',
+              color: '#00B8D9',
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '2px',
               mb: 2
             }}
           >
-            Por Qué Elegirnos
+            Beneficios Reales
           </Typography>
           <Typography 
             variant="h2" 
@@ -68,13 +68,13 @@ export function FeaturesSection() {
             sx={{ 
               fontWeight: 800,
               fontSize: { xs: '2.5rem', md: '3.5rem' },
-              background: 'linear-gradient(135deg, #1e293b 0%, #3b82f6 100%)',
+              background: 'linear-gradient(135deg, #1E2A38 0%, #00B8D9 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               mb: 3
             }}
           >
-            Características Principales
+            Por Qué Tu Negocio Estará Más Seguro
           </Typography>
           <Typography 
             variant="h5" 
@@ -86,7 +86,7 @@ export function FeaturesSection() {
               lineHeight: 1.6
             }}
           >
-            Tecnología avanzada diseñada específicamente para PyMEs argentinas
+            Simple, poderoso y pensado para empresas como la tuya
           </Typography>
         </Box>
 
@@ -104,8 +104,8 @@ export function FeaturesSection() {
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(59, 130, 246, 0.15)',
-                    borderColor: 'rgba(59, 130, 246, 0.2)'
+                    boxShadow: '0 20px 40px rgba(30, 42, 56, 0.15)',
+                    borderColor: 'rgba(174, 234, 0, 0.3)'
                   }
                 }}
               >
