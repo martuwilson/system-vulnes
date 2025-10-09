@@ -27,44 +27,44 @@ import {
   Shield,
   Notifications,
   Person,
-  Insights,
-  Scanner,
-  Warning,
+  Home,
+  Radar,
+  Security,
 } from '@mui/icons-material';
 import { useAuth } from '../../hooks/useAuth';
 
-const drawerWidth = 280;
+const drawerWidth = 260;
 
 const menuItems = [
   {
-    text: 'Dashboard',
-    icon: <Insights />,
+    text: 'Inicio',
+    icon: <Home />,
     path: '/app/dashboard',
-    description: 'Resumen general de seguridad',
+    description: 'Resumen de tu seguridad',
   },
   {
-    text: 'Empresas',
+    text: 'Mi Empresa',
     icon: <Business />,
     path: '/app/companies',
-    description: 'Gestión de empresas',
+    description: 'Datos de tu negocio',
   },
   {
-    text: 'Escaneos',
-    icon: <Scanner />,
+    text: 'Monitoreo',
+    icon: <Radar />,
     path: '/app/scans',
-    description: 'Historial de escaneos',
+    description: 'Estado de protección',
   },
   {
-    text: 'Vulnerabilidades',
-    icon: <Warning />,
+    text: 'Alertas de Seguridad',
+    icon: <Security />,
     path: '/app/findings',
-    description: 'Problemas encontrados',
+    description: 'Problemas detectados',
   },
   {
     text: 'Configuración',
     icon: <Settings />,
     path: '/app/settings',
-    description: 'Configurar sistema',
+    description: 'Ajustes del sistema',
   },
 ];
 
@@ -102,58 +102,81 @@ export function DashboardLayout() {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          p: 3,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          justifyContent: 'center',
+          p: 2.5,
+          background: 'linear-gradient(135deg, #1E2A38 0%, #2A3A4A 100%)',
           color: 'white',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          borderBottom: '2px solid #AEEA00',
         }}
       >
-        <Shield sx={{ mr: 2, fontSize: 28 }} />
-        <Box>
-          <Typography variant="h6" fontWeight="bold" sx={{ lineHeight: 1.2 }}>
-            Security System
-          </Typography>
-          <Typography variant="caption" sx={{ opacity: 0.9 }}>
-            PYME Edition
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Shield sx={{ mr: 1.5, fontSize: 24, color: '#AEEA00' }} />
+          <Box>
+            <Typography 
+              variant="h6" 
+              fontWeight="bold" 
+              sx={{ 
+                lineHeight: 1.2,
+                color: '#FFFFFF',
+                fontSize: '1.1rem',
+              }}
+            >
+              Securyx
+            </Typography>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                opacity: 0.9,
+                color: '#AEEA00',
+                fontSize: '0.7rem',
+                fontWeight: 500,
+                letterSpacing: 0.5,
+              }}
+            >
+              PYME EDITION
+            </Typography>
+          </Box>
         </Box>
       </Box>
       
       {/* Perfil del usuario */}
-      <Box sx={{ p: 3, textAlign: 'center', backgroundColor: '#f8fafc' }}>
+      <Box sx={{ p: 2.5, textAlign: 'center', backgroundColor: '#f8fafc' }}>
         <Avatar
           sx={{
-            width: 56,
-            height: 56,
+            width: 48,
+            height: 48,
             mx: 'auto',
-            mb: 2,
-            bgcolor: theme.palette.primary.main,
-            fontSize: '1.5rem',
+            mb: 1.5,
+            bgcolor: '#1E2A38',
+            fontSize: '1.3rem',
+            fontWeight: 600,
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
           }}
         >
           {user?.firstName?.charAt(0).toUpperCase()}
         </Avatar>
-        <Typography variant="subtitle1" fontWeight="600" sx={{ mb: 0.5 }}>
-          {user?.firstName?.charAt(0).toUpperCase()}.
+        <Typography variant="subtitle2" fontWeight="600" sx={{ mb: 0.5, color: '#1E2A38' }}>
+          {user?.firstName} {user?.lastName}
         </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+        <Typography variant="caption" color="text.secondary" sx={{ mb: 1.5, display: 'block' }}>
           {user?.email}
         </Typography>
         <Box
           sx={{
             display: 'inline-flex',
             alignItems: 'center',
-            px: 2,
-            py: 0.5,
-            borderRadius: 2,
-            backgroundColor: '#e3f2fd',
-            color: '#1976d2',
+            px: 1.5,
+            py: 0.4,
+            borderRadius: 1.5,
+            backgroundColor: '#E8F5E8',
+            color: '#2E7D32',
+            border: '1px solid #A5D6A7',
           }}
         >
-          <Person sx={{ fontSize: 16, mr: 0.5 }} />
-          <Typography variant="caption" fontWeight="600">
-            Admin
+          <Person sx={{ fontSize: 14, mr: 0.5 }} />
+          <Typography variant="caption" fontWeight="600" sx={{ fontSize: '0.7rem' }}>
+            Administrador
           </Typography>
         </Box>
       </Box>
@@ -161,63 +184,68 @@ export function DashboardLayout() {
       <Divider />
 
       {/* Navegación principal */}
-      <Box sx={{ flex: 1, p: 2 }}>
+      <Box sx={{ flex: 1, p: 1.5 }}>
         <Typography 
           variant="overline" 
           sx={{ 
             px: 2, 
             py: 1, 
             display: 'block',
-            fontWeight: 600,
-            color: 'text.secondary',
-            letterSpacing: 1,
+            fontWeight: 700,
+            color: '#1E2A38',
+            letterSpacing: 1.2,
+            fontSize: '0.7rem',
           }}
         >
-          Navegación
+          MENÚ PRINCIPAL
         </Typography>
-        <List sx={{ mt: 1 }}>
+        <List sx={{ mt: 0.5 }}>
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
-              <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
+              <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
                 <ListItemButton
                   onClick={() => navigate(item.path)}
                   sx={{
-                    borderRadius: 3,
-                    py: 1.5,
-                    px: 2,
-                    backgroundColor: isActive ? theme.palette.primary.main : 'transparent',
-                    color: isActive ? 'white' : 'inherit',
-                    boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
-                    transition: 'all 0.2s ease-in-out',
+                    borderRadius: 2,
+                    py: 1.2,
+                    px: 1.5,
+                    backgroundColor: isActive ? '#1E2A38' : 'transparent',
+                    color: isActive ? 'white' : '#1E2A38',
+                    boxShadow: isActive ? '0 3px 10px rgba(30, 42, 56, 0.2)' : 'none',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     position: 'relative',
+                    border: isActive ? 'none' : '1px solid transparent',
                     '&:hover': {
                       backgroundColor: isActive 
-                        ? theme.palette.primary.dark 
-                        : '#f1f5f9',
-                      transform: 'translateY(-1px)',
-                      boxShadow: '0 6px 16px rgba(0,0,0,0.1)',
+                        ? '#2A3A4A' 
+                        : '#F0F4F8',
+                      transform: 'translateX(4px)',
+                      boxShadow: isActive 
+                        ? '0 4px 14px rgba(30, 42, 56, 0.25)' 
+                        : '0 2px 8px rgba(0,0,0,0.08)',
+                      border: isActive ? 'none' : '1px solid #E2E8F0',
                     },
-                    // Badge indicator for active item
-                    '&::after': isActive ? {
+                    // Accent line for active item
+                    '&::before': isActive ? {
                       content: '""',
                       position: 'absolute',
-                      right: 8,
+                      left: 0,
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      width: 4,
-                      height: 20,
-                      backgroundColor: 'white',
-                      borderRadius: 2,
+                      width: 3,
+                      height: '60%',
+                      backgroundColor: '#AEEA00',
+                      borderRadius: '0 2px 2px 0',
                     } : {},
                   }}
                 >
                   <ListItemIcon
                     sx={{
-                      color: isActive ? 'white' : theme.palette.primary.main,
-                      minWidth: 44,
+                      color: isActive ? '#AEEA00' : '#1E2A38',
+                      minWidth: 40,
                       '& .MuiSvgIcon-root': {
-                        fontSize: 22,
+                        fontSize: 20,
                       },
                     }}
                   >
@@ -225,14 +253,17 @@ export function DashboardLayout() {
                   </ListItemIcon>
                   <ListItemText 
                     primary={item.text}
-                    secondary={!isActive ? item.description : undefined}
+                    secondary={item.description}
                     primaryTypographyProps={{
-                      fontSize: '0.9rem',
+                      fontSize: '0.85rem',
                       fontWeight: isActive ? 600 : 500,
+                      lineHeight: 1.2,
                     }}
                     secondaryTypographyProps={{
-                      fontSize: '0.75rem',
-                      color: isActive ? 'rgba(255,255,255,0.7)' : 'text.secondary',
+                      fontSize: '0.7rem',
+                      color: isActive ? 'rgba(255,255,255,0.8)' : '#64748B',
+                      lineHeight: 1.3,
+                      mt: 0.2,
                     }}
                   />
                 </ListItemButton>
@@ -264,8 +295,8 @@ export function DashboardLayout() {
           ml: { md: `${drawerWidth}px` },
           backgroundColor: 'white',
           color: 'text.primary',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-          borderBottom: '1px solid #e2e8f0',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)',
+          borderBottom: '1px solid #E2E8F0',
         }}
       >
         <Toolbar sx={{ px: 3 }}>
@@ -281,11 +312,11 @@ export function DashboardLayout() {
           
           {/* Título de la página actual */}
           <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h5" fontWeight="600" sx={{ mb: 0.5 }}>
-              {menuItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
+            <Typography variant="h5" fontWeight="600" sx={{ mb: 0.5, color: '#1E2A38' }}>
+              {menuItems.find(item => item.path === location.pathname)?.text || 'Inicio'}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {menuItems.find(item => item.path === location.pathname)?.description || 'Resumen general de seguridad'}
+              {menuItems.find(item => item.path === location.pathname)?.description || 'Resumen de tu seguridad'}
             </Typography>
           </Box>
 
