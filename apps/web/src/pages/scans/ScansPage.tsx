@@ -41,13 +41,11 @@ import {
   Compare,
   Error,
   Schedule,
-  BugReport,
   ExpandMore,
   ContentCopy,
   FileDownload,
   Assignment,
   PersonAdd,
-  Cancel,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 import { 
@@ -201,12 +199,6 @@ const getHealthScoreBadge = (score: number) => {
   return 'Crítico';
 };
 
-const getHealthScoreColorName = (score: number) => {
-  if (score >= 71) return '#4caf50'; // green
-  if (score >= 41) return '#ff9800'; // orange
-  return '#f44336'; // red
-};
-
 const formatFullDateTime = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('es-ES', {
@@ -298,7 +290,6 @@ export function ScansPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [healthScoreFilter, setHealthScoreFilter] = useState('all');
   const [domainFilter, setDomainFilter] = useState('all'); // Nuevo filtro por dominio
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
 
   // Obtener las empresas del usuario
   const { data: companiesData } = useQuery(GET_MY_COMPANIES);
@@ -310,7 +301,7 @@ export function ScansPage() {
     pollInterval: 5000, // Poll every 5 seconds for scan updates
   });
 
-  const { data: scansData, loading: scansLoading, refetch: refetchScans } = useQuery(GET_SECURITY_SCANS, {
+  const { data: scansData, refetch: refetchScans } = useQuery(GET_SECURITY_SCANS, {
     variables: { companyId: userCompany?.id },
     skip: !userCompany?.id,
     pollInterval: 3000, // Poll every 3 seconds for real-time updates
@@ -892,7 +883,7 @@ export function ScansPage() {
                             
                             {/* Lista de vulnerabilidades */}
                             <List sx={{ pl: 2 }}>
-                              {findings.map((finding: SecurityFinding, index: number) => {
+                              {findings.map((finding: SecurityFinding) => {
                                 const translatedTitle = translateVulnerabilityTitle(finding.title);
                                 const translatedDescription = translateVulnerabilityDescription(finding.description);
                                 

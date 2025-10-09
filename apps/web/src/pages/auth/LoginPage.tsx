@@ -56,14 +56,18 @@ export function LoginPage() {
     setError(null);
 
     try {
+      console.log('Attempting login with:', { email: data.email });
       const result = await login(data.email, data.password);
+      console.log('Login result:', result);
       
       if (!result?.success) {
+        console.error('Login failed:', result?.error);
         setError(result?.error || 'Error al iniciar sesión');
       }
+      // Si el login es exitoso, la redirección se maneja en useAuth
     } catch (err: any) {
       console.error('Login exception:', err);
-      setError(err.message || 'Error inesperado');
+      setError(err.message || 'Error inesperado al conectar con el servidor');
     } finally {
       setIsLoggingIn(false);
     }

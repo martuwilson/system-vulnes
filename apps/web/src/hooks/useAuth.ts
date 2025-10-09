@@ -89,11 +89,17 @@ export function useAuth() {
 
   const login = useCallback(async (email: string, password: string) => {
     try {
+      console.log('🔐 Enviando request de login a GraphQL...');
+      console.log('📧 Email:', email);
+      console.log('🔗 API URL:', import.meta.env.VITE_API_URL || 'http://localhost:3001/graphql');
+      
       const { data } = await loginMutation({
         variables: { 
           input: { email, password }
         },
       });
+
+      console.log('📥 Respuesta del servidor:', data);
 
       if (data?.login) {
         const { accessToken, user } = data.login;
@@ -109,10 +115,10 @@ export function useAuth() {
 
         toast.success('¡Bienvenido de vuelta!');
         
-        // Forzar redirección después de actualizar el estado
+        // Redirigir correctamente después del login
         setTimeout(() => {
           if (window.location.pathname.startsWith('/auth')) {
-            window.location.href = '/dashboard';
+            window.location.href = '/app/dashboard';
           }
         }, 100);
         
