@@ -329,14 +329,22 @@ export function RegisterPage() {
 
       <Box textAlign="center">
         <Typography variant="body2" color="text.secondary">
-          ¿Ya tienes cuenta?{' '}
+          ¿Ya tenés cuenta en Securyx?{' '}
           <MuiLink
             component={Link}
             to="/auth/login"
-            color="primary"
-            sx={{ fontWeight: 600, textDecoration: 'none' }}
+            sx={{ 
+              color: '#AEEA00',
+              fontWeight: 600,
+              textDecoration: 'none',
+              '&:hover': { 
+                color: '#00B8D9',
+                textDecoration: 'underline'
+              },
+              transition: 'color 0.3s ease'
+            }}
           >
-            Inicia sesión
+            Iniciá sesión acá
           </MuiLink>
         </Typography>
       </Box>

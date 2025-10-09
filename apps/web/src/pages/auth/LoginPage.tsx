@@ -173,14 +173,22 @@ export function LoginPage() {
 
       <Box textAlign="center">
         <Typography variant="body2" color="text.secondary">
-          ¿No tienes cuenta?{' '}
+          ¿Primera vez en Securyx?{' '}
           <MuiLink
             component={Link}
             to="/auth/register"
-            color="primary"
-            sx={{ fontWeight: 600, textDecoration: 'none' }}
+            sx={{ 
+              color: '#AEEA00',
+              fontWeight: 600,
+              textDecoration: 'none',
+              '&:hover': { 
+                color: '#00B8D9',
+                textDecoration: 'underline'
+              },
+              transition: 'color 0.3s ease'
+            }}
           >
-            Regístrate aquí
+            Creá tu cuenta gratis
           </MuiLink>
         </Typography>
       </Box>
