@@ -7,7 +7,7 @@ import {
   AccordionSummary,
   AccordionDetails
 } from '@mui/material';
-import { ExpandMore } from '@mui/icons-material';
+import { ExpandMore, WhatsApp } from '@mui/icons-material';
 
 interface FAQItem {
   question: string;
@@ -16,28 +16,36 @@ interface FAQItem {
 
 const faqItems: FAQItem[] = [
   {
-    question: '¿Qué tan difícil es implementar la solución?',
-    answer: 'Súper fácil. Solo necesitas registrarte, agregar tus dominios y listo. El primer escaneo se ejecuta automáticamente en menos de 5 minutos. No requiere instalación de software ni conocimientos técnicos.'
+    question: '¿Necesito saber de seguridad para usar Securyx?',
+    answer: 'Para nada. Securyx está diseñado para dueños de negocio como vos. Todo funciona automáticamente: solo agregás tu sitio web y nosotros nos encargamos del resto. Los reportes están en lenguaje simple, sin tecnicismos.'
   },
   {
-    question: '¿Qué pasa si no sé interpretar los resultados?',
-    answer: 'Cada vulnerabilidad viene con explicaciones en lenguaje simple y recomendaciones específicas paso a paso. Además, ofrecemos soporte por email en español para ayudarte a implementar las mejoras.'
+    question: '¿Qué tan rápido empiezo a ver resultados?',
+    answer: 'En pocos minutos ya tenés tu primer reporte completo. Y cada vez que encontremos algo importante, te avisamos al instante por email. Es súper rápido y automático.'
   },
   {
-    question: '¿Es seguro que escaneen mi sitio web?',
-    answer: 'Absolutamente. Solo realizamos escaneos externos (como lo haría cualquier visitante web). No accedemos a tu servidor ni datos internos. Cumplimos con estándares internacionales de seguridad y privacidad.'
+    question: '¿Puedo confiar en que sea seguro para mi sitio?',
+    answer: 'Absolutamente. Solo miramos tu sitio como lo haría cualquier visitante normal. No tocamos nada interno de tu negocio. Es como cuando alguien entra a tu local: puede ver la vidriera, pero no tu caja registradora.'
   },
   {
-    question: '¿Cuánto tiempo toma ver resultados?',
-    answer: 'El primer escaneo completo toma entre 3-10 minutos dependiendo del tamaño de tu sitio. Los escaneos posteriores son más rápidos (1-3 min). Recibes notificaciones inmediatas si detectamos algo crítico.'
+    question: '¿Y si no entiendo algo en los reportes?',
+    answer: 'Cada problema viene explicado en español simple, con pasos claros para solucionarlo. Si aún tenés dudas, nuestro equipo te ayuda por WhatsApp o email. Nadie se queda con preguntas sin responder.'
   },
   {
-    question: '¿Puedo cancelar cuando quiera?',
-    answer: 'Sí, sin compromisos ni penalizaciones. Puedes cancelar tu suscripción en cualquier momento desde tu panel de control. El servicio continúa hasta el final del período facturado.'
+    question: '¿Puedo cancelar si no me convence?',
+    answer: 'Por supuesto. Sin compromisos, sin letras chicas. Cancelás cuando quieras desde tu panel y listo. Tu servicio sigue funcionando hasta que termine el mes que ya pagaste.'
   },
   {
-    question: '¿Ofrecen soporte técnico en español?',
-    answer: '¡Por supuesto! Todo nuestro soporte es en español. Respondemos consultas por email en menos de 24 horas. Los clientes Pro tienen soporte prioritario con respuesta en 4 horas.'
+    question: '¿Realmente me van a atender en español?',
+    answer: 'Sí, siempre. Todo nuestro equipo es argentino. Te respondemos por email, WhatsApp o chat en español. Los clientes Pro tienen respuesta ultra rápida, pero todos reciben atención humana y personalizada.'
+  },
+  {
+    question: '¿Mis datos están protegidos con Securyx?',
+    answer: 'Tu información está más protegida que en un banco. Solo vemos lo necesario para ayudarte y nunca compartimos nada con terceros. Cumplimos con todas las normativas de privacidad internacionales.'
+  },
+  {
+    question: '¿Qué pasa si tengo más de un sitio web?',
+    answer: 'Perfecto, podés agregar todos los sitios que manejes desde un solo panel. Cada uno se monitorea por separado y recibís reportes individuales. Ideal para franquicias o consultoras que manejan varios clientes.'
   }
 ];
 
@@ -64,7 +72,7 @@ export function FAQSection() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.03) 0%, transparent 50%)',
+          background: 'radial-gradient(circle at 20% 30%, rgba(174, 234, 0, 0.03) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(0, 184, 217, 0.03) 0%, transparent 50%)',
           pointerEvents: 'none'
         }}
       />
@@ -74,14 +82,14 @@ export function FAQSection() {
           <Typography 
             variant="body2" 
             sx={{ 
-              color: '#3b82f6',
+              color: '#AEEA00',
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '2px',
               mb: 2
             }}
           >
-            Dudas Frecuentes
+            ¿Dudas? Te Ayudamos
           </Typography>
           <Typography 
             variant="h2" 
@@ -89,13 +97,13 @@ export function FAQSection() {
             sx={{ 
               fontWeight: 800,
               fontSize: { xs: '2.5rem', md: '3.5rem' },
-              background: 'linear-gradient(135deg, #1e293b 0%, #3b82f6 100%)',
+              background: 'linear-gradient(135deg, #1E2A38 0%, #00B8D9 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               mb: 3
             }}
           >
-            Preguntas Frecuentes
+            Lo Que Más Nos Preguntan
           </Typography>
           <Typography 
             variant="h5" 
@@ -107,7 +115,7 @@ export function FAQSection() {
               lineHeight: 1.6
             }}
           >
-            Resolvemos las dudas más comunes sobre protección digital para PyMEs
+            Estas son las dudas que tenían otros dueños antes de empezar (y la tranquilidad que tienen ahora)
           </Typography>
         </Box>
 
@@ -123,21 +131,22 @@ export function FAQSection() {
                   '&:before': { display: 'none' },
                   background: 'rgba(255, 255, 255, 0.9)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  border: '1px solid rgba(174, 234, 0, 0.2)',
                   '&:hover': {
-                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
-                    transform: 'translateY(-2px)'
+                    boxShadow: '0 8px 25px rgba(174, 234, 0, 0.1)',
+                    transform: 'translateY(-2px)',
+                    borderColor: 'rgba(174, 234, 0, 0.4)'
                   },
                   transition: 'all 0.3s ease'
                 }}
               >
                 <AccordionSummary 
-                  expandIcon={<ExpandMore sx={{ color: '#3b82f6' }} />}
+                  expandIcon={<ExpandMore sx={{ color: '#1E2A38' }} />}
                   sx={{
                     py: 2,
                     px: 3,
                     '&:hover': {
-                      bgcolor: 'rgba(59, 130, 246, 0.05)'
+                      bgcolor: 'rgba(174, 234, 0, 0.05)'
                     }
                   }}
                 >
@@ -145,7 +154,7 @@ export function FAQSection() {
                     variant="h6" 
                     fontWeight={700}
                     sx={{ 
-                      color: '#1e293b',
+                      color: '#1E2A38',
                       fontSize: '1.1rem'
                     }}
                   >
@@ -178,21 +187,22 @@ export function FAQSection() {
                   '&:before': { display: 'none' },
                   background: 'rgba(255, 255, 255, 0.9)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  border: '1px solid rgba(174, 234, 0, 0.2)',
                   '&:hover': {
-                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
-                    transform: 'translateY(-2px)'
+                    boxShadow: '0 8px 25px rgba(174, 234, 0, 0.1)',
+                    transform: 'translateY(-2px)',
+                    borderColor: 'rgba(174, 234, 0, 0.4)'
                   },
                   transition: 'all 0.3s ease'
                 }}
               >
                 <AccordionSummary 
-                  expandIcon={<ExpandMore sx={{ color: '#3b82f6' }} />}
+                  expandIcon={<ExpandMore sx={{ color: '#1E2A38' }} />}
                   sx={{
                     py: 2,
                     px: 3,
                     '&:hover': {
-                      bgcolor: 'rgba(59, 130, 246, 0.05)'
+                      bgcolor: 'rgba(174, 234, 0, 0.05)'
                     }
                   }}
                 >
@@ -200,7 +210,7 @@ export function FAQSection() {
                     variant="h6" 
                     fontWeight={700}
                     sx={{ 
-                      color: '#1e293b',
+                      color: '#1E2A38',
                       fontSize: '1.1rem'
                     }}
                   >
@@ -228,51 +238,95 @@ export function FAQSection() {
           <Typography 
             variant="h5" 
             sx={{ 
-              color: '#1e293b',
+              color: '#1E2A38',
               fontWeight: 600,
               mb: 2
             }}
           >
-            ¿Tienes otra pregunta?
+            ¿Seguís con alguna duda?
           </Typography>
           <Typography 
             variant="body1" 
             sx={{ 
               color: '#64748b',
-              mb: 4,
-              fontSize: '1.1rem'
+              mb: 3,
+              fontSize: '1.1rem',
+              maxWidth: '500px',
+              mx: 'auto'
             }}
           >
-            Nuestro equipo está aquí para ayudarte en español
+            Hablemos por WhatsApp. Nuestro equipo argentino te responde al toque y te ayuda con lo que necesites
           </Typography>
+          
+          {/* Stats Row */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mb: 4, flexWrap: 'wrap' }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ color: '#AEEA00', fontWeight: 700 }}>
+                {'< 2hs'}
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#64748b' }}>
+                Tiempo de respuesta promedio
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ color: '#00B8D9', fontWeight: 700 }}>
+                100%
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#64748b' }}>
+                En español, siempre
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ color: '#1E2A38', fontWeight: 700 }}>
+                Real
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#64748b' }}>
+                Personas, no bots
+              </Typography>
+            </Box>
+          </Box>
+
           <Box
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: 2,
-              bgcolor: 'rgba(59, 130, 246, 0.1)',
-              backdropFilter: 'blur(10px)',
-              px: 4,
-              py: 2,
-              borderRadius: 2,
-              border: '2px solid rgba(59, 130, 246, 0.3)',
+              background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+              color: 'white',
+              px: 6,
+              py: 3,
+              borderRadius: 3,
               cursor: 'pointer',
               transition: 'all 0.3s ease',
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              boxShadow: '0 4px 20px rgba(37, 211, 102, 0.3)',
               '&:hover': {
-                transform: 'translateY(-2px)',
-                boxShadow: '0 8px 25px rgba(59, 130, 246, 0.2)',
-                borderColor: '#3b82f6'
+                transform: 'translateY(-3px)',
+                boxShadow: '0 8px 30px rgba(37, 211, 102, 0.4)'
               }
             }}
           >
+            <WhatsApp sx={{ color: 'white', fontSize: 24 }} />
             <Typography 
               variant="body1" 
-              fontWeight={600} 
-              sx={{ color: '#3b82f6' }}
+              fontWeight={700} 
+              sx={{ color: 'white' }}
             >
-              Contactar Soporte
+              Escribinos por WhatsApp
             </Typography>
           </Box>
+          
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: '#64748b',
+              mt: 2,
+              fontSize: '0.9rem'
+            }}
+          >
+            También por email: hola@securyx.com.ar
+          </Typography>
         </Box>
       </Container>
     </Box>

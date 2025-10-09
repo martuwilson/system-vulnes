@@ -4,7 +4,9 @@ import {
   BarChart, 
   Savings, 
   Schedule, 
-  Star 
+  Star,
+  SentimentSatisfied,
+  Support
 } from '@mui/icons-material';
 
 interface Testimonial {
@@ -29,23 +31,23 @@ const testimonials: Testimonial[] = [
     avatar: 'MG',
     rating: 5,
     date: 'hace 2 semanas',
-    quote: 'Detectamos 12 vulnerabilidades críticas que no sabíamos que teníamos. En 2 semanas mejoramos nuestro Health Score de 45% a 87%. El ROI fue inmediato.',
+    quote: 'Por primera vez tengo la tranquilidad de saber exactamente qué tan seguro está mi negocio. Detectamos 12 vulnerabilidades críticas que ni sabíamos que existían. En solo 2 semanas pasamos de 45% a 87% de seguridad.',
     resultType: 'health',
-    resultText: 'Mejora del Health Score: +42 puntos',
-    resultIcon: <BarChart sx={{ color: '#10b981', fontSize: 18 }} />,
+    resultText: 'Health Score: de 45% a 87% ↗️',
+    resultIcon: <BarChart sx={{ color: '#AEEA00', fontSize: 18 }} />,
     clientSince: 'Cliente desde hace 8 meses'
   },
   {
-    name: 'Carlos Mendez',
+    name: 'Carlos Méndez',
     role: 'CTO',
     company: 'TechnoSoft Argentina',
     avatar: 'CM',
     rating: 5,
     date: 'hace 1 mes',
-    quote: 'Antes pagábamos $200 USD/mes a un consultor. Ahora con Securyx tenemos monitoreo 24/7 por solo $29/mes. El ahorro es increíble y la cobertura mucho mejor.',
+    quote: 'Antes pagábamos $200 USD/mes a un consultor que venía una vez al mes. Ahora con Securyx tenemos monitoreo 24/7 por $29/mes. El ahorro es increíble y dormimos mucho más tranquilos.',
     resultType: 'savings',
-    resultText: 'Ahorro mensual: $171 USD (-85%)',
-    resultIcon: <Savings sx={{ color: '#10b981', fontSize: 18 }} />,
+    resultText: 'Ahorro: $171 USD/mes (-85%) 💰',
+    resultIcon: <Savings sx={{ color: '#AEEA00', fontSize: 18 }} />,
     clientSince: 'Cliente desde hace 6 meses'
   },
   {
@@ -55,18 +57,18 @@ const testimonials: Testimonial[] = [
     avatar: 'AR',
     rating: 5,
     date: 'hace 3 semanas',
-    quote: 'Sin conocimientos técnicos pude configurar el monitoreo de nuestros 3 dominios. Los reportes PDF son perfectos para mostrar al directorio los avances.',
+    quote: 'Soy gerente, no técnica, y pude configurar todo en 15 minutos. Los reportes PDF son perfectos para mostrar al directorio que nuestra seguridad está bajo control. Mi jefe está más que contento.',
     resultType: 'time',
-    resultText: 'Setup time: 15 minutos vs 2 días',
-    resultIcon: <Schedule sx={{ color: '#10b981', fontSize: 18 }} />,
+    resultText: 'Setup: 15min vs 2 días ⚡',
+    resultIcon: <Schedule sx={{ color: '#AEEA00', fontSize: 18 }} />,
     clientSince: 'Cliente desde hace 4 meses'
   }
 ];
 
 const avatarColors = {
-  MG: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
-  CM: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-  AR: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+  MG: 'linear-gradient(135deg, #1E2A38 0%, #00B8D9 100%)',
+  CM: 'linear-gradient(135deg, #AEEA00 0%, #00B8D9 100%)',
+  AR: 'linear-gradient(135deg, #00B8D9 0%, #AEEA00 100%)'
 };
 
 export function TestimonialsSection() {
@@ -99,14 +101,14 @@ export function TestimonialsSection() {
           <Typography 
             variant="body2" 
             sx={{ 
-              color: '#10b981',
+              color: '#AEEA00',
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '2px',
               mb: 2
             }}
           >
-            Testimonios Reales
+            Historias Reales
           </Typography>
           <Typography 
             variant="h2" 
@@ -114,13 +116,13 @@ export function TestimonialsSection() {
             sx={{ 
               fontWeight: 800,
               fontSize: { xs: '2.5rem', md: '3.5rem' },
-              background: 'linear-gradient(135deg, #ffffff 0%, #10b981 100%)',
+              background: 'linear-gradient(135deg, #ffffff 0%, #AEEA00 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               mb: 3
             }}
           >
-            PyMEs que Transformaron su Seguridad
+            Dueños que Ya Duermen Tranquilos
           </Typography>
           <Typography 
             variant="h5" 
@@ -132,7 +134,7 @@ export function TestimonialsSection() {
               lineHeight: 1.6
             }}
           >
-            Casos reales de empresas argentinas que mejoraron su protección digital con Securyx
+            PyMEs argentinas que dejaron atrás el miedo y recuperaron la tranquilidad con Securyx
           </Typography>
         </Box>
 
@@ -151,8 +153,8 @@ export function TestimonialsSection() {
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    borderColor: 'rgba(16, 185, 129, 0.3)',
-                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
+                    borderColor: 'rgba(174, 234, 0, 0.3)',
+                    boxShadow: '0 20px 40px rgba(174, 234, 0, 0.1)'
                   }
                 }}
               >
@@ -165,15 +167,15 @@ export function TestimonialsSection() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 1,
-                    bgcolor: 'rgba(16, 185, 129, 0.2)',
+                    bgcolor: 'rgba(174, 234, 0, 0.2)',
                     px: 2,
                     py: 0.5,
                     borderRadius: 2,
-                    border: '1px solid rgba(16, 185, 129, 0.3)'
+                    border: '1px solid rgba(174, 234, 0, 0.3)'
                   }}
                 >
-                  <Verified sx={{ fontSize: 16, color: '#10b981' }} />
-                  <Typography variant="caption" sx={{ color: '#10b981', fontWeight: 600 }}>
+                  <Verified sx={{ fontSize: 16, color: '#AEEA00' }} />
+                  <Typography variant="caption" sx={{ color: '#AEEA00', fontWeight: 600 }}>
                     VERIFICADO
                   </Typography>
                 </Box>
@@ -256,14 +258,14 @@ export function TestimonialsSection() {
                   sx={{
                     mt: 3,
                     p: 2,
-                    bgcolor: 'rgba(16, 185, 129, 0.1)',
+                    bgcolor: 'rgba(174, 234, 0, 0.1)',
                     borderRadius: 2,
-                    border: '1px solid rgba(16, 185, 129, 0.2)'
+                    border: '1px solid rgba(174, 234, 0, 0.2)'
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {testimonial.resultIcon}
-                    <Typography variant="body2" sx={{ color: '#10b981', fontWeight: 600 }}>
+                    <Typography variant="body2" sx={{ color: '#AEEA00', fontWeight: 600 }}>
                       {testimonial.resultText}
                     </Typography>
                   </Box>
@@ -289,35 +291,53 @@ export function TestimonialsSection() {
               <Typography variant="h4" sx={{ color: 'white', fontWeight: 700 }}>
                 4.9/5
               </Typography>
-              <Star sx={{ color: '#fbbf24', fontSize: 32 }} />
+              <Star sx={{ color: '#AEEA00', fontSize: 32 }} />
             </Box>
             <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 4 }}>
-              Calificación promedio de 247 reseñas verificadas
+              247 dueños de PyMEs nos recomiendan con sus amigos
             </Typography>
             
             <Grid container spacing={4}>
               <Grid item xs={12} sm={4}>
-                <Typography variant="h3" sx={{ color: '#10b981', fontWeight: 700 }}>
-                  96%
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
+                  <SentimentSatisfied sx={{ color: '#AEEA00', fontSize: 28 }} />
+                  <Typography variant="h3" sx={{ color: '#AEEA00', fontWeight: 700 }}>
+                    96%
+                  </Typography>
+                </Box>
                 <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                  Tasa de retención
+                  No se van nunca más
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                  Una vez que prueban, se quedan
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
-                <Typography variant="h3" sx={{ color: '#3b82f6', fontWeight: 700 }}>
-                  15min
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
+                  <Schedule sx={{ color: '#00B8D9', fontSize: 28 }} />
+                  <Typography variant="h3" sx={{ color: '#00B8D9', fontWeight: 700 }}>
+                    15min
+                  </Typography>
+                </Box>
                 <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                  Setup promedio
+                  Y ya estás protegido
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                  Más rápido que pedir un delivery
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
-                <Typography variant="h3" sx={{ color: '#f59e0b', fontWeight: 700 }}>
-                  24/7
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
+                  <Support sx={{ color: '#1E2A38', fontSize: 28 }} />
+                  <Typography variant="h3" sx={{ color: 'white', fontWeight: 700 }}>
+                    24/7
+                  </Typography>
+                </Box>
                 <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                  Soporte en español
+                  Te ayudamos siempre
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                  En español y cuando lo necesités
                 </Typography>
               </Grid>
             </Grid>
