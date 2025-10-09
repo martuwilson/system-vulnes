@@ -139,10 +139,10 @@ const getSecurityMessage = (score: number) => {
   if (score >= 90) return "¡Excelente! Seguridad de nivel empresarial";
   if (score >= 80) return "¡Muy bien! Tu negocio está bien protegido";
   if (score >= 70) return "Buen nivel, con pequeñas mejoras serás perfecto";
-  if (score >= 60) return "Necesitas mejorar algunos aspectos de seguridad";
-  if (score >= 40) return "Tu negocio está en riesgo, toma acción pronto";
-  if (score >= 20) return "Riesgo alto - Protege tu negocio urgentemente";
-  return "Riesgo crítico - Tu negocio necesita protección inmediata";
+  if (score >= 60) return "Tu seguridad necesita atención. Revisá las recomendaciones";
+  if (score >= 40) return "Algunos riesgos detectados. Te ayudamos a solucionarlos";
+  if (score >= 20) return "Vulnerabilidades importantes. Seguí nuestras guías";
+  return "Múltiples problemas encontrados. Empecemos por lo más importante";
 };
 
 export function DashboardPage() {
@@ -183,17 +183,64 @@ export function DashboardPage() {
   const recentScans: SecurityScan[] = data?.securityScans || [];
   const recentFindings: SecurityFinding[] = data?.securityFindings || [];
 
-  // Calculate statistics
-  const totalAssets = assets.length;
-  const averageHealthScore = recentScans.length > 0 
-    ? Math.round(recentScans.reduce((sum, scan) => sum + scan.healthScore, 0) / recentScans.length)
-    : 0;
+  // Calculate statistics usando siempre datos reales de GraphQL
+  const totalAssets = assets.length || 0; // Forzar consistencia
   
+  // Calcular promedio de health score con validación
+  let averageHealthScore = 0;
+  if (recentScans.length > 0) {
+    const validScans = recentScans.filter(scan => 
+      typeof scan.healthScore === 'number' && 
+      !isNaN(scan.healthScore) && 
+      scan.healthScore >= 0
+    );
+    
+    if (validScans.length > 0) {
+      averageHealthScore = Math.round(
+        validScans.reduce((sum, scan) => sum + scan.healthScore, 0) / validScans.length
+      );
+    }
+  }
+
+  // Validación adicional: asegurar que esté entre 0 y 100
+  const safeHealthScore = Math.max(0, Math.min(100, averageHealthScore));
+
   const criticalFindings = recentFindings.filter(f => f.severity.toLowerCase() === 'critical').length;
   const highFindings = recentFindings.filter(f => f.severity.toLowerCase() === 'high').length;
 
+
+
+
+
   // Check if user is new (no assets and no scans)
   const isNewUser = totalAssets === 0 && recentScans.length === 0;
+
+  // Si no hay empresa, mostrar mensaje apropiado
+  if (!userCompany && !loading) {
+    return (
+      <Box 
+        display="flex" 
+        flexDirection="column"
+        justifyContent="center" 
+        alignItems="center" 
+        minHeight="400px"
+        sx={{ 
+          background: 'linear-gradient(135deg, #F8FAFC 0%, #E3F2FD 100%)',
+          borderRadius: 3,
+          p: 4,
+          textAlign: 'center'
+        }}
+      >
+        <Domain sx={{ fontSize: 48, color: '#1E2A38', mb: 2 }} />
+        <Typography variant="h5" fontWeight="600" color="#1E2A38" mb={1}>
+          Configuración de Empresa Requerida
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Necesitas crear o seleccionar una empresa para ver tu dashboard de seguridad.
+        </Typography>
+      </Box>
+    );
+  }
 
   if (loading) {
     return (
@@ -352,68 +399,73 @@ export function DashboardPage() {
         </Tooltip>
       </Box>
 
-      {/* Métricas Clave - Simplificadas para PyMEs */}
-      <Grid container spacing={3} mb={4}>
+      {/* Métricas Clave - Optimizadas para PyMEs */}
+      <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }} mb={{ xs: 3, md: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
-            title="Sitios Protegidos"
+            title="PROTECCIÓN"
+            humanTitle="Sitios bajo protección"
             value={totalAssets}
-            subtitle={
-              totalAssets === 0 ? "¡Agrega tu primer sitio!" :
-              totalAssets === 1 ? "Tu negocio está protegido" : 
-              `${totalAssets} sitios bajo protección`
+            description={
+              totalAssets === 0 ? "¡Agrega tu primer sitio web!" :
+              totalAssets === 1 ? "1 sitio digital protegido" : 
+              `${totalAssets} sitios digitales protegidos`
             }
+            status="neutral"
             icon={<Shield />}
-            gradient="linear-gradient(135deg, #1E2A38 0%, #2D3748 100%)"
+            tooltipText="Cantidad de sitios web y dominios que están siendo monitoreados por Securyx. Incluye sitios activos e inactivos."
           />
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
-            title="Nivel de Seguridad"
-            value={`${averageHealthScore}%`}
-            subtitle={getSecurityMessage(averageHealthScore)}
-            icon={getHealthScoreIcon(averageHealthScore)}
-            gradient={
-              averageHealthScore >= 80 ? "linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)" :
-              averageHealthScore >= 60 ? "linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)" :
-              "linear-gradient(135deg, #F44336 0%, #EF5350 100%)"
+            title="SEGURIDAD"
+            humanTitle="Nivel general de seguridad"
+            value={`${safeHealthScore}%`}
+            description={getSecurityMessage(safeHealthScore)}
+            status={
+              safeHealthScore >= 80 ? 'safe' :
+              safeHealthScore >= 60 ? 'warning' :
+              'danger'
             }
+            icon={getHealthScoreIcon(safeHealthScore)}
+            tooltipText="Puntuación calculada según vulnerabilidades encontradas, configuraciones de seguridad y últimos escaneos realizados."
           />
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
-            title="Riesgos Críticos"
+            title="AMENAZAS"
+            humanTitle="Amenazas graves"
             value={criticalFindings}
-            subtitle={
-              criticalFindings === 0 ? "¡Perfecto! Sin amenazas graves" : 
-              criticalFindings === 1 ? "1 riesgo crítico detectado" :
-              `${criticalFindings} riesgos críticos - Acción inmediata`
+            description={
+              criticalFindings === 0 ? "¡Excelente! Tu negocio está seguro" : 
+              criticalFindings === 1 ? "1 amenaza crítica requiere atención" :
+              `${criticalFindings} amenazas graves - Acción urgente`
             }
+            status={criticalFindings === 0 ? 'safe' : 'danger'}
             icon={<Error />}
-            gradient={
-              criticalFindings === 0 ? "linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)" :
-              "linear-gradient(135deg, #F44336 0%, #EF5350 100%)"
-            }
+            tooltipText="Vulnerabilidades críticas que podrían permitir acceso no autorizado a tu sistema. Requieren corrección inmediata."
           />
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
-            title="Alertas Importantes"
+            title="AVISOS"
+            humanTitle="Alertas menores"
             value={highFindings}
-            subtitle={
+            description={
               highFindings === 0 ? "Todo bajo control" : 
-              highFindings <= 3 ? `${highFindings} alertas para revisar` :
-              `${highFindings} alertas - Programa revisión`
+              highFindings <= 3 ? `${highFindings} alertas para revisar pronto` :
+              `${highFindings} alertas - Programa una revisión`
+            }
+            status={
+              highFindings === 0 ? 'info' :
+              highFindings <= 3 ? 'warning' :
+              'danger'
             }
             icon={<Warning />}
-            gradient={
-              highFindings === 0 ? "linear-gradient(135deg, #00B8D9 0%, #26C6DA 100%)" :
-              highFindings <= 3 ? "linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)" :
-              "linear-gradient(135deg, #F57C00 0%, #FF9800 100%)"
-            }
+            tooltipText="Problemas de seguridad importantes pero no críticos. Te recomendamos revisarlos cuando tengas tiempo."
           />
         </Grid>
       </Grid>
