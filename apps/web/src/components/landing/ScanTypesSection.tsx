@@ -7,7 +7,9 @@ import {
   Security,
   Public,
   VpnLock,
-  FindInPage
+  FindInPage,
+  Business,
+  Lock
 } from '@mui/icons-material';
 
 interface ScanType {
@@ -16,46 +18,78 @@ interface ScanType {
   description: string;
 }
 
-const scanTypes: ScanType[] = [
-  { 
-    icon: <Email sx={{ fontSize: 40 }} />, 
-    name: 'Email Security', 
-    description: 'SPF, DKIM, DMARC' 
+interface ScanCategory {
+  title: string;
+  subtitle: string;
+  icon: React.ReactNode;
+  color: string;
+  scans: ScanType[];
+}
+
+const scanCategories: ScanCategory[] = [
+  {
+    title: 'Tu Negocio Online',
+    subtitle: 'Lo que tus clientes ven',
+    icon: <Business sx={{ fontSize: 32, color: '#1E2A38' }} />,
+    color: '#1E2A38',
+    scans: [
+      { 
+        icon: <Https sx={{ fontSize: 40, color: '#1E2A38' }} />, 
+        name: 'Certificados de Seguridad', 
+        description: 'Verificamos que tu sitio sea confiable para tus clientes' 
+      },
+      { 
+        icon: <FindInPage sx={{ fontSize: 40, color: '#1E2A38' }} />, 
+        name: 'Contenido del Sitio', 
+        description: 'Revisamos que tu página cargue correctamente y sin errores' 
+      },
+      { 
+        icon: <Public sx={{ fontSize: 40, color: '#1E2A38' }} />, 
+        name: 'Configuración Web', 
+        description: 'Chequeamos que tu dominio esté bien configurado' 
+      }
+    ]
   },
-  { 
-    icon: <Https sx={{ fontSize: 40 }} />, 
-    name: 'SSL Certificate', 
-    description: 'Validez y expiración' 
+  {
+    title: 'Tu Comunicación',
+    subtitle: 'Cómo llegan tus emails',
+    icon: <Email sx={{ fontSize: 32, color: '#00B8D9' }} />,
+    color: '#00B8D9',
+    scans: [
+      { 
+        icon: <Email sx={{ fontSize: 40, color: '#00B8D9' }} />, 
+        name: 'Seguridad del Email', 
+        description: 'Verificamos que tus emails no caigan en spam' 
+      }
+    ]
   },
-  { 
-    icon: <NetworkCheck sx={{ fontSize: 40 }} />, 
-    name: 'Security Headers', 
-    description: 'HSTS, CSP, X-Frame' 
-  },
-  { 
-    icon: <BugReport sx={{ fontSize: 40 }} />, 
-    name: 'Port Scanner', 
-    description: 'Puertos críticos abiertos' 
-  },
-  { 
-    icon: <Security sx={{ fontSize: 40 }} />, 
-    name: 'Web Vulnerabilities', 
-    description: 'XSS, SQL Injection, CSRF' 
-  },
-  { 
-    icon: <Public sx={{ fontSize: 40 }} />, 
-    name: 'DNS Security', 
-    description: 'Configuración y propagación' 
-  },
-  { 
-    icon: <VpnLock sx={{ fontSize: 40 }} />, 
-    name: 'TLS Configuration', 
-    description: 'Protocolos y cifrados' 
-  },
-  { 
-    icon: <FindInPage sx={{ fontSize: 40 }} />, 
-    name: 'Content Security', 
-    description: 'Análisis de contenido web' 
+  {
+    title: 'Tu Protección',
+    subtitle: 'Lo que no se ve pero te cuida',
+    icon: <Lock sx={{ fontSize: 32, color: '#AEEA00' }} />,
+    color: '#AEEA00',
+    scans: [
+      { 
+        icon: <Security sx={{ fontSize: 40, color: '#AEEA00' }} />, 
+        name: 'Vulnerabilidades Web', 
+        description: 'Buscamos agujeros que hackers podrían usar para entrar' 
+      },
+      { 
+        icon: <NetworkCheck sx={{ fontSize: 40, color: '#AEEA00' }} />, 
+        name: 'Blindaje del Sitio', 
+        description: 'Revisamos las defensas invisibles de tu página' 
+      },
+      { 
+        icon: <BugReport sx={{ fontSize: 40, color: '#AEEA00' }} />, 
+        name: 'Puertos de Entrada', 
+        description: 'Verificamos que no haya puertas abiertas sin necesidad' 
+      },
+      { 
+        icon: <VpnLock sx={{ fontSize: 40, color: '#AEEA00' }} />, 
+        name: 'Encriptación Avanzada', 
+        description: 'Confirmamos que la comunicación esté bien protegida' 
+      }
+    ]
   }
 ];
 
@@ -88,14 +122,14 @@ export function ScanTypesSection() {
           <Typography 
             variant="body2" 
             sx={{ 
-              color: '#3b82f6',
+              color: '#AEEA00',
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '2px',
               mb: 2
             }}
           >
-            Cobertura Completa
+            Revisión Completa
           </Typography>
           <Typography 
             variant="h2" 
@@ -103,13 +137,13 @@ export function ScanTypesSection() {
             sx={{ 
               fontWeight: 800,
               fontSize: { xs: '2.5rem', md: '3.5rem' },
-              background: 'linear-gradient(135deg, #1e293b 0%, #3b82f6 100%)',
+              background: 'linear-gradient(135deg, #1E2A38 0%, #00B8D9 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               mb: 3
             }}
           >
-            Tipos de Escaneo
+            Lo Que Analizamos
           </Typography>
           <Typography 
             variant="h5" 
@@ -121,110 +155,182 @@ export function ScanTypesSection() {
               lineHeight: 1.6
             }}
           >
-            Cobertura completa de vectores de ataque comunes para proteger tu negocio digital
+            Revisamos cada aspecto de tu presencia digital para que tengas tranquilidad total
           </Typography>
         </Box>
 
-        <Grid container spacing={4}>
-          {scanTypes.map((scan, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Paper 
-                elevation={2}
-                sx={{ 
-                  p: 4, 
-                  textAlign: 'center', 
-                  height: '100%',
-                  borderRadius: 3,
-                  background: 'rgba(255, 255, 255, 0.9)',
+        {scanCategories.map((category, categoryIndex) => (
+          <Box key={categoryIndex} sx={{ mb: 6 }}>
+            {/* Category Header */}
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  mb: 2,
+                  p: 2,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(255, 255, 255, 0.8)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-                    '& .scan-icon': {
-                      transform: 'scale(1.1)',
-                      color: '#3b82f6'
-                    }
-                  }
+                  border: `2px solid ${category.color}20`
                 }}
               >
-                <Box 
-                  className="scan-icon"
-                  sx={{ 
-                    color: '#64748b', 
-                    mb: 3,
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  {scan.icon}
+                {category.icon}
+                <Box sx={{ textAlign: 'left' }}>
+                  <Typography 
+                    variant="h5" 
+                    fontWeight={700}
+                    sx={{ color: category.color, mb: 0.5 }}
+                  >
+                    {category.title}
+                  </Typography>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ color: '#64748b' }}
+                  >
+                    {category.subtitle}
+                  </Typography>
                 </Box>
-                <Typography 
-                  variant="h6" 
-                  gutterBottom 
-                  fontWeight={700}
-                  sx={{ 
-                    color: '#1e293b',
-                    mb: 2
-                  }}
-                >
-                  {scan.name}
-                </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: '#64748b',
-                    lineHeight: 1.6
-                  }}
-                >
-                  {scan.description}
-                </Typography>
-              </Paper>
+              </Box>
+            </Box>
+
+            {/* Category Items */}
+            <Grid container spacing={3} justifyContent="center">
+              {category.scans.map((scan, scanIndex) => (
+                <Grid item xs={12} sm={6} md={4} key={scanIndex}>
+                  <Paper 
+                    elevation={2}
+                    sx={{ 
+                      p: 3, 
+                      textAlign: 'center', 
+                      height: '100%',
+                      borderRadius: 3,
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      backdropFilter: 'blur(10px)',
+                      border: `1px solid ${category.color}20`,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-8px)',
+                        boxShadow: `0 20px 40px ${category.color}20`,
+                        borderColor: category.color,
+                        '& .scan-icon': {
+                          transform: 'scale(1.1)'
+                        }
+                      }
+                    }}
+                  >
+                    <Box 
+                      className="scan-icon"
+                      sx={{ 
+                        mb: 2,
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      {scan.icon}
+                    </Box>
+                    <Typography 
+                      variant="h6" 
+                      gutterBottom 
+                      fontWeight={600}
+                      sx={{ 
+                        color: '#1E2A38',
+                        mb: 2,
+                        fontSize: '1.1rem'
+                      }}
+                    >
+                      {scan.name}
+                    </Typography>
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        color: '#64748b',
+                        lineHeight: 1.6,
+                        fontSize: '0.95rem'
+                      }}
+                    >
+                      {scan.description}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          </Box>
+        ))}
 
         {/* Call to Action */}
         <Box sx={{ textAlign: 'center', mt: 8 }}>
           <Typography 
+            variant="h5" 
+            sx={{ 
+              color: '#1E2A38',
+              mb: 2,
+              fontWeight: 600
+            }}
+          >
+            ¿Tu negocio está realmente protegido?
+          </Typography>
+          <Typography 
             variant="body1" 
             sx={{ 
               color: '#64748b',
-              mb: 3,
-              fontSize: '1.1rem'
+              mb: 4,
+              fontSize: '1.1rem',
+              maxWidth: '500px',
+              mx: 'auto'
             }}
           >
-            ¿Querés ver qué vulnerabilidades tiene tu sitio web?
+            Descubrí en 5 minutos qué riesgos tiene tu sitio web y cómo solucionarlos paso a paso
           </Typography>
           <Box
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: 2,
-              bgcolor: 'rgba(59, 130, 246, 0.1)',
-              backdropFilter: 'blur(10px)',
-              px: 4,
-              py: 2,
-              borderRadius: 2,
-              border: '2px solid rgba(59, 130, 246, 0.3)',
+              background: 'linear-gradient(135deg, #AEEA00 0%, #00B8D9 100%)',
+              color: '#1E2A38',
+              px: 6,
+              py: 3,
+              borderRadius: 3,
               cursor: 'pointer',
               transition: 'all 0.3s ease',
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              boxShadow: '0 4px 20px rgba(174, 234, 0, 0.3)',
               '&:hover': {
-                transform: 'translateY(-2px)',
-                boxShadow: '0 8px 25px rgba(59, 130, 246, 0.2)',
-                borderColor: '#3b82f6'
+                transform: 'translateY(-3px)',
+                boxShadow: '0 8px 30px rgba(174, 234, 0, 0.4)',
+                '& .cta-icon': {
+                  transform: 'scale(1.1) rotate(5deg)'
+                }
               }
             }}
           >
-            <Security sx={{ color: '#3b82f6' }} />
+            <Security 
+              className="cta-icon"
+              sx={{ 
+                color: '#1E2A38',
+                transition: 'all 0.3s ease'
+              }} 
+            />
             <Typography 
               variant="body1" 
-              fontWeight={600} 
-              sx={{ color: '#3b82f6' }}
+              fontWeight={700} 
+              sx={{ color: '#1E2A38' }}
             >
-              Chequeá tu sitio ahora - Es gratis
+              Comenzar Análisis Gratuito
             </Typography>
           </Box>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: '#64748b',
+              mt: 2,
+              fontSize: '0.9rem'
+            }}
+          >
+            ✓ Sin compromisos ✓ Resultados en minutos ✓ Recomendaciones claras
+          </Typography>
         </Box>
       </Container>
     </Box>
