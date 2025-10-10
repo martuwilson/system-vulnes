@@ -8,13 +8,17 @@ async function main() {
   // Limpiar datos existentes de límites de planes
   await prisma.planLimits.deleteMany();
 
-  // Crear límites por plan según tu modelo de negocio
+  // Crear límites por plan según tu modelo de negocio CLARIFICADO
   const planLimits = [
     {
       plan: SubscriptionPlan.TRIAL,
+      // Campos antiguos (por compatibilidad)
       maxDomains: 1,
-      maxAssets: 10,
-      scanFrequencyHours: 168, // semanal
+      maxAssets: 5,
+      // Campos nuevos (lógica clarificada)
+      maxCompanies: 1,          // 1 empresa para probar
+      maxAssetsPerCompany: 5,   // 5 recursos por empresa (limitado para trial)
+      scanFrequencyHours: 168,  // semanal
       hasSlackIntegration: false,
       hasTeamsIntegration: false,
       hasPDFReports: true,
@@ -28,9 +32,13 @@ async function main() {
     },
     {
       plan: SubscriptionPlan.STARTER,
+      // Campos antiguos (por compatibilidad)  
       maxDomains: 1,
       maxAssets: 10,
-      scanFrequencyHours: 168, // semanal
+      // Campos nuevos (lógica clarificada)
+      maxCompanies: 1,          // 1 empresa/negocio
+      maxAssetsPerCompany: 10,  // 10 recursos (web, tienda, blog, etc.)
+      scanFrequencyHours: 168,  // semanal
       hasSlackIntegration: false,
       hasTeamsIntegration: false,
       hasPDFReports: true,
@@ -44,25 +52,33 @@ async function main() {
     },
     {
       plan: SubscriptionPlan.GROWTH,
-      maxDomains: 5,
-      maxAssets: 50,
-      scanFrequencyHours: 24, // diario
+      // Campos antiguos (por compatibilidad)
+      maxDomains: 3,
+      maxAssets: 45, // 3 empresas x 15 recursos cada una
+      // Campos nuevos (lógica clarificada)
+      maxCompanies: 3,          // 3 empresas/negocios diferentes
+      maxAssetsPerCompany: 15,  // 15 recursos por cada empresa
+      scanFrequencyHours: 24,   // diario
       hasSlackIntegration: true,
       hasTeamsIntegration: true,
       hasPDFReports: true,
       hasCSVReports: true,
       hasComplianceReports: false,
       hasAuditorAccess: false,
-      hasPrioritySupport: false,
+      hasPrioritySupport: true,
       hasHistoricalTrends: true,
-      maxUsers: -1, // unlimited
-      priceUsd: 9900, // USD 99.00
+      maxUsers: 3, // hasta 3 usuarios colaboradores
+      priceUsd: 6900, // USD 69.00
     },
     {
       plan: SubscriptionPlan.PRO,
-      maxDomains: -1, // unlimited
-      maxAssets: -1, // unlimited
-      scanFrequencyHours: 6, // cada 6 horas (tiempo casi real)
+      // Campos antiguos (por compatibilidad)
+      maxDomains: -1,
+      maxAssets: -1,
+      // Campos nuevos (lógica clarificada)
+      maxCompanies: -1,         // empresas ilimitadas
+      maxAssetsPerCompany: -1,  // recursos ilimitados por empresa
+      scanFrequencyHours: 6,    // cada 6 horas (tiempo casi real)
       hasSlackIntegration: true,
       hasTeamsIntegration: true,
       hasPDFReports: true,
@@ -71,8 +87,8 @@ async function main() {
       hasAuditorAccess: true,
       hasPrioritySupport: true,
       hasHistoricalTrends: true,
-      maxUsers: -1, // unlimited
-      priceUsd: 24900, // USD 249.00
+      maxUsers: -1, // usuarios ilimitados
+      priceUsd: 14900, // USD 149.00
     },
   ];
 

@@ -56,36 +56,34 @@ const pricingPlans: PricingPlan[] = [
   {
     id: 'growth',
     name: 'Growth',
-    description: 'Para empresas en crecimiento',
-    price: '$99',
+    description: 'Para PyMEs que crecen',
+    price: '$69',
     period: '/mes',
     features: [
-      '5 dominios monitoreados',
+      '3 dominios monitoreados',
       'Escaneos diarios',
+      'Edición completa de dominios',
       'Integraciones Slack/Teams',
-      'Reportes PDF + CSV',
-      'Usuarios ilimitados'
+      'Hasta 3 usuarios'
     ],
     buttonText: 'Elegir Growth',
     buttonColor: '#ff6b35'
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
-    description: 'Máxima protección y control',
-    price: 'Consultá',
-    period: '',
-    priceNote: 'Precio personalizado',
+    id: 'pro',
+    name: 'Pro',
+    description: 'Sin límites para empresas serias',
+    price: '$149',
+    period: '/mes',
     features: [
-      'Dominios ilimitados',
-      'Escaneos en tiempo real',
+      '5+ dominios (ilimitados)',
+      'Escaneos cada 6 horas',
       'API personalizada',
       'Reportes compliance',
       'Soporte dedicado'
     ],
-    buttonText: 'Contactanos',
-    buttonColor: '#00b4d8',
-    contact: true
+    buttonText: 'Elegir Pro',
+    buttonColor: '#00b4d8'
   }
 ];
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -19,11 +20,9 @@ import {
   IconButton,
   Tooltip,
   LinearProgress,
-  Divider,
 } from '@mui/material';
 import { 
   Add, 
-  Business, 
   Delete, 
   Launch, 
   FlashOn, 
@@ -33,11 +32,8 @@ import {
   TrendingUp,
   Warning,
   CheckCircle,
-  Schedule,
   Analytics,
   Shield,
-  Notifications,
-  Speed,
   VerifiedUser,
   WarningAmber,
   Report,
@@ -45,7 +41,6 @@ import {
   Update,
   Visibility,
   Search,
-  Radar,
   ErrorOutline,
   Lock,
 } from '@mui/icons-material';
@@ -104,8 +99,12 @@ const GET_PLAN_LIMITS = gql`
     planLimitsByPlan(plan: $plan) {
       id
       plan
+      # Campos antiguos (por compatibilidad temporal)
       maxDomains
       maxAssets
+      # Campos nuevos (lógica clarificada)
+      maxCompanies
+      maxAssetsPerCompany
       hasSlackIntegration
       hasTeamsIntegration
       hasPDFReports
@@ -149,6 +148,7 @@ interface Asset {
 }
 
 export function CompaniesPage() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [domain, setDomain] = useState('');
   const [loading, setLoading] = useState(false);
@@ -239,18 +239,24 @@ export function CompaniesPage() {
     return ['GROWTH', 'PRO'].includes(userPlan);
   };
 
-  const canViewDetailedReports = () => {
-    if (!planLimits) return true; // Por defecto permitir
-    // Todos los planes pueden ver detalles básicos
-    return true;
+  const getRemainingAssets = () => {
+    if (!planLimits || !data?.assets) return 0;
+    
+    // Usar los nuevos campos si están disponibles, sino los antiguos
+    const maxAssets = planLimits.maxAssetsPerCompany ?? planLimits.maxAssets;
+    
+    // -1 significa ilimitado
+    if (maxAssets === -1) return Infinity;
+    
+    return Math.max(0, maxAssets - data.assets.length);
   };
 
   const getUpgradeMessage = (feature: string) => {
     const planNames = {
-      'TRIAL': 'Trial',
-      'STARTER': 'Starter', 
-      'GROWTH': 'Growth',
-      'PRO': 'Pro'
+      'TRIAL': 'Trial (5 recursos)',
+      'STARTER': 'Starter (10 recursos)', 
+      'GROWTH': 'Growth (15 recursos)',
+      'PRO': 'Pro (recursos ilimitados)'
     };
     
     const currentPlanName = planNames[userPlan as keyof typeof planNames] || 'Trial';
@@ -258,6 +264,11 @@ export function CompaniesPage() {
     switch (feature) {
       case 'edit':
         return `La edición de dominios está disponible desde el plan Growth. Tu plan actual: ${currentPlanName}`;
+      case 'limit':
+        const remaining = getRemainingAssets();
+        return remaining === Infinity 
+          ? `Tienes recursos ilimitados en el plan ${currentPlanName}`
+          : `Te quedan ${remaining} recursos disponibles en tu plan ${currentPlanName}`;
       default:
         return `Esta funcionalidad requiere un plan superior. Tu plan actual: ${currentPlanName}`;
     }
@@ -365,6 +376,21 @@ export function CompaniesPage() {
   // Función para cerrar modal de upgrade
   const closeUpgradeDialog = () => {
     setUpgradeDialog({ open: false, feature: '', message: '' });
+  };
+
+  // Función para navegar a la sección de precios
+  const goToPricing = () => {
+    navigate('/', { replace: true });
+    // Usar setTimeout para asegurar que la página se carga antes de hacer scroll
+    setTimeout(() => {
+      const pricingSection = document.getElementById('precios');
+      if (pricingSection) {
+        pricingSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 100);
   };
 
   if (queryLoading) {
@@ -835,7 +861,7 @@ export function CompaniesPage() {
                   </Typography>
                   <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
                     <Typography variant="body2" sx={{ color: '#888', fontSize: '13px' }}>
-                      ✨ Edición de dominios • 🔄 5 dominios • 📊 Reportes CSV • 💬 Integración Slack/Teams
+                      ✨ Edición de dominios • 🔄 3 dominios • 👥 Hasta 3 usuarios • 📊 Reportes CSV • 💬 Integración Slack/Teams
                     </Typography>
                   </Box>
                 </Box>
@@ -854,7 +880,7 @@ export function CompaniesPage() {
                       bgcolor: '#ff3838'
                     }
                   }}
-                  onClick={() => window.open('/pricing', '_blank')}
+                  onClick={goToPricing}
                 >
                   Ver Planes
                 </Button>
@@ -2122,10 +2148,13 @@ export function CompaniesPage() {
                 • Edición y gestión completa de dominios
               </Typography>
               <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
-                • Hasta 5 dominios monitoreados
+                • Hasta 3 dominios monitoreados
               </Typography>
               <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
                 • Escaneos diarios automáticos
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
+                • Hasta 3 usuarios en tu equipo
               </Typography>
               <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
                 • Integraciones con Slack y Teams
@@ -2138,7 +2167,7 @@ export function CompaniesPage() {
 
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="h4" sx={{ fontWeight: 800, color: '#ff4757', mb: 1 }}>
-              $99/mes
+              $69/mes
             </Typography>
             <Typography variant="body2" sx={{ color: '#666' }}>
               Facturación mensual • Cancelá cuando quieras
@@ -2186,8 +2215,8 @@ export function CompaniesPage() {
               }
             }}
             onClick={() => {
-              window.open('/pricing', '_blank');
               closeUpgradeDialog();
+              goToPricing();
             }}
           >
             Ver Planes

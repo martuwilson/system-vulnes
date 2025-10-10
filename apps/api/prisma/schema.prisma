@@ -130,8 +130,10 @@ model Subscription {
 model PlanLimits {
   id                    String           @id @default(cuid())
   plan                  SubscriptionPlan @unique
-  maxDomains            Int              // 1, 5, -1 (unlimited)
-  maxAssets             Int              // 10, 50, -1 (unlimited)  
+  maxDomains            Int              // DEPRECATED: usar maxCompanies
+  maxAssets             Int              // DEPRECATED: usar maxAssetsPerCompany
+  maxCompanies          Int?             // 1, 3, -1 (unlimited) - Empresas que puede monitorear
+  maxAssetsPerCompany   Int?             // 10, 20, -1 (unlimited) - Assets por empresa  
   scanFrequencyHours    Int              // 168(semanal), 24(diario), 6(tiempo real)
   hasSlackIntegration   Boolean          @default(false)
   hasTeamsIntegration   Boolean          @default(false)

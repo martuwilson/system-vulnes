@@ -271,11 +271,19 @@ export class PlanLimits {
   @Field(() => SubscriptionPlan)
   plan: SubscriptionPlan;
 
-  @Field()
-  maxDomains: number;
+  // Campos antiguos (compatibilidad temporal)
+  @Field({ nullable: true })
+  maxDomains?: number;
 
-  @Field()
-  maxAssets: number;
+  @Field({ nullable: true })
+  maxAssets?: number;
+
+  // Campos nuevos (lógica clarificada)
+  @Field({ nullable: true })
+  maxCompanies?: number;
+
+  @Field({ nullable: true })
+  maxAssetsPerCompany?: number;
 
   @Field()
   scanFrequencyHours: number;
