@@ -37,6 +37,14 @@ import {
   Shield,
   Notifications,
   Speed,
+  VerifiedUser,
+  WarningAmber,
+  Report,
+  Domain,
+  Update,
+  Visibility,
+  Search,
+  Radar,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 import { formatDateTime } from '../../lib/translations';
@@ -243,10 +251,10 @@ export function CompaniesPage() {
   
   const statusConfig = {
     initial: { label: 'Configuración Inicial', color: '#1976D2', icon: Security },
-    excellent: { label: 'Monitoreo Activo', color: '#AEEA00', icon: CheckCircle },
-    good: { label: 'Protección Estable', color: '#4CAF50', icon: Security },
-    warning: { label: 'Atención Requerida', color: '#F57C00', icon: Warning },
-    critical: { label: 'Riesgo Alto Detectado', color: '#E53935', icon: Warning }
+    excellent: { label: 'Protección Activa', color: '#AEEA00', icon: VerifiedUser },
+    good: { label: 'Protección Activa', color: '#4CAF50', icon: VerifiedUser },
+    warning: { label: 'Atención Requerida', color: '#F57C00', icon: WarningAmber },
+    critical: { label: 'Riesgo Crítico', color: '#E53935', icon: Report }
   };
 
   // Datos de demostración inteligente
@@ -260,9 +268,9 @@ export function CompaniesPage() {
   return (
     <Box sx={{ 
       p: { xs: 2, md: 4 }, 
-      bgcolor: '#FAFAFA', 
+      bgcolor: '#F9FAFB', 
       minHeight: '100vh',
-      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "IBM Plex Sans", "Segoe UI", Roboto, sans-serif'
     }}>
       {/* ===== HERO HEADER EJECUTIVO ===== */}
       <Box sx={{ mb: 6 }}>
@@ -279,28 +287,59 @@ export function CompaniesPage() {
             <Typography 
               variant="h3" 
               sx={{ 
-                fontSize: { xs: '24px', sm: '26px', md: '28px' },
+                fontSize: { xs: '24px', sm: '28px', md: '32px' },
                 fontWeight: 700,
                 color: '#1E2A38',
-                mb: 1,
+                mb: 1.5,
                 letterSpacing: '-0.8px',
                 fontFamily: 'Inter, sans-serif'
               }}
             >
-              Hub de Control Securyx
+              Panel de Seguridad Digital de tu Empresa
             </Typography>
             <Typography 
               variant="subtitle1" 
               sx={{ 
-                fontSize: { xs: '15px', md: '16px' },
+                fontSize: { xs: '16px', md: '18px' },
                 color: '#757575',
-                fontWeight: 500,
-                mb: 0.5,
-                lineHeight: 1.4
+                fontWeight: 400,
+                mb: 1,
+                lineHeight: 1.5,
+                maxWidth: '600px'
               }}
             >
-              Estás protegiendo {totalDomains} {totalDomains === 1 ? 'dominio activo' : 'dominios activos'} de tu empresa
+              Monitoreá la salud y protección de tus dominios en tiempo real con Securyx.
             </Typography>
+            
+            {/* Estado Global Contextual */}
+            <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+              {React.createElement(statusConfig[systemStatus].icon, { 
+                sx: { fontSize: 20, color: statusConfig[systemStatus].color }
+              })}
+              <Typography 
+                variant="body1"
+                sx={{ 
+                  fontSize: '15px',
+                  color: statusConfig[systemStatus].color,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                {statusConfig[systemStatus].label}
+              </Typography>
+              <Chip
+                label={totalDomains > 0 ? `${totalDomains} dominios monitoreados` : 'Configuración inicial'}
+                size="small"
+                sx={{
+                  bgcolor: 'rgba(30, 42, 56, 0.05)',
+                  color: '#1E2A38',
+                  fontWeight: 500,
+                  fontSize: '12px',
+                  borderRadius: '8px'
+                }}
+              />
+            </Box>
           </Box>
           
           {/* CTA Principal Mejorado */}
@@ -335,24 +374,43 @@ export function CompaniesPage() {
         <Card 
           sx={{ 
             borderRadius: '16px',
-            border: '1px solid rgba(30, 42, 56, 0.08)',
-            boxShadow: '0 4px 20px rgba(30, 42, 56, 0.08)',
+            border: 'none',
+            boxShadow: '0 8px 32px rgba(30, 42, 56, 0.12)',
             overflow: 'hidden',
-            background: 'linear-gradient(135deg, #1E2A38 0%, #2D3748 100%)',
+            background: 'linear-gradient(145deg, #1E2A38 0%, #263238 100%)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 32px rgba(30, 42, 56, 0.15)',
             color: 'white',
-            mb: 4
+            mb: 4,
+            position: 'relative',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '2px',
+              background: 'linear-gradient(90deg, #AEEA00 0%, #4CAF50 50%, #1976D2 100%)',
+              opacity: 0.8
+            }
           }}
         >
           <CardContent sx={{ p: 4 }}>
             <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
               <Box display="flex" alignItems="center" gap={3}>
                 <Box sx={{ 
-                  p: 2, 
-                  borderRadius: '12px', 
-                  bgcolor: 'rgba(255,255,255,0.15)',
-                  display: 'flex'
+                  p: 2.5, 
+                  borderRadius: '16px', 
+                  bgcolor: 'rgba(174, 234, 0, 0.15)',
+                  border: '1px solid rgba(174, 234, 0, 0.2)',
+                  display: 'flex',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: 'rgba(174, 234, 0, 0.25)',
+                    transform: 'scale(1.05)',
+                    boxShadow: '0 8px 20px rgba(174, 234, 0, 0.2)'
+                  }
                 }}>
-                  <Business sx={{ fontSize: 32, color: '#AEEA00' }} />
+                  <Domain sx={{ fontSize: 32, color: '#AEEA00' }} />
                 </Box>
                 <Box>
                   <Typography 
@@ -398,19 +456,27 @@ export function CompaniesPage() {
                     backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(255,255,255,0.1)',
                     textAlign: 'center',
-                    transition: 'all 0.2s ease',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
                     '&:hover': {
                       bgcolor: 'rgba(255,255,255,0.15)',
-                      transform: 'translateY(-2px)'
+                      transform: 'translateY(-3px)',
+                      boxShadow: '0 12px 24px rgba(0,0,0,0.15)'
                     }
                   }}
                 >
-                  <Analytics sx={{ fontSize: { xs: 28, md: 32 }, color: '#AEEA00', mb: 1 }} />
+                  <Shield sx={{ 
+                    fontSize: { xs: 28, md: 32 }, 
+                    color: '#AEEA00', 
+                    mb: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': { filter: 'brightness(1.2)' }
+                  }} />
                   <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: 'white', fontSize: { xs: '24px', md: '32px' } }}>
                     {totalDomains}
                   </Typography>
                   <Typography sx={{ fontSize: { xs: '12px', md: '13px' }, color: 'rgba(255,255,255,0.8)' }}>
-                    Dominios Monitoreados
+                    Dominios bajo protección
                   </Typography>
                 </Paper>
               </Grid>
@@ -424,19 +490,55 @@ export function CompaniesPage() {
                     backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(255,255,255,0.1)',
                     textAlign: 'center',
-                    transition: 'all 0.2s ease',
+                    position: 'relative',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
                     '&:hover': {
                       bgcolor: 'rgba(255,255,255,0.15)',
-                      transform: 'translateY(-2px)'
+                      transform: 'translateY(-3px)',
+                      boxShadow: '0 12px 24px rgba(0,0,0,0.15)'
                     }
                   }}
                 >
-                  <Speed sx={{ fontSize: { xs: 28, md: 32 }, color: avgHealthScore >= 80 ? '#AEEA00' : avgHealthScore >= 60 ? '#4CAF50' : '#F57C00', mb: 1 }} />
-                  <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: 'white', fontSize: { xs: '24px', md: '32px' } }}>
-                    {avgHealthScore}%
-                  </Typography>
+                  {/* Círculo de progreso de fondo */}
+                  <Box sx={{ position: 'relative', display: 'inline-flex', mb: 1 }}>
+                    <CircularProgress
+                      variant="determinate"
+                      value={100}
+                      size={60}
+                      thickness={3}
+                      sx={{ color: 'rgba(255,255,255,0.1)' }}
+                    />
+                    <CircularProgress
+                      variant="determinate"
+                      value={avgHealthScore}
+                      size={60}
+                      thickness={3}
+                      sx={{ 
+                        color: avgHealthScore >= 80 ? '#AEEA00' : avgHealthScore >= 60 ? '#4CAF50' : avgHealthScore >= 40 ? '#F57C00' : '#E53935',
+                        position: 'absolute',
+                        left: 0,
+                        transition: 'all 0.6s ease-in-out'
+                      }}
+                    />
+                    <Box sx={{ 
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                    }}>
+                      <Typography variant="h6" sx={{ 
+                        fontWeight: 700, 
+                        color: 'white', 
+                        fontSize: '16px',
+                        lineHeight: 1
+                      }}>
+                        {avgHealthScore}%
+                      </Typography>
+                    </Box>
+                  </Box>
                   <Typography sx={{ fontSize: { xs: '12px', md: '13px' }, color: 'rgba(255,255,255,0.8)' }}>
-                    Health Promedio
+                    Salud Digital Promedio
                   </Typography>
                 </Paper>
               </Grid>
@@ -450,19 +552,31 @@ export function CompaniesPage() {
                     backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(255,255,255,0.1)',
                     textAlign: 'center',
-                    transition: 'all 0.2s ease',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
                     '&:hover': {
                       bgcolor: 'rgba(255,255,255,0.15)',
-                      transform: 'translateY(-2px)'
+                      transform: 'translateY(-3px)',
+                      boxShadow: '0 12px 24px rgba(0,0,0,0.15)'
                     }
                   }}
                 >
-                  <Schedule sx={{ fontSize: { xs: 28, md: 32 }, color: '#42A5F5', mb: 1 }} />
+                  <Update sx={{ 
+                    fontSize: { xs: 28, md: 32 }, 
+                    color: '#42A5F5', 
+                    mb: 1,
+                    animation: lastScanDate ? 'none' : 'pulse 2s infinite',
+                    '@keyframes pulse': {
+                      '0%': { opacity: 1 },
+                      '50%': { opacity: 0.5 },
+                      '100%': { opacity: 1 }
+                    }
+                  }} />
                   <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: 'white', fontSize: { xs: '14px', md: '16px' }, lineHeight: 1.3 }}>
                     {lastScanDate ? formatDateTime(lastScanDate.toISOString()).split(',')[0] : 'Sin escaneos'}
                   </Typography>
                   <Typography sx={{ fontSize: { xs: '12px', md: '13px' }, color: 'rgba(255,255,255,0.8)' }}>
-                    Último Escaneo
+                    Última revisión automatizada
                   </Typography>
                 </Paper>
               </Grid>
@@ -486,17 +600,18 @@ export function CompaniesPage() {
                 letterSpacing: '-0.4px'
               }}
             >
-              Dominios Monitoreados
+              Dominios bajo protección
             </Typography>
             <Typography 
               variant="body2" 
               sx={{ 
                 fontSize: '15px',
                 color: '#757575',
-                mb: 3
+                mb: 3,
+                lineHeight: 1.5
               }}
             >
-              Gestiona y monitorea el estado de seguridad de todos tus dominios digitales
+              Gestiona y monitorea el estado de seguridad de todos tus dominios digitales en tiempo real
             </Typography>
           </Box>
 
@@ -551,17 +666,18 @@ export function CompaniesPage() {
                     <Card 
                       sx={{ 
                         borderRadius: '16px',
-                        border: '1px solid rgba(30, 42, 56, 0.08)',
-                        boxShadow: '0 2px 12px rgba(30, 42, 56, 0.06)',
+                        border: '1px solid #E0E0E0',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                         height: { xs: '320px', md: '380px' },
                         display: 'flex',
                         flexDirection: 'column',
                         position: 'relative',
                         overflow: 'hidden',
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        bgcolor: 'white',
+                        transition: 'all 0.2s ease',
                         '&:hover': {
-                          transform: { xs: 'none', md: 'translateY(-4px)' },
-                          boxShadow: '0 8px 32px rgba(30, 42, 56, 0.12)',
+                          transform: { xs: 'none', md: 'translateY(-3px)' },
+                          boxShadow: '0 6px 14px rgba(0,0,0,0.08)',
                           borderColor: 'rgba(25, 118, 210, 0.2)'
                         }
                       }}
@@ -633,13 +749,20 @@ export function CompaniesPage() {
                             variant="determinate" 
                             value={healthScore} 
                             sx={{
-                              height: 8,
-                              borderRadius: '4px',
-                              bgcolor: '#F3F4F6',
+                              height: 10,
+                              borderRadius: '10px',
+                              bgcolor: '#ECEFF1',
                               mb: 1,
                               '& .MuiLinearProgress-bar': {
-                                bgcolor: healthColor,
-                                borderRadius: '4px'
+                                background: healthScore >= 80 
+                                  ? 'linear-gradient(90deg, #4CAF50 0%, #AEEA00 100%)'
+                                  : healthScore >= 60 
+                                    ? 'linear-gradient(90deg, #1976D2 0%, #4CAF50 100%)'
+                                    : healthScore >= 40
+                                      ? 'linear-gradient(90deg, #F57C00 0%, #FF9800 100%)'
+                                      : 'linear-gradient(90deg, #F57C00 0%, #E53935 100%)',
+                                borderRadius: '10px',
+                                transition: 'all 0.3s ease'
                               }
                             }}
                           />
@@ -689,36 +812,36 @@ export function CompaniesPage() {
                               <FlashOn sx={{ fontSize: 20 }} />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Ver detalles">
+                          <Tooltip title="Ver detalles" arrow>
                             <IconButton
                               size="small"
                               sx={{ 
-                                bgcolor: '#F3F4F6',
-                                color: '#6B7280',
+                                bgcolor: 'rgba(25, 118, 210, 0.1)',
+                                color: '#1976D2',
                                 width: 40,
                                 height: 40,
                                 '&:hover': { 
-                                  bgcolor: '#E5E7EB',
-                                  color: '#1E2A38',
+                                  bgcolor: '#1976D2',
+                                  color: 'white',
                                   transform: 'scale(1.05)'
                                 },
                                 transition: 'all 0.2s ease-in-out'
                               }}
                             >
-                              <Analytics sx={{ fontSize: 20 }} />
+                              <Visibility sx={{ fontSize: 20 }} />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Editar">
+                          <Tooltip title="Editar" arrow>
                             <IconButton
                               size="small"
                               sx={{ 
-                                bgcolor: '#F3F4F6',
-                                color: '#6B7280',
+                                bgcolor: 'rgba(117, 117, 117, 0.1)',
+                                color: '#757575',
                                 width: 40,
                                 height: 40,
                                 '&:hover': { 
-                                  bgcolor: '#E5E7EB',
-                                  color: '#1E2A38',
+                                  bgcolor: '#757575',
+                                  color: 'white',
                                   transform: 'scale(1.05)'
                                 },
                                 transition: 'all 0.2s ease-in-out'
@@ -727,7 +850,7 @@ export function CompaniesPage() {
                               <Edit sx={{ fontSize: 20 }} />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Eliminar">
+                          <Tooltip title="Eliminar" arrow>
                             <IconButton
                               size="small"
                               onClick={() => handleDelete(asset.id, asset.domain)}
@@ -768,104 +891,190 @@ export function CompaniesPage() {
               mb: 3
             }}>
               <CardContent sx={{ p: 3 }}>
-                <Box display="flex" alignItems="center" gap={2} mb={3}>
-                  <Shield sx={{ fontSize: 24, color: '#1976D2' }} />
+                <Box display="flex" alignItems="center" gap={2} mb={4}>
+                  <Box sx={{ 
+                    p: 1.5, 
+                    borderRadius: '10px', 
+                    bgcolor: 'rgba(25, 118, 210, 0.1)',
+                    display: 'flex'
+                  }}>
+                    <Analytics sx={{ fontSize: 20, color: '#1976D2' }} />
+                  </Box>
                   <Typography variant="h6" sx={{ fontWeight: 700, color: '#1E2A38', fontSize: '16px' }}>
-                    Inteligencia de Seguridad
+                    Inteligencia de Seguridad Activa
                   </Typography>
                 </Box>
                 
 {totalDomains > 0 ? (
                   <>
+                    {/* 1️⃣ Alertas Recientes */}
                     <Box mb={3}>
-                      <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 1 }}>
-                        Top Vulnerabilidades Detectadas
-                      </Typography>
+                      <Box display="flex" alignItems="center" gap={1} mb={2}>
+                        <Box sx={{ 
+                          width: 24, 
+                          height: 24, 
+                          borderRadius: '50%', 
+                          bgcolor: '#F57C00', 
+                          color: 'white', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          fontSize: '12px', 
+                          fontWeight: 'bold' 
+                        }}>
+                          1
+                        </Box>
+                        <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '14px', fontWeight: 600 }}>
+                          Alertas recientes
+                        </Typography>
+                      </Box>
+                      
                       {demoMetrics.vulnerabilitiesDetected > 0 ? (
                         <>
-                          <Box display="flex" flex={1} alignItems="center" gap={1} mb={1}>
-                            <Warning sx={{ fontSize: 16, color: '#F57C00' }} />
+                          <Box display="flex" alignItems="center" gap={2} mb={1.5}>
+                            <Box sx={{ 
+                              width: 20, 
+                              height: 20, 
+                              borderRadius: '50%', 
+                              bgcolor: '#F57C00', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center' 
+                            }}>
+                              <Typography sx={{ color: 'white', fontSize: '10px', fontWeight: 'bold' }}>
+                                {Math.max(1, Math.floor(demoMetrics.vulnerabilitiesDetected / 2))}
+                              </Typography>
+                            </Box>
                             <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '13px', flex: 1 }}>
-                              Certificados SSL próximos a expirar
+                              Certificados SSL por renovar pronto
                             </Typography>
-                            <Chip label={Math.max(1, Math.floor(demoMetrics.vulnerabilitiesDetected / 2))} size="small" sx={{ bgcolor: '#F57C00', color: 'white', fontSize: '11px' }} />
                           </Box>
-                          <Box display="flex" alignItems="center" gap={1} mb={1}>
-                            <Warning sx={{ fontSize: 16, color: avgHealthScore < 50 ? '#E53935' : '#F57C00' }} />
+                          <Box display="flex" alignItems="center" gap={2} mb={1.5}>
+                            <Box sx={{ 
+                              width: 20, 
+                              height: 20, 
+                              borderRadius: '50%', 
+                              bgcolor: avgHealthScore < 50 ? '#E53935' : '#F57C00', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center' 
+                            }}>
+                              <Typography sx={{ color: 'white', fontSize: '10px', fontWeight: 'bold' }}>
+                                {Math.ceil(demoMetrics.vulnerabilitiesDetected / 2)}
+                              </Typography>
+                            </Box>
                             <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '13px', flex: 1 }}>
                               Configuraciones de seguridad
                             </Typography>
-                            <Chip label={Math.ceil(demoMetrics.vulnerabilitiesDetected / 2)} size="small" sx={{ bgcolor: avgHealthScore < 50 ? '#E53935' : '#F57C00', color: 'white', fontSize: '11px' }} />
                           </Box>
                         </>
                       ) : (
-                        <Box display="flex" alignItems="center" gap={1} mb={1}>
-                          <CheckCircle sx={{ fontSize: 16, color: '#4CAF50' }} />
+                        <Box display="flex" alignItems="center" gap={2}>
+                          <CheckCircle sx={{ fontSize: 20, color: '#4CAF50' }} />
                           <Typography variant="body2" sx={{ color: '#4CAF50', fontSize: '13px', flex: 1 }}>
-                            No hay vulnerabilidades críticas detectadas
+                            Sin vulnerabilidades críticas
                           </Typography>
                         </Box>
                       )}
                     </Box>
 
-                    <Divider sx={{ my: 2 }} />
+                    <Box sx={{ borderTop: '1px solid #E0E0E0', my: 3 }} />
 
+                    {/* 2️⃣ Estadísticas Clave */}
                     <Box mb={3}>
-                      <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 1 }}>
-                        Estadísticas de Monitoreo
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '13px', mb: 0.5 }}>
-                        Tiempo promedio entre escaneos: <strong>{demoMetrics.avgScanInterval}</strong>
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '13px', mb: 0.5 }}>
-                        Mejora de health score: <strong>{demoMetrics.healthImprovement} este mes</strong>
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '13px', mb: 0.5 }}>
-                        Dominios protegidos: <strong>{totalDomains}/{totalDomains}</strong>
-                      </Typography>
+                      <Box display="flex" alignItems="center" gap={1} mb={2}>
+                        <Box sx={{ 
+                          width: 24, 
+                          height: 24, 
+                          borderRadius: '50%', 
+                          bgcolor: '#1976D2', 
+                          color: 'white', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          fontSize: '12px', 
+                          fontWeight: 'bold' 
+                        }}>
+                          2
+                        </Box>
+                        <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '14px', fontWeight: 600 }}>
+                          Estadísticas clave
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ pl: 4 }}>
+                        <Typography variant="body2" sx={{ color: '#757575', fontSize: '12px', mb: 1 }}>
+                          • Tiempo entre escaneos: <strong>{demoMetrics.avgScanInterval}</strong>
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#757575', fontSize: '12px', mb: 1 }}>
+                          • Mejora mensual: <strong>{demoMetrics.healthImprovement}</strong>
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#757575', fontSize: '12px' }}>
+                          • Cobertura total: <strong>{totalDomains} dominios protegidos</strong>
+                        </Typography>
+                      </Box>
                     </Box>
 
-                    <Divider sx={{ my: 2 }} />
+                    <Box sx={{ borderTop: '1px solid #E0E0E0', my: 3 }} />
 
-                    {demoMetrics.criticalAlerts > 0 ? (
-                      <Box>
-                        <Box display="flex" alignItems="center" gap={1} mb={2}>
-                          <Notifications sx={{ fontSize: 16, color: '#E53935' }} />
-                          <Typography variant="body2" sx={{ color: '#E53935', fontSize: '13px', fontWeight: 600 }}>
-                            Última Alerta Crítica
-                          </Typography>
+                    {/* 3️⃣ Estado del Sistema */}
+                    <Box>
+                      <Box display="flex" alignItems="center" gap={1} mb={2}>
+                        <Box sx={{ 
+                          width: 24, 
+                          height: 24, 
+                          borderRadius: '50%', 
+                          bgcolor: '#4CAF50', 
+                          color: 'white', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          fontSize: '12px', 
+                          fontWeight: 'bold' 
+                        }}>
+                          3
                         </Box>
-                        <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '13px', mb: 1 }}>
-                          Configuración de seguridad detectada en {assets[0]?.domain || 'dominio'}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#9CA3AF', fontSize: '12px' }}>
-                          Hace 2 horas
+                        <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '14px', fontWeight: 600 }}>
+                          Estado del sistema
                         </Typography>
                       </Box>
-                    ) : (
-                      <Box>
-                        <Box display="flex" alignItems="center" gap={1} mb={2}>
-                          <CheckCircle sx={{ fontSize: 16, color: '#4CAF50' }} />
-                          <Typography variant="body2" sx={{ color: '#4CAF50', fontSize: '13px', fontWeight: 600 }}>
-                            Sistema Estable
+                      
+                      {demoMetrics.criticalAlerts > 0 ? (
+                        <Box>
+                          <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '13px', mb: 1, pl: 4 }}>
+                            Configuración detectada en {assets[0]?.domain || 'dominio'}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: '#9CA3AF', fontSize: '12px', pl: 4 }}>
+                            Hace 2 horas
                           </Typography>
                         </Box>
-                        <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '13px', mb: 1 }}>
-                          No hay alertas críticas pendientes
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#9CA3AF', fontSize: '12px' }}>
-                          Última revisión: {lastScanDate ? 'Hoy' : 'Pendiente'}
-                        </Typography>
-                      </Box>
-                    )}
+                      ) : (
+                        <Box sx={{ pl: 4 }}>
+                          <Chip
+                            icon={<CheckCircle />}
+                            label="🟢 Sistema Estable"
+                            sx={{
+                              bgcolor: '#E8F5E9',
+                              color: '#2E7D32',
+                              fontWeight: 500,
+                              fontSize: '12px',
+                              borderRadius: '12px'
+                            }}
+                          />
+                          <Typography variant="body2" sx={{ color: '#757575', fontSize: '12px', mt: 1 }}>
+                            Última revisión: {lastScanDate ? 'Hoy' : 'Pendiente'}
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
                   </>
                 ) : (
-                  <Box textAlign="center" py={2}>
-                    <Security sx={{ fontSize: 48, color: '#E5E7EB', mb: 2 }} />
-                    <Typography variant="body2" sx={{ color: '#757575', fontSize: '14px', mb: 1 }}>
+                  <Box textAlign="center" py={4}>
+                    <Security sx={{ fontSize: 48, color: '#E0E0E0', mb: 2 }} />
+                    <Typography variant="body2" sx={{ color: '#1E2A38', fontSize: '15px', fontWeight: 500, mb: 1 }}>
                       Sin datos de inteligencia aún
                     </Typography>
-                    <Typography variant="body2" sx={{ color: '#9CA3AF', fontSize: '12px', lineHeight: 1.4 }}>
+                    <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', lineHeight: 1.5, px: 2 }}>
                       Agrega dominios para comenzar a recibir análisis de seguridad y alertas inteligentes
                     </Typography>
                   </Box>
@@ -874,43 +1083,76 @@ export function CompaniesPage() {
             </Card>
 
             {/* Panel de Acciones Rápidas */}
+            {/* Callout Card Principal */}
             <Card sx={{ 
               borderRadius: '16px',
-              border: '1px solid rgba(30, 42, 56, 0.08)',
-              boxShadow: '0 2px 12px rgba(30, 42, 56, 0.06)'
+              border: '1px solid #E0E0E0',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              bgcolor: '#E3F2FD',
+              mb: 3
             }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1E2A38', fontSize: '16px', mb: 3 }}>
-                  Acciones Rápidas
+              <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                <Box sx={{ 
+                  width: 60, 
+                  height: 60, 
+                  borderRadius: '50%', 
+                  bgcolor: 'rgba(25, 118, 210, 0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mx: 'auto',
+                  mb: 2
+                }}>
+                  <Search sx={{ fontSize: 28, color: '#1976D2' }} />
+                </Box>
+                
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1E2A38', fontSize: '16px', mb: 1 }}>
+                  🔍 Escanear todos los dominios ahora
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 3, lineHeight: 1.4 }}>
+                  Actualizá los reportes de vulnerabilidad en tiempo real
                 </Typography>
                 
                 <Button
                   fullWidth
                   startIcon={<FlashOn />}
-                  variant="outlined"
+                  variant="contained"
                   sx={{
-                    borderColor: '#1976D2',
-                    color: '#1976D2',
-                    fontWeight: 500,
-                    mb: 2,
+                    bgcolor: '#1976D2',
+                    color: 'white',
+                    fontWeight: 600,
                     py: 1.5,
                     textTransform: 'none',
-                    borderRadius: '10px',
+                    borderRadius: '12px',
+                    fontSize: '14px',
                     '&:hover': {
-                      bgcolor: 'rgba(25, 118, 210, 0.05)',
-                      borderColor: '#1565C0'
+                      bgcolor: '#1565C0'
                     }
                   }}
                 >
-                  Escanear Todos los Dominios
+                  Iniciar Escaneo Completo
                 </Button>
+              </CardContent>
+            </Card>
+
+            {/* Acciones Secundarias */}
+            <Card sx={{ 
+              borderRadius: '16px',
+              border: '1px solid #E0E0E0',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              bgcolor: 'white'
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1E2A38', fontSize: '15px', mb: 3 }}>
+                  Acciones Rápidas
+                </Typography>
                 
                 <Button
                   fullWidth
                   startIcon={<TrendingUp />}
                   variant="outlined"
                   sx={{
-                    borderColor: '#AEEA00',
+                    borderColor: '#E0E0E0',
                     color: '#1E2A38',
                     fontWeight: 500,
                     mb: 2,
@@ -918,8 +1160,8 @@ export function CompaniesPage() {
                     textTransform: 'none',
                     borderRadius: '10px',
                     '&:hover': {
-                      bgcolor: 'rgba(174, 234, 0, 0.05)',
-                      borderColor: '#9DD600'
+                      bgcolor: '#F9FAFB',
+                      borderColor: '#1976D2'
                     }
                   }}
                 >
