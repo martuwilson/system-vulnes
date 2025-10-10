@@ -37,8 +37,7 @@ import {
   TrendingUp,
   TrendingDown,
   TrendingFlat,
-  Download,
-  Compare,
+
   Error,
   Schedule,
   ExpandMore,
@@ -46,6 +45,18 @@ import {
   FileDownload,
   Assignment,
   PersonAdd,
+  Visibility,
+  Assessment,
+  RestartAlt,
+  CompareArrows,
+  Language,
+  Flag,
+  MonitorHeart,
+
+  WarningAmber,
+  Shield,
+  VerifiedUser,
+  Remove
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 import { 
@@ -246,6 +257,74 @@ const getSeverityIcon = (severity: string) => {
   }
 };
 
+// Funciones utilitarias para el diseño mejorado
+const getHealthScoreLabel = (score: number) => {
+  if (score >= 80) return { text: 'Excelente', color: '#4CAF50', icon: <VerifiedUser sx={{ fontSize: '16px' }} /> };
+  if (score >= 60) return { text: 'Bueno', color: '#AEEA00', icon: <Shield sx={{ fontSize: '16px' }} /> };
+  return { text: 'Crítico', color: '#E53935', icon: <WarningAmber sx={{ fontSize: '16px' }} /> };
+};
+
+const getStatusChipProps = (status: string) => {
+  switch (status.toUpperCase()) {
+    case 'COMPLETED':
+      return {
+        label: 'Análisis completado',
+        color: '#E8F5E9' as const,
+        textColor: '#4CAF50' as const,
+        icon: '🟢'
+      };
+    case 'IN_PROGRESS':
+      return {
+        label: 'En proceso',
+        color: '#FFF3E0' as const,
+        textColor: '#F57C00' as const,
+        icon: '🟡'
+      };
+    case 'FAILED':
+      return {
+        label: 'Error',
+        color: '#FFEBEE' as const,
+        textColor: '#E53935' as const,
+        icon: '🔴'
+      };
+    case 'QUEUED':
+      return {
+        label: 'En cola',
+        color: '#E3F2FD' as const,
+        textColor: '#1976D2' as const,
+        icon: '⏳'
+      };
+    default:
+      return {
+        label: status,
+        color: '#F5F5F5' as const,
+        textColor: '#757575' as const,
+        icon: '⚪'
+      };
+  }
+};
+
+const getTrendingInfo = (currentScore: number, previousScore: number | null) => {
+  if (previousScore === null) return { icon: <Remove />, text: 'Sin datos previos', color: '#757575' };
+  
+  const diff = currentScore - previousScore;
+  if (diff > 5) return { 
+    icon: <TrendingUp />, 
+    text: `↑ Mejoró un ${diff}% desde el último escaneo`, 
+    color: '#4CAF50' 
+  };
+  if (diff < -5) return { 
+    icon: <TrendingDown />, 
+    text: `↓ Empeoró un ${Math.abs(diff)}% desde el último escaneo`, 
+    color: '#E53935' 
+  };
+  return { 
+    icon: <TrendingFlat />, 
+    text: '→ Estable desde el último escaneo', 
+    color: '#757575' 
+  };
+};
+
 const getSeverityLabel = (severity: string) => {
   switch (severity.toUpperCase()) {
     case 'CRITICAL': return 'Críticas';
@@ -256,12 +335,7 @@ const getSeverityLabel = (severity: string) => {
   }
 };
 
-const getTrendIcon = (currentScore: number, previousScore: number | null) => {
-  if (previousScore === null) return null;
-  if (currentScore > previousScore) return <TrendingUp color="success" fontSize="small" />;
-  if (currentScore < previousScore) return <TrendingDown color="error" fontSize="small" />;
-  return <TrendingFlat color="inherit" fontSize="small" />;
-};
+
 
 const formatVulnerabilitySummary = (scan: SecurityScan) => {
   const parts = [];
@@ -269,7 +343,29 @@ const formatVulnerabilitySummary = (scan: SecurityScan) => {
   if (scan.highFindings > 0) parts.push(`${scan.highFindings} altas`);
   if (scan.mediumFindings > 0) parts.push(`${scan.mediumFindings} medias`);
   if (scan.lowFindings > 0) parts.push(`${scan.lowFindings} bajas`);
-  return parts.length > 0 ? parts.join(' | ') : 'Sin vulnerabilidades';
+  return parts.length > 0 ? `Riesgos detectados: ${parts.join(', ')}` : 'Sin riesgos detectados';
+};
+
+const formatVulnerabilityCount = (scan: SecurityScan) => {
+  const totalVulns = (scan.criticalFindings || 0) + (scan.highFindings || 0) + 
+                    (scan.mediumFindings || 0) + (scan.lowFindings || 0);
+  
+  if (totalVulns === 0) return { text: 'Sin riesgos', color: '#4CAF50', icon: <CheckCircle /> };
+  if ((scan.criticalFindings || 0) > 0) return { 
+    text: `${totalVulns} riesgos (crítico)`, 
+    color: '#E53935', 
+    icon: <Error /> 
+  };
+  if ((scan.highFindings || 0) > 0) return { 
+    text: `${totalVulns} riesgos (alto)`, 
+    color: '#F57C00', 
+    icon: <WarningAmber /> 
+  };
+  return { 
+    text: `${totalVulns} riesgos (bajo)`, 
+    color: '#FFC107', 
+    icon: <WarningAmber /> 
+  };
 };
 
 export function ScansPage() {
@@ -403,9 +499,10 @@ export function ScansPage() {
       if (result.data?.startSecurityScanQueued?.success) {
         const scanId = result.data.startSecurityScanQueued.scanId;
         
-        // Feedback inmediato
-        toast.success(`🚀 Escaneo iniciado para ${selectedDomain} - Monitoreando progreso...`, {
-          duration: 4000,
+        // Feedback inmediato con microcopy amigable
+        toast.success(`✅ Análisis iniciado correctamente — ${selectedDomain} está siendo analizado en segundo plano`, {
+          duration: 5000,
+          icon: '🔍',
         });
         
         // Establecer el ID del escaneo activo para seguimiento
@@ -416,11 +513,11 @@ export function ScansPage() {
         refetch(); // Refresh assets
         refetchScans(); // Refresh scans list
       } else {
-        toast.error(result.data?.startSecurityScanQueued?.message || 'Error al iniciar escaneo');
+        toast.error(result.data?.startSecurityScanQueued?.message || 'No pudimos iniciar el análisis. Intentá nuevamente en unos minutos.');
       }
     } catch (error: any) {
       console.error('Scan error:', error);
-      toast.error(error.message || 'Error al iniciar escaneo');
+      toast.error(error.message || 'Hubo un problema técnico. Verificá tu conexión e intentá nuevamente.');
     } finally {
       setScanningDomain(null);
     }
@@ -450,23 +547,73 @@ export function ScansPage() {
 
   return (
     <Box>
-      {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Box>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Escaneos de Seguridad
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Ejecuta y monitorea escaneos de seguridad en tiempo real
-          </Typography>
+      {/* Header Premium con gradiente y tipografía optimizada */}
+      <Box 
+        sx={{
+          background: 'linear-gradient(180deg, #F9FBFF 0%, #FFFFFF 100%)',
+          borderBottom: '1px solid #ECEFF1',
+          borderRadius: '12px 12px 0 0',
+          p: 3,
+          mb: 3
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <Security 
+              sx={{ 
+                fontSize: '20px',
+                background: 'linear-gradient(135deg, #1976D2, #42A5F5)',
+                borderRadius: '6px',
+                p: 0.75,
+                color: 'white'
+              }} 
+            />
+            <Box>
+              <Typography 
+                variant="h4" 
+                sx={{
+                  fontWeight: 600,
+                  fontSize: '22px',
+                  color: '#1E2A38',
+                  fontFamily: 'Inter, "IBM Plex Sans", -apple-system, sans-serif',
+                  mb: 0.5
+                }}
+              >
+                Panel de Escaneos de Seguridad
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{
+                  color: '#616161',
+                  fontSize: '14px',
+                  fontFamily: 'Inter, "IBM Plex Sans", -apple-system, sans-serif'
+                }}
+              >
+                Ejecutá análisis automáticos de tus dominios y controlá el estado general de tu protección digital.
+              </Typography>
+            </Box>
+          </Box>
+          <Box display="flex" gap={1.5} alignItems="center">
+            <Tooltip title="Refrescar datos de escaneos">
+              <Button
+                variant="outlined"
+                startIcon={<Refresh />}
+                onClick={() => refetch()}
+                sx={{
+                  borderColor: '#E0E0E0',
+                  color: '#757575',
+                  '&:hover': {
+                    borderColor: '#1976D2',
+                    backgroundColor: '#E3F2FD',
+                    color: '#1976D2'
+                  }
+                }}
+              >
+                Refrescar datos
+              </Button>
+            </Tooltip>
+          </Box>
         </Box>
-        <Button
-          variant="outlined"
-          startIcon={<Refresh />}
-          onClick={() => refetch()}
-        >
-          Actualizar
-        </Button>
       </Box>
 
       {/* Banner de escaneos activos */}
@@ -525,28 +672,65 @@ export function ScansPage() {
         </Alert>
       )}
 
-      {/* Start New Scan */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            Iniciar Nuevo Escaneo
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Selecciona un dominio y ejecuta un escaneo de seguridad completo en background
+      {/* Panel de Nuevo Análisis - Diseño Premium */}
+      <Card 
+        sx={{ 
+          mb: 3,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+          borderRadius: '12px',
+          borderLeft: '4px solid #1976D2',
+          background: '#FFFFFF',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+            <PlayArrow sx={{ color: '#1976D2', fontSize: '20px' }} />
+            <Typography 
+              variant="h6" 
+              sx={{
+                fontWeight: 600,
+                color: '#1E2A38',
+                fontFamily: 'Inter, "IBM Plex Sans", -apple-system, sans-serif'
+              }}
+            >
+              Ejecutar nuevo análisis
+            </Typography>
+          </Box>
+          
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: '#616161', 
+              mb: 3,
+              lineHeight: 1.6
+            }}
+          >
+            Seleccioná el dominio que querés analizar y ejecutá un escaneo completo de vulnerabilidades.
           </Typography>
           
-          <Grid container spacing={2} alignItems="center">
+          <Grid container spacing={2} alignItems="flex-end">
             <Grid item xs={12} sm={8}>
-              <FormControl fullWidth>
-                <InputLabel>Seleccionar Dominio</InputLabel>
+              <FormControl 
+                fullWidth
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px'
+                  }
+                }}
+              >
+                <InputLabel>Seleccioná el dominio que querés analizar</InputLabel>
                 <Select
                   value={selectedDomain}
                   onChange={(e) => setSelectedDomain(e.target.value)}
-                  label="Seleccionar Dominio"
+                  label="Seleccioná el dominio que querés analizar"
                 >
                   {assets.map((asset) => (
                     <MenuItem key={asset.id} value={asset.domain}>
-                      {asset.domain}
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Security sx={{ fontSize: '16px', color: '#1976D2' }} />
+                        {asset.domain}
+                      </Box>
                     </MenuItem>
                   ))}
                 </Select>
@@ -557,34 +741,118 @@ export function ScansPage() {
                 variant="contained"
                 fullWidth
                 size="large"
-                startIcon={scanningDomain ? <CircularProgress size={20} color="inherit" /> : <PlayArrow />}
+                startIcon={
+                  scanningDomain ? 
+                  <CircularProgress size={20} color="inherit" /> : 
+                  <PlayArrow />
+                }
                 onClick={handleStartScan}
                 disabled={!selectedDomain || scanningDomain === selectedDomain}
+                sx={{
+                  background: 'linear-gradient(90deg, #1976D2, #42A5F5)',
+                  borderRadius: '8px',
+                  fontWeight: 500,
+                  textTransform: 'none',
+                  py: 1.25,
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #1565C0, #1976D2)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)'
+                  },
+                  '&:disabled': {
+                    background: '#E0E0E0'
+                  },
+                  transition: 'all 0.3s ease'
+                }}
               >
-                {scanningDomain === selectedDomain ? 'Iniciando...' : 'Iniciar Escaneo'}
+                {scanningDomain === selectedDomain ? 'Analizando...' : 'Ejecutar análisis'}
               </Button>
             </Grid>
           </Grid>
 
+          <Box 
+            sx={{ 
+              mt: 2, 
+              p: 1.5, 
+              backgroundColor: '#F9FBFF', 
+              borderRadius: '8px',
+              border: '1px solid #E3F2FD'
+            }}
+          >
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: '#1976D2',
+                fontStyle: 'italic',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5
+              }}
+            >
+              💡 El escaneo se ejecuta en segundo plano y no interrumpe tus operaciones.
+            </Typography>
+          </Box>
+
           {assets.length === 0 && (
-            <Alert severity="info" sx={{ mt: 2 }}>
-              No tienes dominios registrados. Ve a la sección de Empresas para agregar assets.
+            <Alert 
+              severity="info" 
+              sx={{ 
+                mt: 2,
+                borderRadius: '8px',
+                backgroundColor: '#E3F2FD',
+                '& .MuiAlert-icon': {
+                  color: '#1976D2'
+                }
+              }}
+            >
+              No tenés dominios registrados. Andá a la sección de Empresas para agregar recursos digitales.
             </Alert>
           )}
         </CardContent>
       </Card>
 
-      {/* Recent Scans */}
-      <Card>
-        <CardContent>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h6" fontWeight="bold">
-              Historial de escaneos de seguridad ({filteredScans.length})
-            </Typography>
+      {/* Dashboard de Análisis Realizados */}
+      <Card sx={{ borderRadius: '12px' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box 
+            display="flex" 
+            justifyContent="space-between" 
+            alignItems="flex-start" 
+            mb={3}
+            flexWrap="wrap"
+            gap={2}
+          >
+            <Box>
+              <Typography 
+                variant="h6" 
+                sx={{
+                  fontWeight: 600,
+                  color: '#1E2A38',
+                  fontFamily: 'Inter, "IBM Plex Sans", -apple-system, sans-serif',
+                  mb: 0.5
+                }}
+              >
+                Últimos análisis realizados ({filteredScans.length})
+              </Typography>
+              <Typography variant="body2" color="#616161">
+                Histórico de escaneos y tendencias de seguridad
+              </Typography>
+            </Box>
             
-            <Box display="flex" gap={2} alignItems="center">
-              <FormControl size="small" sx={{ minWidth: 120 }}>
-                <InputLabel>Dominio</InputLabel>
+            <Box display="flex" gap={1.5} alignItems="center" flexWrap="wrap">
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: 140,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px'
+                  }
+                }}
+              >
+                <InputLabel sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Language sx={{ fontSize: '14px' }} />
+                  Dominio
+                </InputLabel>
                 <Select
                   value={domainFilter}
                   onChange={(e) => setDomainFilter(e.target.value)}
@@ -599,131 +867,376 @@ export function ScansPage() {
                 </Select>
               </FormControl>
               
-              <FormControl size="small" sx={{ minWidth: 120 }}>
-                <InputLabel>Estado</InputLabel>
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: 130,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px'
+                  }
+                }}
+              >
+                <InputLabel sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Flag sx={{ fontSize: '14px' }} />
+                  Estado
+                </InputLabel>
                 <Select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   label="Estado"
                 >
                   <MenuItem value="all">Todos</MenuItem>
-                  <MenuItem value="completed">Completado</MenuItem>
-                  <MenuItem value="in_progress">En progreso</MenuItem>
+                  <MenuItem value="completed">Análisis completado</MenuItem>
+                  <MenuItem value="in_progress">En proceso</MenuItem>
                   <MenuItem value="queued">En cola</MenuItem>
-                  <MenuItem value="failed">Fallido</MenuItem>
+                  <MenuItem value="failed">Falló</MenuItem>
                 </Select>
               </FormControl>
               
-              <FormControl size="small" sx={{ minWidth: 140 }}>
-                <InputLabel>Health Score</InputLabel>
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: 170,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px'
+                  }
+                }}
+              >
+                <InputLabel sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <MonitorHeart sx={{ fontSize: '14px' }} />
+                  Índice de Salud
+                </InputLabel>
                 <Select
                   value={healthScoreFilter}
                   onChange={(e) => setHealthScoreFilter(e.target.value)}
-                  label="Health Score"
+                  label="Índice de Salud"
                 >
-                  <MenuItem value="all">Todos</MenuItem>
+                  <MenuItem value="all">Todos los niveles</MenuItem>
                   <MenuItem value="excellent">Excelente (80-100%)</MenuItem>
                   <MenuItem value="good">Bueno (60-79%)</MenuItem>
-                  <MenuItem value="poor">Pobre (&lt;60%)</MenuItem>
+                  <MenuItem value="poor">Crítico (&lt;60%)</MenuItem>
                 </Select>
               </FormControl>
             </Box>
           </Box>
           
           {filteredScans.length === 0 ? (
-            <Alert severity="info">
+            <Alert 
+              severity="info" 
+              sx={{
+                borderRadius: '12px',
+                backgroundColor: '#F9FBFF',
+                border: '1px solid #E3F2FD',
+                '& .MuiAlert-icon': { color: '#1976D2' }
+              }}
+            >
               {domainFilter === 'all' 
-                ? "No hay escaneos ejecutados aún. Inicia tu primer escaneo de seguridad."
-                : `No hay escaneos para el dominio "${domainFilter}". Selecciona este dominio e inicia un escaneo.`
+                ? "No hay análisis ejecutados aún. Iniciá tu primer análisis de seguridad."
+                : `No hay análisis para el dominio "${domainFilter}". Seleccioná este dominio e iniciá un análisis.`
               }
             </Alert>
           ) : (
-            <Grid container spacing={2}>
+            <Grid container spacing={2.5}>
               {filteredScans.map((scan, index) => {
                 const previousScan = index < filteredScans.length - 1 ? filteredScans[index + 1] : null;
-                const trendIcon = getTrendIcon(scan.healthScore || 0, previousScan?.healthScore || null);
+                const trendInfo = getTrendingInfo(scan.healthScore || 0, previousScan?.healthScore || null);
+                const statusInfo = getStatusChipProps(scan.status);
+                const healthInfo = getHealthScoreLabel(scan.healthScore || 0);
+                const vulnInfo = formatVulnerabilityCount(scan);
                 
                 return (
-                  <Grid item xs={12} md={6} key={scan.id}>
+                  <Grid item xs={12} lg={6} key={scan.id}>
                     <Card 
-                      variant="outlined" 
                       sx={{ 
                         cursor: 'pointer',
+                        borderRadius: '12px',
+                        border: index === 0 ? '2px solid #1976D2' : '1px solid #E0E0E0',
+                        background: '#FFFFFF',
+                        transition: 'all 0.3s ease',
                         position: 'relative',
-                        '&:hover': { boxShadow: 2 },
-                        border: index === 0 ? '2px solid' : '1px solid',
-                        borderColor: index === 0 ? 'primary.main' : 'grey.300'
+                        overflow: 'visible',
+                        '&:hover': { 
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                          transform: 'translateY(-2px)'
+                        },
+                        // Animación de entrada
+                        animation: 'fadeInUp 0.15s ease-out',
+                        animationDelay: `${index * 0.05}s`,
+                        '@keyframes fadeInUp': {
+                          from: {
+                            opacity: 0,
+                            transform: 'translateY(20px)'
+                          },
+                          to: {
+                            opacity: 1,
+                            transform: 'translateY(0)'
+                          }
+                        }
                       }}
                       onClick={() => handleViewDetails(scan)}
                     >
-                      <CardContent>
-                        <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
-                          <Box>
-                            <Typography variant="subtitle1" fontWeight="bold">
-                              {scan.domain}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {formatDateTime(scan.createdAt)}
+                      {/* Badge de "Más reciente" */}
+                      {index === 0 && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: -8,
+                            right: 16,
+                            background: 'linear-gradient(90deg, #1976D2, #42A5F5)',
+                            color: 'white',
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: '12px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            zIndex: 1
+                          }}
+                        >
+                          MÁS RECIENTE
+                        </Box>
+                      )}
+                      
+                      <CardContent sx={{ p: 3 }}>
+                        {/* Header del informe */}
+                        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2.5}>
+                          <Box flex={1}>
+                            <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                              <Security sx={{ color: '#1976D2', fontSize: '18px' }} />
+                              <Typography 
+                                variant="h6" 
+                                sx={{
+                                  fontWeight: 600,
+                                  color: '#1E2A38',
+                                  fontSize: '16px'
+                                }}
+                              >
+                                {scan.domain}
+                              </Typography>
+                            </Box>
+                            <Typography 
+                              variant="body2" 
+                              sx={{ 
+                                color: '#757575',
+                                fontSize: '13px'
+                              }}
+                            >
+                              Análisis realizado el {formatDateTime(scan.createdAt)}
                             </Typography>
                           </Box>
-                          <Box display="flex" alignItems="center" gap={0.5}>
-                            {getStatusIcon(scan.status)}
-                            <Chip
-                              label={translateStatus(scan.status)}
-                              color={getStatusColor(scan.status) as any}
-                              size="small"
-                            />
-                          </Box>
+                          
+                          <Chip
+                            icon={<span style={{ fontSize: '12px' }}>{statusInfo.icon}</span>}
+                            label={statusInfo.label}
+                            sx={{
+                              backgroundColor: statusInfo.color,
+                              color: statusInfo.textColor,
+                              fontWeight: 500,
+                              fontSize: '12px',
+                              height: '28px'
+                            }}
+                          />
                         </Box>
                         
+                        {/* Progreso para escaneos activos */}
                         {scan.status === 'IN_PROGRESS' && (
-                          <Box sx={{ mb: 2 }}>
-                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                              Escaneo en progreso...
-                            </Typography>
-                            <LinearProgress />
+                          <Box sx={{ mb: 2.5 }}>
+                            <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <CircularProgress size={16} />
+                              <Typography variant="body2" color="#1976D2" fontWeight={500}>
+                                Análisis en progreso...
+                              </Typography>
+                            </Box>
+                            <LinearProgress 
+                              sx={{ 
+                                borderRadius: '6px', 
+                                height: '6px',
+                                backgroundColor: '#E3F2FD',
+                                '& .MuiLinearProgress-bar': {
+                                  backgroundColor: '#1976D2'
+                                }
+                              }} 
+                            />
                           </Box>
                         )}
                         
+                        {/* Índice de Salud Digital */}
                         {scan.healthScore !== undefined && (
-                          <Box display="flex" alignItems="center" gap={2} mb={2}>
-                            <Typography variant="body2">Health Score:</Typography>
+                          <Box sx={{ mb: 2.5 }}>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                              <Typography variant="body2" color="#616161" fontWeight={500}>
+                                Índice de Salud Digital
+                              </Typography>
+                              <Box display="flex" alignItems="center" gap={0.5}>
+                                {healthInfo.icon}
+                                <Typography 
+                                  variant="h6" 
+                                  sx={{ 
+                                    fontWeight: 700, 
+                                    color: healthInfo.color,
+                                    fontSize: '18px'
+                                  }}
+                                >
+                                  {scan.healthScore}%
+                                </Typography>
+                              </Box>
+                            </Box>
+                            
                             <LinearProgress
                               variant="determinate"
                               value={scan.healthScore}
-                              color={getHealthScoreColor(scan.healthScore)}
-                              sx={{ flexGrow: 1, height: 8, borderRadius: 4 }}
+                              sx={{ 
+                                height: '6px', 
+                                borderRadius: '6px',
+                                backgroundColor: '#F5F5F5',
+                                '& .MuiLinearProgress-bar': {
+                                  background: `linear-gradient(90deg, ${healthInfo.color}, ${healthInfo.color}90)`,
+                                  borderRadius: '6px'
+                                }
+                              }}
                             />
-                            <Box display="flex" alignItems="center" gap={0.5}>
-                              <Typography variant="body2" fontWeight="bold">
-                                {scan.healthScore}%
+                            
+                            <Box display="flex" alignItems="center" gap={0.5} mt={1}>
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  color: healthInfo.color,
+                                  fontWeight: 600,
+                                  fontSize: '13px'
+                                }}
+                              >
+                                {healthInfo.text}
                               </Typography>
-                              {trendIcon}
+                              {trendInfo && (
+                                <Typography 
+                                  variant="caption" 
+                                  sx={{ 
+                                    color: trendInfo.color,
+                                    fontSize: '11px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.25
+                                  }}
+                                >
+                                  {trendInfo.text}
+                                </Typography>
+                              )}
                             </Box>
                           </Box>
                         )}
                         
-                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                          <Typography variant="body2" color="text.secondary">
-                            {formatVulnerabilitySummary(scan)}
-                          </Typography>
-                        </Box>
-
-                        <Box display="flex" gap={1} flexWrap="wrap">
-                          <Button size="small" variant="outlined" startIcon={<Security />}>
-                            Ver Detalles
-                          </Button>
-                          <Button size="small" variant="text" startIcon={<Download />}>
-                            Reporte
-                          </Button>
-                          <Button size="small" variant="text" startIcon={<Refresh />}>
-                            Re-escanear
-                          </Button>
-                          {index > 0 && (
-                            <Button size="small" variant="text" startIcon={<Compare />}>
-                              Comparar
+                        {/* Resumen de vulnerabilidades */}
+                        {scan.findingsCount !== undefined && (
+                          <Box sx={{ mb: 2.5 }}>
+                            <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                              {vulnInfo.icon}
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  color: vulnInfo.color,
+                                  fontWeight: 500,
+                                  fontSize: '13px'
+                                }}
+                              >
+                                {vulnInfo.text}
+                              </Typography>
+                            </Box>
+                            <Typography variant="caption" color="#757575">
+                              {formatVulnerabilitySummary(scan)}
+                            </Typography>
+                          </Box>
+                        )}
+                        
+                        {/* Acciones */}
+                        <Box 
+                          display="flex" 
+                          justifyContent="space-between" 
+                          alignItems="center" 
+                          pt={1.5}
+                          borderTop="1px solid #F0F0F0"
+                        >
+                          <Tooltip title="Ver análisis detallado">
+                            <Button
+                              size="small"
+                              startIcon={<Visibility />}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewDetails(scan);
+                              }}
+                              sx={{
+                                textTransform: 'none',
+                                fontWeight: 500,
+                                color: '#1976D2',
+                                '&:hover': {
+                                  backgroundColor: '#E3F2FD'
+                                }
+                              }}
+                            >
+                              Ver detalles
                             </Button>
-                          )}
+                          </Tooltip>
+                          
+                          <Box display="flex" gap={0.5}>
+                            <Tooltip title="Descargar reporte">
+                              <IconButton 
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Handle report download
+                                }}
+                                sx={{
+                                  backgroundColor: '#ECEFF1',
+                                  color: '#757575',
+                                  '&:hover': { 
+                                    backgroundColor: '#E3F2FD', 
+                                    color: '#1976D2' 
+                                  }
+                                }}
+                              >
+                                <Assessment fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            
+                            <Tooltip title="Repetir análisis">
+                              <IconButton 
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedDomain(scan.domain);
+                                  handleStartScan();
+                                }}
+                                sx={{
+                                  backgroundColor: '#ECEFF1',
+                                  color: '#757575',
+                                  '&:hover': { 
+                                    backgroundColor: '#E3F2FD', 
+                                    color: '#1976D2' 
+                                  }
+                                }}
+                              >
+                                <RestartAlt fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            
+                            <Tooltip title="Comparar resultados">
+                              <IconButton 
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Handle comparison
+                                }}
+                                sx={{
+                                  backgroundColor: '#ECEFF1',
+                                  color: '#757575',
+                                  '&:hover': { 
+                                    backgroundColor: '#E3F2FD', 
+                                    color: '#1976D2' 
+                                  }
+                                }}
+                              >
+                                <CompareArrows fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
                         </Box>
                       </CardContent>
                     </Card>
