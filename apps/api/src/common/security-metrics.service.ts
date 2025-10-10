@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
 export interface SecurityMetric {
   name: string;
@@ -10,7 +9,7 @@ export interface SecurityMetric {
 
 @Injectable()
 export class SecurityMetricsService {
-  constructor(private eventEmitter: EventEmitter2) {}
+  constructor() {}
 
   // Métricas de escaneo
   recordScanStarted(domain: string, companyId: string) {
@@ -90,7 +89,8 @@ export class SecurityMetricsService {
   }
 
   private emit(event: string, metric: SecurityMetric) {
-    this.eventEmitter.emit(event, metric);
+    // Log del evento para debugging
+    console.log(`Event: ${event}`, metric);
     
     // También enviar a servicio de métricas externo si está configurado
     if (process.env.METRICS_ENDPOINT) {

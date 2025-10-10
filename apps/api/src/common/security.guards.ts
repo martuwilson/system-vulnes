@@ -38,9 +38,9 @@ export class CompanyOwnershipGuard implements CanActivate {
         where: {
           id: scanId,
           company: {
-            users: {
+            companyUsers: {
               some: {
-                id: userId,
+                userId: userId,
               },
             },
           },
@@ -60,9 +60,9 @@ export class CompanyOwnershipGuard implements CanActivate {
           id: findingId,
           scan: {
             company: {
-              users: {
+              companyUsers: {
                 some: {
-                  id: userId,
+                  userId: userId,
                 },
               },
             },
@@ -82,9 +82,9 @@ export class CompanyOwnershipGuard implements CanActivate {
         where: {
           id: assetId,
           company: {
-            users: {
+            companyUsers: {
               some: {
-                id: userId,
+                userId: userId,
               },
             },
           },
@@ -116,20 +116,22 @@ export class RoleGuard implements CanActivate {
     }
 
     // Obtener roles del usuario
-    const userWithRoles = await this.prisma.user.findUnique({
-      where: { id: user.id },
+    const userCompanies = await this.prisma.companyUser.findMany({
+      where: { userId: user.id },
       select: {
         role: true,
         companyId: true,
       },
     });
 
-    if (!userWithRoles) {
+    if (!userCompanies.length) {
       return false;
     }
 
-    // Verificar si tiene alguno de los roles requeridos
-    return this.requiredRoles.includes(userWithRoles.role);
+    // Verificar si tiene alguno de los roles requeridos en alguna empresa
+    return userCompanies.some(companyUser => 
+      this.requiredRoles.includes(companyUser.role)
+    );
   }
 }
 

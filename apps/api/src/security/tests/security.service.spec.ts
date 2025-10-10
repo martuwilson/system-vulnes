@@ -96,33 +96,6 @@ describe('SecurityService', () => {
     });
   });
 
-  describe('calculateHealthScore', () => {
-    it('should calculate correct health score for findings', () => {
-      // Arrange
-      const findings = [
-        { severity: 'CRITICAL' },
-        { severity: 'HIGH' },
-        { severity: 'MEDIUM' },
-        { severity: 'LOW' },
-      ];
-
-      // Act
-      const score = service.calculateHealthScore(findings as any);
-
-      // Assert
-      // 100 - 25 (critical) - 15 (high) - 8 (medium) - 3 (low) = 49
-      expect(score).toBe(49);
-    });
-
-    it('should return 100 for no findings', () => {
-      const score = service.calculateHealthScore([]);
-      expect(score).toBe(100);
-    });
-
-    it('should not return negative scores', () => {
-      const manyFindings = Array(10).fill({ severity: 'CRITICAL' });
-      const score = service.calculateHealthScore(manyFindings as any);
-      expect(score).toBe(0);
-    });
-  });
+  // Nota: Los tests de calculateHealthScore se movieron a shared/utils.spec.ts
+  // ya que esa función ahora está en el paquete compartido
 });
