@@ -37,7 +37,10 @@ import {
   CheckCircleOutline,
   Domain,
   PriorityHigh,
-  Schedule
+  Schedule,
+  Analytics,
+  CheckCircleOutlined,
+  ErrorOutline
 } from '@mui/icons-material';
 import { HealthScoreIndicator } from '../../components/ui/HealthScoreIndicator';
 
@@ -998,48 +1001,56 @@ export function DashboardPage() {
           </Card>
         </Grid>
 
-        {/* Historial de Análisis - Humanizado */}
+        {/* Historial de Análisis - Estilo Securyx Optimizado */}
         <Grid item xs={12}>
           <Card 
             sx={{ 
-              borderRadius: 3,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-              border: '1px solid #E3F2FD'
+              borderRadius: '10px',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+              border: '1px solid #E0E0E0',
+              backgroundColor: '#FFFFFF'
             }}
           >
             <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography 
                   variant="h6" 
-                  fontWeight="bold"
+                  fontWeight="600"
                   sx={{ 
                     color: '#1E2A38',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 1
+                    gap: 1.5,
+                    fontSize: '1.1rem'
                   }}
                 >
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Assessment sx={{ fontSize: 20, color: '#1E2A38' }} />
-                    Historial de Análisis
-                  </Box>
+                  <Analytics sx={{ fontSize: 24, color: '#00B8D9' }} />
+                  Historial de Análisis
                 </Typography>
                 {recentScans.length > 0 && (
                   <Chip 
-                    label={
-                      recentScans.length === 1 ? '1 análisis realizado' :
-                      `${recentScans.length} análisis realizados`
-                    }
+                    label={`${recentScans.length} análisis realizados`}
                     size="small" 
                     sx={{
-                      backgroundColor: '#E3F2FD',
-                      color: '#1E2A38',
+                      backgroundColor: '#E0E0E0',
+                      color: '#424242',
                       fontWeight: 600,
-                      border: '1px solid #00B8D9'
+                      borderRadius: '20px',
+                      fontSize: '0.75rem'
                     }}
                   />
                 )}
               </Box>
+              
+              {/* Línea divisoria sutil */}
+              <Box 
+                sx={{ 
+                  width: '100%',
+                  height: '1px',
+                  backgroundColor: '#E0E0E0',
+                  mb: 3
+                }}
+              />
               
               {recentScans.length === 0 ? (
                 <Alert 
@@ -1066,12 +1077,36 @@ export function DashboardPage() {
               ) : (
                 <List>
                   {recentScans.map((scan) => {
-                    // Traducir estado a términos de negocio
+                    // Configuración visual según paleta Securyx
                     const businessStatus = {
-                      'COMPLETED': { label: 'Completado', icon: <CheckCircle sx={{ fontSize: 14 }} />, color: '#4CAF50', bg: '#E8F5E8' },
-                      'RUNNING': { label: 'Analizando...', icon: <TrendingUp sx={{ fontSize: 14 }} />, color: '#00B8D9', bg: '#E3F2FD' },
-                      'FAILED': { label: 'Error', icon: <Error sx={{ fontSize: 14 }} />, color: '#F44336', bg: '#FFEBEE' },
-                      'PENDING': { label: 'En espera', icon: <Warning sx={{ fontSize: 14 }} />, color: '#FF9800', bg: '#FFF3E0' }
+                      'COMPLETED': { 
+                        label: 'Completado', 
+                        icon: <CheckCircleOutlined sx={{ fontSize: 16 }} />, 
+                        color: '#4CAF50', 
+                        bg: '#F1FAEE',
+                        badgeColor: '#AEEA00'
+                      },
+                      'RUNNING': { 
+                        label: 'Analizando...', 
+                        icon: <TrendingUp sx={{ fontSize: 16 }} />, 
+                        color: '#00B8D9', 
+                        bg: '#E3F2FD',
+                        badgeColor: '#00B8D9'
+                      },
+                      'FAILED': { 
+                        label: 'Error', 
+                        icon: <ErrorOutline sx={{ fontSize: 16 }} />, 
+                        color: '#E53935', 
+                        bg: '#FFF1F1',
+                        badgeColor: '#E53935'
+                      },
+                      'PENDING': { 
+                        label: 'En espera', 
+                        icon: <Warning sx={{ fontSize: 16 }} />, 
+                        color: '#FF9800', 
+                        bg: '#FFF8E1',
+                        badgeColor: '#FF9800'
+                      }
                     };
 
                     const status = businessStatus[scan.status as keyof typeof businessStatus] || 
@@ -1088,55 +1123,62 @@ export function DashboardPage() {
                     return (
                       <ListItem 
                         key={scan.id} 
-                        divider 
                         sx={{ 
-                          py: 3,
-                          borderRadius: 2,
+                          py: 2.5,
+                          px: 2.5,
+                          borderRadius: '10px',
                           mb: 2,
                           backgroundColor: status.bg,
-                          border: `1px solid ${status.color}20`,
+                          border: `1px solid ${status.color}15`,
+                          boxShadow: '0 2px 5px rgba(0,0,0,0.08)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
                           '&:hover': {
                             transform: 'translateY(-2px)',
-                            boxShadow: `0 6px 20px ${status.color}20`,
-                            transition: 'all 0.3s ease-in-out'
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                           }
                         }}
                       >
-                        <ListItemIcon>
+                        <ListItemIcon sx={{ minWidth: 50 }}>
                           <Box
                             sx={{
-                              width: 48,
-                              height: 48,
+                              width: 44,
+                              height: 44,
                               borderRadius: '50%',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              background: `linear-gradient(135deg, ${status.color} 0%, ${status.color}80 100%)`,
-                              color: 'white'
+                              backgroundColor: `${status.color}15`,
+                              border: `2px solid ${status.color}30`,
+                              color: status.color
                             }}
                           >
-                            <Security />
+                            <Security sx={{ fontSize: 22 }} />
                           </Box>
                         </ListItemIcon>
                         <ListItemText
                           primary={
-                            <Box display="flex" alignItems="center" gap={2} mb={1}>
-                              <Box display="flex" alignItems="center" gap={0.5}>
-                                <Assessment sx={{ fontSize: 18, color: '#1E2A38' }} />
-                                <Typography variant="subtitle1" fontWeight="600" color="#1E2A38">
-                                  Análisis de {scan.domain}
-                                </Typography>
-                              </Box>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                              <Typography 
+                                variant="subtitle1" 
+                                fontWeight="600" 
+                                color="#263238"
+                                sx={{ fontSize: '16px' }}
+                              >
+                                Análisis de {scan.domain}
+                              </Typography>
                               <Chip
                                 icon={status.icon}
                                 label={status.label}
                                 size="small"
                                 sx={{
-                                  backgroundColor: status.color,
-                                  color: 'white',
+                                  backgroundColor: status.badgeColor,
+                                  color: status.label === 'Completado' ? '#1E2A38' : 'white',
                                   fontWeight: 600,
+                                  borderRadius: '20px',
+                                  fontSize: '0.75rem',
                                   '& .MuiChip-icon': {
-                                    color: 'white !important'
+                                    color: status.label === 'Completado' ? '#1E2A38 !important' : 'white !important'
                                   }
                                 }}
                               />
@@ -1144,27 +1186,63 @@ export function DashboardPage() {
                           }
                           secondary={
                             <Box>
-                              <Typography variant="body2" sx={{ color: '#2D3748', fontWeight: 500, mb: 1 }}>
+                              <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                  color: '#424242', 
+                                  fontWeight: 500, 
+                                  mb: 1.5,
+                                  fontSize: '14px'
+                                }}
+                              >
                                 {getVulnMessage(scan.findingsCount)}
                               </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                Análisis realizado el {formatDateTime(scan.createdAt)}
-                              </Typography>
+                              <Box display="flex" alignItems="center" gap={0.5}>
+                                <Schedule sx={{ fontSize: 16, color: '#757575' }} />
+                                <Typography 
+                                  variant="caption" 
+                                  sx={{ 
+                                    color: '#757575',
+                                    fontSize: '13px'
+                                  }}
+                                >
+                                  {formatDateTime(scan.createdAt)}
+                                </Typography>
+                              </Box>
                             </Box>
                           }
                         />
-                        <Box display="flex" alignItems="center" gap={2}>
-                          <Box textAlign="center">
-                            <Typography variant="caption" color="text.secondary">
-                              Nivel de Seguridad
-                            </Typography>
-                            <HealthScoreIndicator 
-                              score={scan.healthScore} 
-                              size="medium" 
-                              showLabel={true}
-                              showProgress={true}
-                            />
-                          </Box>
+                        <Box 
+                          display="flex" 
+                          flexDirection="column" 
+                          alignItems="center" 
+                          sx={{ minWidth: 100 }}
+                        >
+                          <Typography 
+                            variant="caption" 
+                            sx={{ 
+                              color: '#757575',
+                              fontSize: '12px',
+                              mb: 1,
+                              textAlign: 'center'
+                            }}
+                          >
+                            Nivel de Seguridad
+                          </Typography>
+                          <Tooltip 
+                            title="Nivel de seguridad calculado según vulnerabilidades detectadas"
+                            arrow
+                            placement="top"
+                          >
+                            <Box sx={{ cursor: 'help' }}>
+                              <HealthScoreIndicator 
+                                score={scan.healthScore} 
+                                size="medium" 
+                                showLabel={true}
+                                showProgress={true}
+                              />
+                            </Box>
+                          </Tooltip>
                         </Box>
                       </ListItem>
                     );
