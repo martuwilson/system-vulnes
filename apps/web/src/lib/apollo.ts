@@ -30,8 +30,8 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         toast.error('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
         
         // Redirigir al login si no estamos ya ahí
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
+        if (window.location.pathname !== '/auth/login') {
+          window.location.href = '/auth/login';
         }
       }
     });
@@ -45,8 +45,8 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       
       toast.error('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
       
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      if (window.location.pathname !== '/auth/login') {
+        window.location.href = '/auth/login';
       }
     }
   }

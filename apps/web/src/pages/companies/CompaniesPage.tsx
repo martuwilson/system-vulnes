@@ -209,7 +209,7 @@ export function CompaniesPage() {
             variant="contained" 
             color="primary" 
             sx={{ mt: 2 }}
-            onClick={() => window.location.href = '/login'}
+            onClick={() => window.location.href = '/auth/login'}
           >
             Ir al Login
           </Button>
