@@ -31,11 +31,14 @@ import {
   Assessment,
   Public,
   Notifications,
+  NotificationsActive,
   TrendingUp,
   MonitorHeart,
   Info,
   CheckCircleOutline,
-  Domain
+  Domain,
+  PriorityHigh,
+  Schedule
 } from '@mui/icons-material';
 import { HealthScoreIndicator } from '../../components/ui/HealthScoreIndicator';
 
@@ -44,7 +47,7 @@ import { MetricCard } from '../../components/ui/MetricCard';
 import { Toast, useToast } from '../../components/ui/Toast';
 import { WelcomeCard } from '../../components/dashboard/WelcomeCard';
 
-import { getCategoryIconByType, formatDateTime } from '../../lib/translations';
+import { formatDateTime } from '../../lib/translations';
 
 const GET_MY_COMPANIES = gql`
   query GetMyCompanies {
@@ -624,59 +627,71 @@ export function DashboardPage() {
           </Card>
         </Grid>
 
-        {/* Alertas de Seguridad - Humanizado */}
+        {/* Alertas de Seguridad - Estilo Securyx Optimizado */}
         <Grid item xs={12} md={6}>
           <Card 
             sx={{ 
               height: '100%',
-              borderRadius: 3,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-              border: '1px solid #E3F2FD'
+              borderRadius: '10px',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+              border: '1px solid #E0E0E0',
+              backgroundColor: '#FFFFFF',
+              transition: 'all 0.3s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+              }
             }}
           >
             <CardContent>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography 
                   variant="h6" 
-                  fontWeight="bold"
+                  fontWeight="600"
                   sx={{ 
-                    color: '#1E2A38'
+                    color: '#1E2A38',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5
                   }}
                 >
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Notifications sx={{ fontSize: 24, color: '#F44336' }} />
-                    Alertas de Seguridad
-                  </Box>
-                </Typography>
-                <Box display="flex" alignItems="center" gap={2}>
+                  <NotificationsActive sx={{ fontSize: 24, color: '#F57C00' }} />
+                  Alertas de Seguridad
                   {recentFindings.length > 0 && (
                     <Chip 
-                      label={
-                        recentFindings.length === 1 ? '1 alerta' :
-                        `${recentFindings.length} alertas`
-                      }
+                      label={`${recentFindings.length} alertas`}
                       size="small" 
                       sx={{
-                        backgroundColor: recentFindings.length === 0 ? '#E8F5E8' : '#FFF3E0',
-                        color: recentFindings.length === 0 ? '#2E7D32' : '#F57C00',
+                        backgroundColor: '#F57C00',
+                        color: 'white',
                         fontWeight: 600,
-                        border: recentFindings.length === 0 ? '1px solid #AEEA00' : '1px solid #FFB74D'
+                        fontSize: '0.75rem',
+                        ml: 1
                       }}
                     />
                   )}
+                </Typography>
+                <Box display="flex" alignItems="center" gap={2}>
                   {recentFindings.length > 5 && (
-                    <FormControl size="small" sx={{ minWidth: 120 }}>
-                      <InputLabel>Prioridad</InputLabel>
+                    <FormControl size="small" sx={{ minWidth: 140 }}>
+                      <InputLabel sx={{ color: '#616161' }}>Prioridad</InputLabel>
                       <Select
                         value={severityFilter}
                         label="Prioridad"
                         onChange={(e) => setSeverityFilter(e.target.value)}
-                        sx={{ borderRadius: 2 }}
+                        sx={{ 
+                          borderRadius: 2,
+                          border: '1px solid #E0E0E0',
+                          '&:hover': {
+                            '& .MuiOutlinedInput-notchedOutline': {
+                              borderColor: '#1565C0',
+                            }
+                          }
+                        }}
                       >
                         <MenuItem value="all">Todas las alertas</MenuItem>
                         <MenuItem value="critical">
                           <Box display="flex" alignItems="center" gap={1}>
-                            <Error sx={{ fontSize: 16, color: '#F44336' }} />
+                            <Error sx={{ fontSize: 16, color: '#E65100' }} />
                             Críticas
                           </Box>
                         </MenuItem>
@@ -688,13 +703,13 @@ export function DashboardPage() {
                         </MenuItem>
                         <MenuItem value="medium">
                           <Box display="flex" alignItems="center" gap={1}>
-                            <Assessment sx={{ fontSize: 16, color: '#FF9800' }} />
-                            Moderadas
+                            <PriorityHigh sx={{ fontSize: 16, color: '#F57C00' }} />
+                            Para Revisar
                           </Box>
                         </MenuItem>
                         <MenuItem value="low">
                           <Box display="flex" alignItems="center" gap={1}>
-                            <Info sx={{ fontSize: 16, color: '#2196F3' }} />
+                            <Info sx={{ fontSize: 16, color: '#00B8D9' }} />
                             Informativas
                           </Box>
                         </MenuItem>
@@ -751,12 +766,36 @@ export function DashboardPage() {
                         .replace(/SQL Injection/g, 'Seguridad de Datos')
                         .replace(/CSRF/g, 'Protección de Formularios');
 
-                      // Traducir severidad a términos de negocio
+                      // Configuración visual según paleta Securyx
                       const businessSeverity = {
-                        critical: { label: 'Crítico', icon: <Error sx={{ fontSize: 14 }} />, color: '#F44336', bg: '#FFEBEE' },
-                        high: { label: 'Importante', icon: <Warning sx={{ fontSize: 14 }} />, color: '#F57C00', bg: '#FFF3E0' },
-                        medium: { label: 'Revisar', icon: <Assessment sx={{ fontSize: 14 }} />, color: '#FF9800', bg: '#FFF8E1' },
-                        low: { label: 'Informativo', icon: <Info sx={{ fontSize: 14 }} />, color: '#2196F3', bg: '#E3F2FD' }
+                        critical: { 
+                          label: 'Crítico', 
+                          icon: <Error sx={{ fontSize: 24 }} />, 
+                          color: '#E65100', 
+                          bg: '#FFEBEE',
+                          badgeColor: '#E65100'
+                        },
+                        high: { 
+                          label: 'Importante', 
+                          icon: <Warning sx={{ fontSize: 24 }} />, 
+                          color: '#F57C00', 
+                          bg: '#FFF8E1',
+                          badgeColor: '#F57C00'
+                        },
+                        medium: { 
+                          label: 'Revisar', 
+                          icon: <PriorityHigh sx={{ fontSize: 24 }} />, 
+                          color: '#F57C00', 
+                          bg: '#FFF8E1',
+                          badgeColor: '#F57C00'
+                        },
+                        low: { 
+                          label: 'Informativo', 
+                          icon: <Info sx={{ fontSize: 24 }} />, 
+                          color: '#00B8D9', 
+                          bg: '#E3F2FD',
+                          badgeColor: '#42A5F5'
+                        }
                       };
 
                       const severity = businessSeverity[finding.severity.toLowerCase() as keyof typeof businessSeverity] || 
@@ -765,46 +804,59 @@ export function DashboardPage() {
                       return (
                         <ListItem 
                           key={finding.id} 
-                          divider 
                           sx={{ 
-                            py: 2.5,
-                            borderRadius: 2,
-                            mb: 1,
+                            py: 3,
+                            px: 2.5,
+                            borderRadius: '10px',
+                            mb: 2,
                             backgroundColor: severity.bg,
-                            border: `1px solid ${severity.color}20`,
+                            border: `1px solid ${severity.color}15`,
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease-in-out',
                             '&:hover': {
-                              transform: 'translateX(4px)',
-                              boxShadow: `0 4px 12px ${severity.color}20`,
-                              transition: 'all 0.2s ease-in-out'
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                              filter: 'brightness(1.02)'
                             }
                           }}
                         >
-                          <ListItemIcon>
+                          <ListItemIcon sx={{ minWidth: 40, alignItems: 'flex-start', pt: 0.5 }}>
                             <Box 
                               sx={{ 
-                                fontSize: '2em',
-                                filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.1))'
+                                color: severity.color,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
                               }}
                             >
-                              {getCategoryIconByType(finding.category)}
+                              {severity.icon}
                             </Box>
                           </ListItemIcon>
                           <ListItemText
                             primary={
                               <Box display="flex" alignItems="center" gap={1} mb={1}>
-                                <Typography variant="subtitle1" fontWeight="600" color="#1E2A38">
+                                <Typography 
+                                  variant="subtitle1" 
+                                  fontWeight="600" 
+                                  color="#263238"
+                                  sx={{ flex: 1 }}
+                                >
                                   {humanizedTitle}
                                 </Typography>
                                 <Chip
-                                  icon={severity.icon}
                                   label={severity.label}
                                   size="small"
                                   sx={{
-                                    backgroundColor: severity.color,
+                                    backgroundColor: severity.badgeColor,
                                     color: 'white',
                                     fontWeight: 600,
-                                    '& .MuiChip-icon': {
-                                      color: 'white !important'
+                                    borderRadius: '20px',
+                                    fontSize: '0.75rem',
+                                    transition: 'all 0.2s ease-in-out',
+                                    '&:hover': {
+                                      filter: 'brightness(1.05)',
+                                      boxShadow: `0 2px 8px ${severity.badgeColor}40`
                                     }
                                   }}
                                 />
@@ -812,15 +864,20 @@ export function DashboardPage() {
                             }
                             secondary={
                               <Box>
-                                <Box display="flex" alignItems="center" gap={0.5} sx={{ mb: 0.5 }}>
-                                  <Domain sx={{ fontSize: 16, color: '#00B8D9' }} />
-                                  <Typography variant="body2" sx={{ color: '#2D3748', fontWeight: 500 }}>
-                                    {finding.asset.domain}
-                                  </Typography>
+                                <Box display="flex" alignItems="center" gap={1} sx={{ mb: 1 }}>
+                                  <Box display="flex" alignItems="center" gap={0.5}>
+                                    <Language sx={{ fontSize: 16, color: '#00B8D9' }} />
+                                    <Typography variant="body2" sx={{ color: '#616161', fontWeight: 500 }}>
+                                      {finding.asset.domain}
+                                    </Typography>
+                                  </Box>
+                                  <Box display="flex" alignItems="center" gap={0.5}>
+                                    <Schedule sx={{ fontSize: 16, color: '#616161' }} />
+                                    <Typography variant="caption" sx={{ color: '#616161' }}>
+                                      {formatDateTime(finding.createdAt)}
+                                    </Typography>
+                                  </Box>
                                 </Box>
-                                <Typography variant="caption" color="text.secondary">
-                                  Detectado el {formatDateTime(finding.createdAt)}
-                                </Typography>
                                 <Tooltip 
                                   title={`Detalles técnicos: ${finding.description}`}
                                   arrow
@@ -829,16 +886,20 @@ export function DashboardPage() {
                                   <Typography 
                                     variant="body2" 
                                     sx={{ 
-                                      fontSize: '0.875rem',
-                                      cursor: 'help',
-                                      color: '#546E7A',
+                                      fontSize: '0.85rem',
+                                      cursor: 'pointer',
+                                      color: '#1565C0',
                                       mt: 0.5,
-                                      '&:hover': { textDecoration: 'underline' }
+                                      transition: 'all 0.2s ease-in-out',
+                                      '&:hover': { 
+                                        textDecoration: 'underline',
+                                        color: '#0D47A1'
+                                      }
                                     }}
                                   >
                                     <Box display="flex" alignItems="center" gap={0.5}>
-                                      <Info sx={{ fontSize: 14, color: '#546E7A' }} />
-                                      <span>Clic aquí para ver más detalles técnicos</span>
+                                      <Info sx={{ fontSize: 16, color: '#1565C0' }} />
+                                      <span>Ver más detalles técnicos</span>
                                     </Box>
                                   </Typography>
                                 </Tooltip>
