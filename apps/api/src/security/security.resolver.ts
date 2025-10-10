@@ -315,7 +315,11 @@ export class SecurityResolver {
     @CurrentUser() user: User,
   ): Promise<SecurityScanStatus | null> {
     try {
+      console.log('🔍 getSecurityScanStatus - scanId recibido:', scanId);
+      console.log('🔍 getSecurityScanStatus - user:', user.id);
+      
       const userWithCompany = await this.getCurrentUserWithCompany(user.id);
+      console.log('🔍 getSecurityScanStatus - userWithCompany:', userWithCompany?.companyId);
       
       if (!userWithCompany?.companyId) {
         return null;
@@ -333,7 +337,15 @@ export class SecurityResolver {
         }
       });
 
+      console.log('🔍 getSecurityScanStatus - scan encontrado:', scan ? 'SÍ' : 'NO');
+      if (scan) {
+        console.log('🔍 getSecurityScanStatus - scan.id:', scan.id);
+        console.log('🔍 getSecurityScanStatus - scan.domain:', scan.domain);
+        console.log('🔍 getSecurityScanStatus - findings count:', scan.findings?.length);
+      }
+
       if (!scan) {
+        console.log('❌ getSecurityScanStatus - No se encontró el scan con ID:', scanId);
         return null;
       }
 

@@ -1,0 +1,1 @@
+SELECT COUNT(*) as total_scans FROM security_scans;
