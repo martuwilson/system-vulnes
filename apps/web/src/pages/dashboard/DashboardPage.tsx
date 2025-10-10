@@ -30,7 +30,6 @@ import {
   Language,
   Assessment,
   Public,
-  Notifications,
   NotificationsActive,
   TrendingUp,
   MonitorHeart,
@@ -745,19 +744,69 @@ export function DashboardPage() {
                   </Box>
                 </Alert>
               ) : (
-                <List>
-                  {[...recentFindings]
-                    .filter(finding => 
+                <>
+                  {/* Indicador de alertas filtradas */}
+                  {(() => {
+                    const filteredFindings = [...recentFindings].filter(finding => 
                       severityFilter === 'all' || 
                       finding.severity.toLowerCase() === severityFilter
-                    )
-                    .sort((a, b) => {
-                      // Ordenar por prioridad: críticas > importantes > moderadas > informativas
-                      const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-                      return (severityOrder[b.severity.toLowerCase() as keyof typeof severityOrder] || 0) - 
-                             (severityOrder[a.severity.toLowerCase() as keyof typeof severityOrder] || 0);
-                    })
-                    .slice(0, 5)
+                    );
+                    const showingCount = filteredFindings.length;
+                    const totalCount = recentFindings.length;
+                    
+                    return showingCount !== totalCount && (
+                      <Box 
+                        sx={{ 
+                          mb: 2, 
+                          p: 1.5,
+                          backgroundColor: '#E3F2FD',
+                          border: '1px solid #BBDEFB',
+                          borderRadius: '8px',
+                          textAlign: 'center'
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ color: '#1565C0', fontWeight: 500 }}>
+                          Mostrando {showingCount} de {totalCount} alertas
+                          {severityFilter !== 'all' && ' (filtradas)'}
+                        </Typography>
+                      </Box>
+                    );
+                  })()}
+
+                  <Box 
+                    sx={{ 
+                      maxHeight: '400px',
+                      overflowY: 'auto',
+                      pr: 1,
+                      position: 'relative',
+                      '&::-webkit-scrollbar': {
+                        width: '6px',
+                      },
+                      '&::-webkit-scrollbar-track': {
+                        backgroundColor: '#F5F5F5',
+                        borderRadius: '3px',
+                      },
+                      '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: '#BDBDBD',
+                        borderRadius: '3px',
+                        '&:hover': {
+                          backgroundColor: '#9E9E9E',
+                        }
+                      }
+                    }}
+                  >
+                  <List sx={{ py: 0 }}>
+                    {[...recentFindings]
+                      .filter(finding => 
+                        severityFilter === 'all' || 
+                        finding.severity.toLowerCase() === severityFilter
+                      )
+                      .sort((a, b) => {
+                        // Ordenar por prioridad: críticas > importantes > moderadas > informativas
+                        const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+                        return (severityOrder[b.severity.toLowerCase() as keyof typeof severityOrder] || 0) - 
+                               (severityOrder[a.severity.toLowerCase() as keyof typeof severityOrder] || 0);
+                      })
                     .map((finding) => {
                       // Humanizar títulos técnicos
                       const humanizedTitle = finding.title
@@ -909,7 +958,41 @@ export function DashboardPage() {
                         </ListItem>
                       );
                     })}
-                </List>
+                    </List>
+                    
+                    {/* Indicador de más contenido */}
+                    {(() => {
+                      const filteredFindings = [...recentFindings].filter(finding => 
+                        severityFilter === 'all' || 
+                        finding.severity.toLowerCase() === severityFilter
+                      );
+                      return filteredFindings.length > 3 && (
+                        <Box 
+                          sx={{ 
+                            textAlign: 'center',
+                            py: 1,
+                            borderTop: '1px solid #E0E0E0',
+                            backgroundColor: 'rgba(245, 245, 245, 0.5)',
+                            position: 'sticky',
+                            bottom: 0,
+                            backdropFilter: 'blur(2px)'
+                          }}
+                        >
+                          <Typography 
+                            variant="caption" 
+                            sx={{ 
+                              color: '#616161',
+                              fontSize: '0.75rem',
+                              fontStyle: 'italic'
+                            }}
+                          >
+                            Desplázate para ver todas las alertas
+                          </Typography>
+                        </Box>
+                      );
+                    })()}
+                  </Box>
+                </>
               )}
             </CardContent>
           </Card>
