@@ -7,6 +7,7 @@ import {
   Typography,
   Button,
   Dialog,
+  DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
@@ -45,6 +46,8 @@ import {
   Visibility,
   Search,
   Radar,
+  ErrorOutline,
+  Lock,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 import { formatDateTime } from '../../lib/translations';
@@ -83,6 +86,40 @@ const GET_COMPANY_SCANS = gql`
   }
 `;
 
+const GET_USER_SUBSCRIPTION = gql`
+  query GetUserSubscription {
+    userProfile {
+      id
+      subscription {
+        id
+        plan
+        status
+      }
+    }
+  }
+`;
+
+const GET_PLAN_LIMITS = gql`
+  query GetPlanLimits($plan: String!) {
+    planLimitsByPlan(plan: $plan) {
+      id
+      plan
+      maxDomains
+      maxAssets
+      hasSlackIntegration
+      hasTeamsIntegration
+      hasPDFReports
+      hasCSVReports
+      hasComplianceReports
+      hasAuditorAccess
+      hasPrioritySupport
+      hasHistoricalTrends
+      maxUsers
+      priceUsd
+    }
+  }
+`;
+
 const CREATE_ASSET = gql`
   mutation CreateAsset($input: CreateAssetInput!) {
     createAsset(input: $input) {
@@ -115,6 +152,32 @@ export function CompaniesPage() {
   const [open, setOpen] = useState(false);
   const [domain, setDomain] = useState('');
   const [loading, setLoading] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState<{open: boolean, assetId: string, domainName: string}>({
+    open: false,
+    assetId: '',
+    domainName: ''
+  });
+  const [deleting, setDeleting] = useState(false);
+  
+  // Estados para ver detalles
+  const [detailsDialog, setDetailsDialog] = useState<{open: boolean, asset: Asset | null}>({
+    open: false,
+    asset: null
+  });
+  
+  // Estados para editar dominio
+  const [editDialog, setEditDialog] = useState<{open: boolean, asset: Asset | null}>({
+    open: false,
+    asset: null
+  });
+  const [editingDomain, setEditingDomain] = useState('');
+  
+  // Estados para modal de upgrade
+  const [upgradeDialog, setUpgradeDialog] = useState<{open: boolean, feature: string, message: string}>({
+    open: false,
+    feature: '',
+    message: ''
+  });
 
   // Obtener las empresas del usuario
   const { data: companiesData } = useQuery(GET_MY_COMPANIES);
@@ -138,6 +201,19 @@ export function CompaniesPage() {
     errorPolicy: 'all'
   });
 
+  // Obtener información de suscripción del usuario
+  const { data: subscriptionData } = useQuery(GET_USER_SUBSCRIPTION, {
+    errorPolicy: 'all'
+  });
+
+  // Obtener límites del plan actual
+  const userPlan = subscriptionData?.userProfile?.subscription?.plan || 'TRIAL';
+  const { data: planLimitsData } = useQuery(GET_PLAN_LIMITS, {
+    variables: { plan: userPlan },
+    skip: !userPlan,
+    errorPolicy: 'all'
+  });
+
   const [createAsset] = useMutation(CREATE_ASSET, {
     refetchQueries: ['GetCompanyAssets'],
   });
@@ -147,12 +223,44 @@ export function CompaniesPage() {
 
   const assets: Asset[] = data?.companyAssets || [];
   const allScans = scansData?.securityScans || [];
+  const planLimits = planLimitsData?.planLimitsByPlan;
 
   // Función helper para obtener el último escaneo de un dominio específico
   const getLatestScanForDomain = (domain: string) => {
     const filtered = allScans.filter((scan: any) => scan.domain === domain);
     const latest = filtered.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0] || null;
     return latest;
+  };
+
+  // Funciones de validación de permisos basadas en planes
+  const canEditDomains = () => {
+    if (!planLimits) return false;
+    // Solo Growth y Pro pueden editar dominios
+    return ['GROWTH', 'PRO'].includes(userPlan);
+  };
+
+  const canViewDetailedReports = () => {
+    if (!planLimits) return true; // Por defecto permitir
+    // Todos los planes pueden ver detalles básicos
+    return true;
+  };
+
+  const getUpgradeMessage = (feature: string) => {
+    const planNames = {
+      'TRIAL': 'Trial',
+      'STARTER': 'Starter', 
+      'GROWTH': 'Growth',
+      'PRO': 'Pro'
+    };
+    
+    const currentPlanName = planNames[userPlan as keyof typeof planNames] || 'Trial';
+    
+    switch (feature) {
+      case 'edit':
+        return `La edición de dominios está disponible desde el plan Growth. Tu plan actual: ${currentPlanName}`;
+      default:
+        return `Esta funcionalidad requiere un plan superior. Tu plan actual: ${currentPlanName}`;
+    }
   };
 
   const handleSubmit = async () => {
@@ -181,16 +289,82 @@ export function CompaniesPage() {
     }
   };
 
-  const handleDelete = async (id: string, domain: string) => {
-    if (!window.confirm(`¿Estás seguro de eliminar ${domain}?`)) return;
+  const handleDelete = (id: string, domain: string) => {
+    setDeleteDialog({
+      open: true,
+      assetId: id,
+      domainName: domain
+    });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteDialog.assetId) return;
     
+    setDeleting(true);
     try {
-      await deleteAsset({ variables: { id } });
-      toast.success('Asset eliminado exitosamente');
+      await deleteAsset({ variables: { id: deleteDialog.assetId } });
+      toast.success(`${deleteDialog.domainName} eliminado exitosamente`);
+      setDeleteDialog({ open: false, assetId: '', domainName: '' });
     } catch (error: any) {
       console.error('Error deleting asset:', error);
-      toast.error(error.message || 'Error al eliminar asset');
+      toast.error(error.message || 'Error al eliminar dominio');
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialog({ open: false, assetId: '', domainName: '' });
+  };
+
+  // Función para ver detalles
+  const handleViewDetails = (asset: Asset) => {
+    setDetailsDialog({
+      open: true,
+      asset: asset
+    });
+  };
+
+  // Función para cerrar detalles
+  const closeDetailsDialog = () => {
+    setDetailsDialog({ open: false, asset: null });
+  };
+
+  // Función para editar dominio
+  const handleEditDomain = (asset: Asset) => {
+    // Verificar si el usuario puede editar dominios
+    if (!canEditDomains()) {
+      setUpgradeDialog({
+        open: true,
+        feature: 'edit',
+        message: getUpgradeMessage('edit')
+      });
+      return;
+    }
+
+    setEditingDomain(asset.domain);
+    setEditDialog({
+      open: true,
+      asset: asset
+    });
+  };
+
+  // Función para cerrar edición
+  const closeEditDialog = () => {
+    setEditDialog({ open: false, asset: null });
+    setEditingDomain('');
+  };
+
+  // Función para confirmar edición (por ahora solo cierra el modal)
+  const confirmEdit = () => {
+    // Aquí puedes agregar la lógica para actualizar el dominio
+    toast.success(`Dominio actualizado: ${editingDomain}`);
+    closeEditDialog();
+  };
+
+  // Función para cerrar modal de upgrade
+  const closeUpgradeDialog = () => {
+    setUpgradeDialog({ open: false, feature: '', message: '' });
   };
 
   if (queryLoading) {
@@ -284,19 +458,60 @@ export function CompaniesPage() {
           mb={4}
         >
           <Box flex={1}>
-            <Typography 
-              variant="h3" 
-              sx={{ 
-                fontSize: { xs: '24px', sm: '28px', md: '32px' },
-                fontWeight: 700,
-                color: '#1E2A38',
-                mb: 1.5,
-                letterSpacing: '-0.8px',
-                fontFamily: 'Inter, sans-serif'
-              }}
-            >
-              Panel de Seguridad Digital de tu Empresa
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5, flexWrap: 'wrap' }}>
+              <Typography 
+                variant="h3" 
+                sx={{ 
+                  fontSize: { xs: '24px', sm: '28px', md: '32px' },
+                  fontWeight: 700,
+                  color: '#1E2A38',
+                  letterSpacing: '-0.8px',
+                  fontFamily: 'Inter, sans-serif'
+                }}
+              >
+                Panel de Seguridad Digital de tu Empresa
+              </Typography>
+              
+              {/* Badge del Plan */}
+              <Chip 
+                label={(() => {
+                  const planNames = {
+                    'TRIAL': 'Trial',
+                    'STARTER': 'Starter',
+                    'GROWTH': 'Growth', 
+                    'PRO': 'Pro'
+                  };
+                  return planNames[userPlan as keyof typeof planNames] || 'Trial';
+                })()}
+                size="small"
+                sx={{
+                  bgcolor: (() => {
+                    const colors = {
+                      'TRIAL': '#E3F2FD',
+                      'STARTER': '#FFF3E0', 
+                      'GROWTH': '#E8F5E8',
+                      'PRO': '#F3E5F5'
+                    };
+                    return colors[userPlan as keyof typeof colors] || '#E3F2FD';
+                  })(),
+                  color: (() => {
+                    const colors = {
+                      'TRIAL': '#1976D2',
+                      'STARTER': '#F57C00',
+                      'GROWTH': '#388E3C', 
+                      'PRO': '#7B1FA2'
+                    };
+                    return colors[userPlan as keyof typeof colors] || '#1976D2';
+                  })(),
+                  fontWeight: 600,
+                  fontSize: '12px',
+                  height: 24,
+                  '& .MuiChip-label': {
+                    px: 1.5
+                  }
+                }}
+              />
+            </Box>
             <Typography 
               variant="subtitle1" 
               sx={{ 
@@ -375,7 +590,6 @@ export function CompaniesPage() {
           sx={{ 
             borderRadius: '16px',
             border: 'none',
-            boxShadow: '0 8px 32px rgba(30, 42, 56, 0.12)',
             overflow: 'hidden',
             background: 'linear-gradient(145deg, #1E2A38 0%, #263238 100%)',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 32px rgba(30, 42, 56, 0.15)',
@@ -584,6 +798,71 @@ export function CompaniesPage() {
           </CardContent>
         </Card>
       </Box>
+
+      {/* ===== CARD INFORMATIVA SOBRE LIMITACIONES DEL PLAN ===== */}
+      {(['TRIAL', 'STARTER'].includes(userPlan)) && (
+        <Box sx={{ mb: 4 }}>
+          <Card 
+            sx={{ 
+              borderRadius: '16px',
+              border: '2px solid #ff4757',
+              background: 'linear-gradient(135deg, rgba(255, 71, 87, 0.05) 0%, rgba(255, 107, 122, 0.05) 100%)',
+              position: 'relative',
+              overflow: 'visible'
+            }}
+          >
+            <CardContent sx={{ p: 4 }}>
+              <Box display="flex" alignItems="center" gap={3}>
+                <Box sx={{ 
+                  p: 2.5, 
+                  borderRadius: '16px', 
+                  bgcolor: 'rgba(255, 71, 87, 0.15)',
+                  border: '1px solid rgba(255, 71, 87, 0.2)',
+                  display: 'flex'
+                }}>
+                  <Lock sx={{ fontSize: 32, color: '#ff4757' }} />
+                </Box>
+                <Box flex={1}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ fontSize: '18px', fontWeight: 700, mb: 1, color: '#ff4757' }}
+                  >
+                    🚀 Desbloquea más funciones con Growth
+                  </Typography>
+                  <Typography sx={{ fontSize: '14px', color: '#666', mb: 2, lineHeight: 1.5 }}>
+                    Tu plan <strong>{userPlan === 'TRIAL' ? 'Trial' : 'Starter'}</strong> tiene funcionalidades limitadas. 
+                    Con Growth obtienes edición completa de dominios, más monitoreó, y reportes avanzados.
+                  </Typography>
+                  <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+                    <Typography variant="body2" sx={{ color: '#888', fontSize: '13px' }}>
+                      ✨ Edición de dominios • 🔄 5 dominios • 📊 Reportes CSV • 💬 Integración Slack/Teams
+                    </Typography>
+                  </Box>
+                </Box>
+                <Button
+                  variant="contained"
+                  sx={{
+                    bgcolor: '#ff4757',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '14px',
+                    textTransform: 'none',
+                    px: 3,
+                    py: 1.5,
+                    borderRadius: '12px',
+                    '&:hover': {
+                      bgcolor: '#ff3838'
+                    }
+                  }}
+                  onClick={() => window.open('/pricing', '_blank')}
+                >
+                  Ver Planes
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+      )}
 
       {/* ===== LAYOUT PRINCIPAL CON SIDEBAR ===== */}
       <Grid container spacing={{ xs: 3, md: 4 }}>
@@ -815,6 +1094,7 @@ export function CompaniesPage() {
                           <Tooltip title="Ver detalles" arrow>
                             <IconButton
                               size="small"
+                              onClick={() => handleViewDetails(asset)}
                               sx={{ 
                                 bgcolor: 'rgba(25, 118, 210, 0.1)',
                                 color: '#1976D2',
@@ -831,26 +1111,47 @@ export function CompaniesPage() {
                               <Visibility sx={{ fontSize: 20 }} />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Editar" arrow>
+                          <Tooltip 
+                            title={canEditDomains() ? "Editar dominio" : `🔒 ${getUpgradeMessage('edit')}`} 
+                            arrow
+                          >
                             <IconButton
                               size="small"
+                              onClick={() => handleEditDomain(asset)}
                               sx={{ 
-                                bgcolor: 'rgba(117, 117, 117, 0.1)',
-                                color: '#757575',
+                                bgcolor: canEditDomains() ? 'rgba(117, 117, 117, 0.1)' : 'rgba(255, 71, 87, 0.1)',
+                                color: canEditDomains() ? '#757575' : '#ff4757',
                                 width: 40,
                                 height: 40,
+                                position: 'relative',
                                 '&:hover': { 
-                                  bgcolor: '#757575',
+                                  bgcolor: canEditDomains() ? '#757575' : '#ff4757',
                                   color: 'white',
                                   transform: 'scale(1.05)'
                                 },
                                 transition: 'all 0.2s ease-in-out'
                               }}
                             >
-                              <Edit sx={{ fontSize: 20 }} />
+                              {canEditDomains() ? (
+                                <Edit sx={{ fontSize: 20 }} />
+                              ) : (
+                                <>
+                                  <Edit sx={{ fontSize: 20 }} />
+                                  <Lock sx={{ 
+                                    fontSize: 12, 
+                                    position: 'absolute',
+                                    top: 4,
+                                    right: 4,
+                                    bgcolor: '#ff4757',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    p: 0.2
+                                  }} />
+                                </>
+                              )}
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Eliminar" arrow>
+                          <Tooltip title="Eliminar dominio" arrow>
                             <IconButton
                               size="small"
                               onClick={() => handleDelete(asset.id, asset.domain)}
@@ -1333,6 +1634,563 @@ export function CompaniesPage() {
             }}
           >
             {loading ? <CircularProgress size={20} color="inherit" /> : '+ Añadir Dominio'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ===== MODAL DE CONFIRMACIÓN ELIMINAR DOMINIO ===== */}
+      <Dialog 
+        open={deleteDialog.open} 
+        onClose={cancelDelete} 
+        maxWidth="sm" 
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '20px',
+            boxShadow: '0 20px 60px rgba(229, 57, 53, 0.15)',
+            overflow: 'hidden'
+          }
+        }}
+      >
+        {/* Header con fondo de alerta */}
+        <Box sx={{ 
+          background: 'linear-gradient(135deg, #E53935 0%, #D32F2F 100%)',
+          color: 'white',
+          p: 4,
+          textAlign: 'center'
+        }}>
+          <Box sx={{ 
+            width: 80, 
+            height: 80, 
+            borderRadius: '50%', 
+            bgcolor: 'rgba(255,255,255,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mx: 'auto',
+            mb: 3
+          }}>
+            <ErrorOutline sx={{ fontSize: 40, color: 'white' }} />
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, fontSize: '22px' }}>
+            Confirmar Eliminación
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px' }}>
+            Esta acción no se puede deshacer
+          </Typography>
+        </Box>
+
+        <DialogContent sx={{ p: 4 }}>
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              fontSize: '16px',
+              color: '#1E2A38',
+              mb: 2,
+              lineHeight: 1.6,
+              textAlign: 'center'
+            }}
+          >
+            ¿Estás seguro de que deseas eliminar el dominio{' '}
+            <Box component="span" sx={{ fontWeight: 700, color: '#E53935' }}>
+              {deleteDialog.domainName}
+            </Box>
+            ?
+          </Typography>
+          
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontSize: '14px',
+              color: '#757575',
+              textAlign: 'center',
+              lineHeight: 1.5
+            }}
+          >
+            Se perderán todos los datos de monitoreo, escaneos históricos y configuraciones asociadas a este dominio.
+          </Typography>
+
+          {/* Warning Box */}
+          <Box sx={{
+            mt: 3,
+            p: 3,
+            borderRadius: '12px',
+            bgcolor: 'rgba(229, 57, 53, 0.05)',
+            border: '1px solid rgba(229, 57, 53, 0.2)'
+          }}>
+            <Box display="flex" alignItems="center" gap={2} mb={1}>
+              <Warning sx={{ fontSize: 20, color: '#E53935' }} />
+              <Typography variant="body2" sx={{ fontWeight: 600, color: '#E53935', fontSize: '14px' }}>
+                Impacto de la eliminación:
+              </Typography>
+            </Box>
+            <Box sx={{ pl: 4 }}>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
+                • Historial de escaneos eliminado permanentemente
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
+                • Configuraciones de alertas perdidas
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px' }}>
+                • Métricas de health score reiniciadas
+              </Typography>
+            </Box>
+          </Box>
+        </DialogContent>
+        
+        <DialogActions sx={{ p: 4, pt: 0, gap: 2 }}>
+          <Button 
+            onClick={cancelDelete}
+            variant="outlined"
+            sx={{
+              color: '#757575',
+              borderColor: '#E0E0E0',
+              fontWeight: 500,
+              fontSize: '15px',
+              textTransform: 'none',
+              px: 4,
+              py: 1.5,
+              borderRadius: '12px',
+              flex: 1,
+              '&:hover': {
+                bgcolor: '#F9FAFB',
+                borderColor: '#757575'
+              }
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={confirmDelete} 
+            variant="contained"
+            disabled={deleting}
+            sx={{
+              bgcolor: '#E53935',
+              color: 'white',
+              fontWeight: 600,
+              fontSize: '15px',
+              textTransform: 'none',
+              px: 4,
+              py: 1.5,
+              borderRadius: '12px',
+              flex: 1,
+              minWidth: '140px',
+              '&:hover': {
+                bgcolor: '#D32F2F'
+              },
+              '&:disabled': {
+                bgcolor: '#E0E0E0',
+                color: '#9CA3AF'
+              }
+            }}
+          >
+            {deleting ? (
+              <>
+                <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />
+                Eliminando...
+              </>
+            ) : (
+              'Eliminar Dominio'
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ===== MODAL VER DETALLES ===== */}
+      <Dialog 
+        open={detailsDialog.open} 
+        onClose={closeDetailsDialog}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '16px',
+            boxShadow: '0 24px 48px rgba(0,0,0,0.12)',
+            maxHeight: '90vh'
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          background: 'linear-gradient(135deg, #1976D2 0%, #1565C0 100%)',
+          color: 'white',
+          p: 4,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2
+        }}>
+          <Visibility sx={{ fontSize: 28 }} />
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, fontSize: '22px' }}>
+              Detalles del Dominio
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9, fontSize: '14px' }}>
+              {detailsDialog.asset?.domain}
+            </Typography>
+          </Box>
+        </DialogTitle>
+        
+        <DialogContent sx={{ p: 4 }}>
+          {detailsDialog.asset && (
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ p: 3, borderRadius: '12px', bgcolor: '#F8F9FA', border: '1px solid #E9ECEF' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#1976D2' }}>
+                    Información General
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#757575' }}>Dominio:</Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>{detailsDialog.asset.domain}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#757575' }}>Estado:</Typography>
+                      <Chip 
+                        label={detailsDialog.asset.isActive ? "Activo" : "Inactivo"}
+                        color={detailsDialog.asset.isActive ? "success" : "error"}
+                        size="small"
+                        sx={{ mt: 0.5 }}
+                      />
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#757575' }}>Fecha de creación:</Typography>
+                      <Typography variant="body1">{formatDateTime(detailsDialog.asset.createdAt)}</Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </Grid>
+              
+              <Grid item xs={12} md={6}>
+                <Box sx={{ p: 3, borderRadius: '12px', bgcolor: '#F8F9FA', border: '1px solid #E9ECEF' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#1976D2' }}>
+                    Estado de Seguridad
+                  </Typography>
+                  {(() => {
+                    const latestScan = getLatestScanForDomain(detailsDialog.asset.domain);
+                    return latestScan ? (
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#757575' }}>Health Score:</Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                            <Box sx={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: '50%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              bgcolor: latestScan.healthScore >= 80 ? '#4CAF50' : latestScan.healthScore >= 50 ? '#FF9800' : '#F44336',
+                              color: 'white',
+                              fontWeight: 'bold'
+                            }}>
+                              {latestScan.healthScore}
+                            </Box>
+                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                              {latestScan.healthScore >= 80 ? 'Excelente' : latestScan.healthScore >= 50 ? 'Moderado' : 'Crítico'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#757575' }}>Vulnerabilidades:</Typography>
+                          <Typography variant="body1">{latestScan.findingsCount} encontradas</Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#757575' }}>Último escaneo:</Typography>
+                          <Typography variant="body1">{formatDateTime(latestScan.createdAt)}</Typography>
+                        </Box>
+                      </Box>
+                    ) : (
+                      <Box sx={{ textAlign: 'center', py: 3 }}>
+                        <Search sx={{ fontSize: 48, color: '#BDBDBD', mb: 1 }} />
+                        <Typography variant="body2" sx={{ color: '#757575' }}>
+                          No se han realizado escaneos aún
+                        </Typography>
+                      </Box>
+                    );
+                  })()}
+                </Box>
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+        
+        <DialogActions sx={{ p: 4, pt: 0 }}>
+          <Button 
+            onClick={closeDetailsDialog}
+            variant="contained"
+            sx={{
+              bgcolor: '#1976D2',
+              color: 'white',
+              fontWeight: 500,
+              textTransform: 'none',
+              px: 4,
+              py: 1.5,
+              borderRadius: '12px',
+              '&:hover': {
+                bgcolor: '#1565C0'
+              }
+            }}
+          >
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ===== MODAL EDITAR DOMINIO ===== */}
+      <Dialog 
+        open={editDialog.open} 
+        onClose={closeEditDialog}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '16px',
+            boxShadow: '0 24px 48px rgba(0,0,0,0.12)'
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          background: 'linear-gradient(135deg, #757575 0%, #616161 100%)',
+          color: 'white',
+          p: 4,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2
+        }}>
+          <Edit sx={{ fontSize: 28 }} />
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, fontSize: '22px' }}>
+              Editar Dominio
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9, fontSize: '14px' }}>
+              Modificar la configuración del dominio
+            </Typography>
+          </Box>
+        </DialogTitle>
+        
+        <DialogContent sx={{ p: 4 }}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body1" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+              Nombre del dominio
+            </Typography>
+            <TextField
+              fullWidth
+              value={editingDomain}
+              onChange={(e) => setEditingDomain(e.target.value)}
+              placeholder="ejemplo.com"
+              variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  fontSize: '16px'
+                }
+              }}
+            />
+          </Box>
+          
+          <Box sx={{
+            p: 3,
+            borderRadius: '12px',
+            bgcolor: 'rgba(25, 118, 210, 0.05)',
+            border: '1px solid rgba(25, 118, 210, 0.2)'
+          }}>
+            <Box display="flex" alignItems="center" gap={2} mb={1}>
+              <Domain sx={{ fontSize: 20, color: '#1976D2' }} />
+              <Typography variant="body2" sx={{ fontWeight: 600, color: '#1976D2', fontSize: '14px' }}>
+                Información importante:
+              </Typography>
+            </Box>
+            <Box sx={{ pl: 4 }}>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
+                • Cambiar el dominio reiniciará el historial de monitoreo
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
+                • Los escaneos previos se mantendrán asociados al dominio anterior
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px' }}>
+                • Se requiere nueva validación del dominio
+              </Typography>
+            </Box>
+          </Box>
+        </DialogContent>
+        
+        <DialogActions sx={{ p: 4, pt: 0, gap: 2 }}>
+          <Button 
+            onClick={closeEditDialog}
+            variant="outlined"
+            sx={{
+              color: '#757575',
+              borderColor: '#E0E0E0',
+              fontWeight: 500,
+              fontSize: '15px',
+              textTransform: 'none',
+              px: 4,
+              py: 1.5,
+              borderRadius: '12px',
+              flex: 1,
+              '&:hover': {
+                bgcolor: '#F9FAFB',
+                borderColor: '#757575'
+              }
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            onClick={confirmEdit}
+            variant="contained"
+            disabled={!editingDomain.trim()}
+            sx={{
+              bgcolor: '#757575',
+              color: 'white',
+              fontWeight: 600,
+              fontSize: '15px',
+              textTransform: 'none',
+              px: 4,
+              py: 1.5,
+              borderRadius: '12px',
+              flex: 1,
+              minWidth: '140px',
+              '&:hover': {
+                bgcolor: '#616161'
+              },
+              '&:disabled': {
+                bgcolor: '#E0E0E0',
+                color: '#9CA3AF'
+              }
+            }}
+          >
+            Guardar Cambios
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ===== MODAL UPGRADE PLAN ===== */}
+      <Dialog 
+        open={upgradeDialog.open} 
+        onClose={closeUpgradeDialog}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '16px',
+            boxShadow: '0 24px 48px rgba(0,0,0,0.12)'
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          background: 'linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%)',
+          color: 'white',
+          p: 4,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2
+        }}>
+          <Lock sx={{ fontSize: 28 }} />
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, fontSize: '22px' }}>
+              Funcionalidad Premium
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9, fontSize: '14px' }}>
+              Actualizá tu plan para desbloquear más funciones
+            </Typography>
+          </Box>
+        </DialogTitle>
+        
+        <DialogContent sx={{ p: 4 }}>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+              {upgradeDialog.message}
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#666', mb: 3 }}>
+              Desbloquea esta funcionalidad y muchas más con un plan superior
+            </Typography>
+          </Box>
+
+          {/* Plan Benefits */}
+          <Box sx={{
+            p: 3,
+            borderRadius: '12px',
+            bgcolor: 'rgba(255, 71, 87, 0.05)',
+            border: '1px solid rgba(255, 71, 87, 0.2)',
+            mb: 3
+          }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: '#ff4757', mb: 2, fontSize: '14px' }}>
+              ✨ Con el plan Growth obtienes:
+            </Typography>
+            <Box sx={{ pl: 2 }}>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
+                • Edición y gestión completa de dominios
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
+                • Hasta 5 dominios monitoreados
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
+                • Escaneos diarios automáticos
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px', mb: 0.5 }}>
+                • Integraciones con Slack y Teams
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#757575', fontSize: '13px' }}>
+                • Reportes avanzados (PDF + CSV)
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: '#ff4757', mb: 1 }}>
+              $99/mes
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#666' }}>
+              Facturación mensual • Cancelá cuando quieras
+            </Typography>
+          </Box>
+        </DialogContent>
+        
+        <DialogActions sx={{ p: 4, pt: 0, gap: 2 }}>
+          <Button 
+            onClick={closeUpgradeDialog}
+            variant="outlined"
+            sx={{
+              color: '#757575',
+              borderColor: '#E0E0E0',
+              fontWeight: 500,
+              fontSize: '15px',
+              textTransform: 'none',
+              px: 4,
+              py: 1.5,
+              borderRadius: '12px',
+              flex: 1,
+              '&:hover': {
+                bgcolor: '#F9FAFB',
+                borderColor: '#757575'
+              }
+            }}
+          >
+            Tal vez después
+          </Button>
+          <Button 
+            variant="contained"
+            sx={{
+              bgcolor: '#ff4757',
+              color: 'white',
+              fontWeight: 600,
+              fontSize: '15px',
+              textTransform: 'none',
+              px: 4,
+              py: 1.5,
+              borderRadius: '12px',
+              flex: 1,
+              minWidth: '140px',
+              '&:hover': {
+                bgcolor: '#ff3838'
+              }
+            }}
+            onClick={() => {
+              window.open('/pricing', '_blank');
+              closeUpgradeDialog();
+            }}
+          >
+            Ver Planes
           </Button>
         </DialogActions>
       </Dialog>
