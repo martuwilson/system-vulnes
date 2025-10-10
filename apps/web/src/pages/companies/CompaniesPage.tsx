@@ -25,8 +25,6 @@ import {
   Add, 
   Business, 
   Delete, 
-  CheckCircle, 
-  Warning, 
   Launch, 
   FlashOn, 
   Edit,
@@ -225,62 +223,127 @@ export function CompaniesPage() {
   }
 
   return (
-    <Box>
+    <Box sx={{ p: { xs: 2, md: 3 }, bgcolor: '#FAFAFA', minHeight: '100vh' }}>
       {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={4}>
         <Box>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Activos de la Empresa
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontSize: '20px',
+              fontWeight: 700,
+              color: '#1E2A38',
+              mb: 1,
+              letterSpacing: '-0.5px'
+            }}
+          >
+            Mi Empresa
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+          <Typography 
+            variant="subtitle1" 
+            sx={{ 
+              fontSize: '14px',
+              color: '#6B7280',
+              fontWeight: 500,
+              mb: 0.5
+            }}
+          >
             {formatPlural(assets.length, 'dominio monitoreado', 'dominios monitoreados')}
           </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Gestiona los dominios y activos de {userCompany?.name || 'tu empresa'}
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontSize: '13px',
+              color: '#9CA3AF',
+              lineHeight: 1.5
+            }}
+          >
+            Gestiona los dominios y activos digitales de {userCompany?.name || 'tu empresa'}
           </Typography>
         </Box>
         <Button
           variant="contained"
           startIcon={<Add />}
           onClick={() => setOpen(true)}
-          size="large"
+          sx={{
+            bgcolor: '#1976D2',
+            color: 'white',
+            fontWeight: 600,
+            fontSize: '14px',
+            px: 3,
+            py: 1.5,
+            borderRadius: '8px',
+            textTransform: 'none',
+            boxShadow: '0 2px 8px rgba(25, 118, 210, 0.15)',
+            '&:hover': {
+              bgcolor: '#1565C0',
+              boxShadow: '0 4px 12px rgba(25, 118, 210, 0.25)',
+              transform: 'translateY(-1px)'
+            },
+            transition: 'all 0.2s ease-in-out'
+          }}
         >
-          + Añadir dominio
+          Añadir Dominio
         </Button>
       </Box>
 
       {/* Company Info */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
+      <Card 
+        sx={{ 
+          mb: 4,
+          borderRadius: '12px',
+          border: '1px solid #E5E7EB',
+          boxShadow: '0 2px 8px rgba(30, 42, 56, 0.08)',
+          overflow: 'hidden'
+        }}
+      >
+        <CardContent sx={{ p: 4 }}>
           <Box display="flex" alignItems="center" mb={3}>
             <Box 
               sx={{ 
-                mr: 2, 
-                p: 1.5, 
-                borderRadius: 2, 
-                bgcolor: 'primary.main', 
+                mr: 3, 
+                p: 2, 
+                borderRadius: '12px', 
+                bgcolor: '#1E2A38',
+                background: 'linear-gradient(135deg, #1E2A38 0%, #2D3748 100%)',
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(30, 42, 56, 0.2)'
               }}
             >
-              <Business sx={{ fontSize: 32 }} />
+              <Business sx={{ fontSize: 28 }} />
             </Box>
-            <Box>
-              <Typography variant="h4" fontWeight="bold" color="primary" gutterBottom>
-                {userCompany?.name || 'Sin empresa'}
+            <Box flex={1}>
+              <Typography 
+                variant="h5" 
+                sx={{
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  color: '#1E2A38',
+                  mb: 1,
+                  letterSpacing: '-0.3px'
+                }}
+              >
+                {userCompany?.name || 'Sin empresa configurada'}
               </Typography>
               {userCompany?.domain && (
                 <Box display="flex" alignItems="center" gap={1}>
-                  <Launch sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <Launch sx={{ fontSize: 16, color: '#6B7280' }} />
                   <Typography 
-                    variant="body1" 
-                    color="primary" 
+                    variant="body2" 
                     sx={{ 
-                      textDecoration: 'underline',
+                      fontSize: '14px',
+                      color: '#1976D2',
+                      fontWeight: 500,
+                      textDecoration: 'none',
                       cursor: 'pointer',
-                      '&:hover': { color: 'primary.dark' }
+                      '&:hover': { 
+                        color: '#1565C0',
+                        textDecoration: 'underline'
+                      },
+                      transition: 'all 0.2s ease-in-out'
                     }}
                     onClick={() => window.open(`https://${userCompany.domain}`, '_blank')}
                   >
@@ -293,86 +356,212 @@ export function CompaniesPage() {
           
           <Box display="flex" gap={2} flexWrap="wrap">
             <Chip 
-              label={formatPlural(assets.length, 'Total', 'Total')} 
-              color="default" 
+              label={`${assets.length} Dominios`}
+              sx={{
+                bgcolor: '#F3F4F6',
+                color: '#1E2A38',
+                fontWeight: 600,
+                fontSize: '13px',
+                border: '1px solid #E5E7EB',
+                '&:hover': { bgcolor: '#E5E7EB' }
+              }}
               variant="outlined"
             />
             <Chip 
-              label={formatPlural(assets.filter(a => a.isActive).length, 'Activo', 'Activos')} 
-              color="success" 
+              label={`${assets.filter(a => a.isActive).length} Activos`}
+              sx={{
+                bgcolor: '#AEEA00',
+                color: '#1E2A38',
+                fontWeight: 600,
+                fontSize: '13px',
+                border: 'none',
+                '&:hover': { bgcolor: '#9DD600' }
+              }}
             />
             <Chip 
-              label={formatPlural(assets.filter(a => !a.isActive).length, 'Inactivo', 'Inactivos')} 
-              color={assets.filter(a => !a.isActive).length > 0 ? "error" : "default"}
-              variant={assets.filter(a => !a.isActive).length > 0 ? "filled" : "outlined"}
+              label={`${assets.filter(a => !a.isActive).length} Inactivos`}
+              sx={{
+                bgcolor: assets.filter(a => !a.isActive).length > 0 ? '#E53935' : '#F3F4F6',
+                color: assets.filter(a => !a.isActive).length > 0 ? 'white' : '#6B7280',
+                fontWeight: 600,
+                fontSize: '13px',
+                border: assets.filter(a => !a.isActive).length === 0 ? '1px solid #E5E7EB' : 'none',
+                '&:hover': { 
+                  bgcolor: assets.filter(a => !a.isActive).length > 0 ? '#D32F2F' : '#E5E7EB'
+                }
+              }}
             />
           </Box>
         </CardContent>
       </Card>
 
       {/* Assets List */}
-      <Card>
-        <CardContent sx={{ p: 3 }}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
-            Dominios monitoreados: {assets.length}
+      <Card
+        sx={{
+          borderRadius: '12px',
+          border: '1px solid #E5E7EB',
+          boxShadow: '0 2px 8px rgba(30, 42, 56, 0.08)'
+        }}
+      >
+        <CardContent sx={{ p: 4 }}>
+          <Typography 
+            variant="h6" 
+            sx={{
+              fontSize: '16px',
+              fontWeight: 700,
+              color: '#1E2A38',
+              mb: 3,
+              letterSpacing: '-0.3px'
+            }}
+          >
+            Dominios Monitoreados ({assets.length})
           </Typography>
           
           {assets.length === 0 ? (
-            <Alert severity="info" sx={{ mt: 2 }}>
-              No tienes assets registrados aún. Agrega tu primer dominio para comenzar a monitorear la seguridad.
+            <Alert 
+              severity="info" 
+              sx={{ 
+                mt: 2,
+                borderRadius: '8px',
+                border: '1px solid #1976D2',
+                bgcolor: 'rgba(25, 118, 210, 0.05)',
+                '& .MuiAlert-message': {
+                  fontSize: '14px',
+                  color: '#1E2A38'
+                }
+              }}
+            >
+              No tienes dominios registrados aún. Agrega tu primer dominio para comenzar a monitorear la seguridad digital.
             </Alert>
           ) : (
-            <List sx={{ '& .MuiListItem-root': { borderRadius: 2, mb: 1 } }}>
+            <List sx={{ '& .MuiListItem-root': { borderRadius: '8px', mb: 2 } }}>
               {assets.map((asset) => {
                 const latestScan = getLatestScanForDomain(asset.domain);
                 
                 return (
-                <ListItem key={asset.id} divider sx={{ py: 3 }}>
+                <ListItem 
+                  key={asset.id} 
+                  sx={{ 
+                    py: 3,
+                    px: 3,
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    bgcolor: 'white',
+                    '&:hover': {
+                      bgcolor: '#FAFAFA',
+                      borderColor: '#D1D5DB',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 4px 12px rgba(30, 42, 56, 0.1)'
+                    },
+                    transition: 'all 0.2s ease-in-out'
+                  }}
+                >
                   <ListItemIcon sx={{ minWidth: 56 }}>
-                    <Language color="primary" sx={{ fontSize: 32 }} />
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        borderRadius: '8px',
+                        bgcolor: '#1976D2',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Language sx={{ fontSize: 24 }} />
+                    </Box>
                   </ListItemIcon>
                   <ListItemText
                     primary={
                       <Box display="flex" alignItems="center" justifyContent="space-between" mb={1.5}>
                         <Box display="flex" alignItems="center" gap={2}>
-                          <Typography variant="h6" fontWeight="600" color="text.primary">
+                          <Typography 
+                            variant="h6" 
+                            sx={{
+                              fontSize: '16px',
+                              fontWeight: 600,
+                              color: '#1E2A38',
+                              letterSpacing: '-0.2px'
+                            }}
+                          >
                             {asset.domain}
                           </Typography>
                           {asset.isActive ? (
-                            <CheckCircle color="success" sx={{ fontSize: 24 }} />
+                            <Chip
+                              size="small"
+                              label="Activo"
+                              sx={{
+                                bgcolor: '#AEEA00',
+                                color: '#1E2A38',
+                                fontWeight: 600,
+                                fontSize: '12px',
+                                height: '24px'
+                              }}
+                            />
                           ) : (
-                            <Warning color="warning" sx={{ fontSize: 24 }} />
+                            <Chip
+                              size="small"
+                              label="Inactivo"
+                              sx={{
+                                bgcolor: '#E53935',
+                                color: 'white',
+                                fontWeight: 600,
+                                fontSize: '12px',
+                                height: '24px'
+                              }}
+                            />
                           )}
                         </Box>
                       </Box>
                     }
                     secondary={
                       <Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            fontSize: '13px',
+                            color: '#6B7280',
+                            mb: 1
+                          }}
+                        >
                           Agregado: {formatDateTime(asset.createdAt)}
                         </Typography>
-                        <Box display="flex" alignItems="center" gap={4}>
-                          <Typography variant="body2" color="text.secondary">
+                        <Box display="flex" alignItems="center" gap={4} flexWrap="wrap">
+                          <Typography 
+                            variant="body2" 
+                            sx={{ fontSize: '13px', color: '#6B7280' }}
+                          >
                             Último escaneo: 
-                            <Box component="span" sx={{ color: 'text.primary', fontWeight: 500, ml: 0.5 }}>
+                            <Box 
+                              component="span" 
+                              sx={{ 
+                                color: '#1E2A38', 
+                                fontWeight: 500, 
+                                ml: 0.5 
+                              }}
+                            >
                               {latestScan 
                                 ? `${formatDateTime(latestScan.createdAt)} - ${translateStatus(latestScan.status)}`
                                 : 'Sin escanear aún'
                               }
                             </Box>
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Health Score: 
+                          <Typography 
+                            variant="body2" 
+                            sx={{ fontSize: '13px', color: '#6B7280' }}
+                          >
+                            Puntuación: 
                             <Box 
                               component="span" 
                               sx={{ 
                                 color: latestScan?.healthScore !== undefined 
-                                  ? latestScan.healthScore >= 80 ? 'success.main' 
-                                    : latestScan.healthScore >= 60 ? 'warning.main' 
-                                    : 'error.main'
-                                  : 'text.primary',
-                                fontWeight: 500, 
-                                ml: 0.5 
+                                  ? latestScan.healthScore >= 80 ? '#AEEA00' 
+                                    : latestScan.healthScore >= 60 ? '#F57C00' 
+                                    : '#E53935'
+                                  : '#1E2A38',
+                                fontWeight: 600, 
+                                ml: 0.5,
+                                fontSize: '13px'
                               }}
                             >
                               {latestScan?.healthScore !== undefined 
@@ -386,42 +575,59 @@ export function CompaniesPage() {
                     }
                   />
                   <ListItemSecondaryAction>
-                    <Box display="flex" alignItems="center" gap={0.5}>
+                    <Box display="flex" alignItems="center" gap={1}>
                       <IconButton
-                        size="medium"
-                        color="primary"
+                        size="small"
                         title="Escanear ahora"
                         sx={{ 
-                          bgcolor: 'primary.main',
+                          bgcolor: '#1976D2',
                           color: 'white',
-                          '&:hover': { bgcolor: 'primary.dark' }
+                          width: 36,
+                          height: 36,
+                          '&:hover': { 
+                            bgcolor: '#1565C0',
+                            transform: 'scale(1.05)'
+                          },
+                          transition: 'all 0.2s ease-in-out'
                         }}
                       >
-                        <FlashOn sx={{ fontSize: 20 }} />
+                        <FlashOn sx={{ fontSize: 18 }} />
                       </IconButton>
                       <IconButton
-                        size="medium"
-                        color="default"
+                        size="small"
                         title="Editar dominio"
                         sx={{ 
-                          bgcolor: 'grey.100',
-                          '&:hover': { bgcolor: 'grey.200' }
+                          bgcolor: '#F3F4F6',
+                          color: '#6B7280',
+                          width: 36,
+                          height: 36,
+                          '&:hover': { 
+                            bgcolor: '#E5E7EB',
+                            color: '#1E2A38',
+                            transform: 'scale(1.05)'
+                          },
+                          transition: 'all 0.2s ease-in-out'
                         }}
                       >
-                        <Edit sx={{ fontSize: 20 }} />
+                        <Edit sx={{ fontSize: 18 }} />
                       </IconButton>
                       <IconButton
-                        size="medium"
+                        size="small"
                         onClick={() => handleDelete(asset.id, asset.domain)}
-                        color="error"
                         title="Eliminar"
                         sx={{ 
-                          bgcolor: 'error.light',
+                          bgcolor: '#E53935',
                           color: 'white',
-                          '&:hover': { bgcolor: 'error.main' }
+                          width: 36,
+                          height: 36,
+                          '&:hover': { 
+                            bgcolor: '#D32F2F',
+                            transform: 'scale(1.05)'
+                          },
+                          transition: 'all 0.2s ease-in-out'
                         }}
                       >
-                        <Delete sx={{ fontSize: 20 }} />
+                        <Delete sx={{ fontSize: 18 }} />
                       </IconButton>
                     </Box>
                   </ListItemSecondaryAction>
@@ -434,11 +640,40 @@ export function CompaniesPage() {
       </Card>
 
       {/* Add Asset Dialog */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Añadir Nuevo Dominio</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Agrega un dominio para monitorear su seguridad digital
+      <Dialog 
+        open={open} 
+        onClose={() => setOpen(false)} 
+        maxWidth="sm" 
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(30, 42, 56, 0.15)'
+          }
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontSize: '18px',
+            fontWeight: 700,
+            color: '#1E2A38',
+            borderBottom: '1px solid #E5E7EB',
+            pb: 2
+          }}
+        >
+          Añadir Nuevo Dominio
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontSize: '14px',
+              color: '#6B7280',
+              mb: 3,
+              lineHeight: 1.5
+            }}
+          >
+            Agrega un dominio para monitorear su seguridad digital y recibir alertas de vulnerabilidades
           </Typography>
           <TextField
             autoFocus
@@ -450,18 +685,73 @@ export function CompaniesPage() {
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
             helperText="Ingresa el dominio sin http:// o https://"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '8px',
+                fontSize: '14px',
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#1976D2'
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#1976D2',
+                  borderWidth: '2px'
+                }
+              },
+              '& .MuiInputLabel-root': {
+                fontSize: '14px',
+                fontWeight: 500,
+                '&.Mui-focused': {
+                  color: '#1976D2'
+                }
+              },
+              '& .MuiFormHelperText-root': {
+                fontSize: '12px',
+                color: '#6B7280'
+              }
+            }}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>
+        <DialogActions sx={{ p: 3, pt: 2 }}>
+          <Button 
+            onClick={() => setOpen(false)}
+            sx={{
+              color: '#6B7280',
+              fontWeight: 500,
+              fontSize: '14px',
+              textTransform: 'none',
+              px: 3,
+              '&:hover': {
+                bgcolor: '#F3F4F6',
+                color: '#1E2A38'
+              }
+            }}
+          >
             Cancelar
           </Button>
           <Button 
             onClick={handleSubmit} 
             variant="contained"
             disabled={loading || !domain.trim()}
+            sx={{
+              bgcolor: '#1976D2',
+              color: 'white',
+              fontWeight: 600,
+              fontSize: '14px',
+              textTransform: 'none',
+              px: 4,
+              py: 1,
+              borderRadius: '8px',
+              minWidth: '100px',
+              '&:hover': {
+                bgcolor: '#1565C0'
+              },
+              '&:disabled': {
+                bgcolor: '#E5E7EB',
+                color: '#9CA3AF'
+              }
+            }}
           >
-            {loading ? <CircularProgress size={20} /> : 'Añadir'}
+            {loading ? <CircularProgress size={18} color="inherit" /> : 'Añadir Dominio'}
           </Button>
         </DialogActions>
       </Dialog>
