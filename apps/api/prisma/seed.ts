@@ -99,8 +99,8 @@ async function main() {
     console.log(`✅ Created limits for ${limits.plan} plan`);
   }
 
-  // Create test user
-  const testUser = await prisma.user.upsert({
+  // Create test user (commented out for fresh start)
+  /*const testUser = await prisma.user.upsert({
     where: { email: 'test@dalone.com.ar' },
     update: {},
     create: {
@@ -215,7 +215,7 @@ async function main() {
     });
 
     console.log(`✅ Created security scans with findings for ${testCompany.name}`);
-  }
+  }*/
 
   console.log('🎉 Database seeded successfully!');
 }

@@ -6,6 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RegisterInput, LoginInput } from '../graphql/inputs';
 import { AuthResponse } from '../graphql/responses';
 import { User } from '../graphql/models';
+import { EmailService } from '../common/email.service';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   /**
@@ -77,6 +79,11 @@ export class AuthService {
 
     // Generar tokens
     const tokens = await this.generateTokens(result.user.id, result.user.email);
+
+    // Enviar email de bienvenida (no bloqueante)
+    this.sendWelcomeEmail(result.user, result.company).catch(error => {
+      console.error('Error sending welcome email:', error);
+    });
 
     return {
       ...tokens,
@@ -184,5 +191,18 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  /**
+   * Enviar email de bienvenida al usuario registrado
+   */
+  private async sendWelcomeEmail(user: any, company: any): Promise<void> {
+    const frontendUrl = this.configService.get('FRONTEND_URL') || 'http://localhost:3000';
+    
+    await this.emailService.sendWelcomeEmail(user.email, {
+      firstName: user.firstName,
+      companyName: company.name,
+      loginUrl: `${frontendUrl}/auth/login`,
+    });
   }
 }

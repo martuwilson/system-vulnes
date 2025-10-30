@@ -6,11 +6,15 @@ import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { JwtStrategy } from './jwt.strategy';
 import { PrismaModule } from '../prisma/prisma.module';
+import { EmailModule } from '../common/email.module';
 
 @Module({
   imports: [
     // Importar PrismaModule para acceso a la DB
     PrismaModule,
+    
+    // Importar EmailModule para envío de correos
+    EmailModule,
     
     // Configurar Passport
     PassportModule.register({ defaultStrategy: 'jwt' }),
