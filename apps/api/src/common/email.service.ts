@@ -104,29 +104,217 @@ export class EmailService {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Bienvenido a Securyx</title>
         <style>
-          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
-          .header h1 { margin: 0; font-size: 28px; }
-          .content { background: #fff; padding: 30px 20px; border: 1px solid #e0e0e0; }
-          .highlight { background: #f8f9fa; padding: 20px; border-left: 4px solid #ff4757; margin: 20px 0; border-radius: 4px; }
-          .button { display: inline-block; background: #ff4757; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
-          .button:hover { background: #ff3838; }
-          .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; background: #f8f9fa; border-radius: 0 0 8px 8px; }
-          .features { display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
-          .feature { flex: 1; min-width: 200px; padding: 15px; background: #f0f9ff; border-radius: 6px; text-align: center; }
-          .feature-icon { font-size: 24px; margin-bottom: 10px; }
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { 
+            font-family: 'Inter', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            line-height: 1.6; 
+            color: #1E2A38; 
+            background: #f8fafc;
+            margin: 0; 
+            padding: 20px; 
+          }
+          .email-container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: #ffffff; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 8px 32px rgba(30, 42, 56, 0.08);
+          }
+          .header { 
+            background: linear-gradient(135deg, #1E2A38 0%, #2A3A4A 100%); 
+            color: white; 
+            padding: 40px 30px; 
+            text-align: center; 
+            position: relative;
+          }
+          .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #AEEA00 0%, #C6FF00 100%);
+          }
+          .header h1 { 
+            margin: 0; 
+            font-size: 28px; 
+            font-weight: 700; 
+            margin-bottom: 8px;
+          }
+          .header p { 
+            margin: 0; 
+            font-size: 16px; 
+            opacity: 0.9; 
+            color: #AEEA00;
+          }
+          .shield-icon {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: #AEEA00;
+            border-radius: 50%;
+            margin-bottom: 16px;
+            position: relative;
+          }
+          .shield-icon::before {
+            content: '🛡️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+          }
+          .content { 
+            background: #fff; 
+            padding: 40px 30px; 
+          }
+          .content h2 {
+            color: #1E2A38;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+          }
+          .content p {
+            margin-bottom: 16px;
+            color: #475569;
+            font-size: 16px;
+            line-height: 1.6;
+          }
+          .highlight { 
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F7FA 100%); 
+            padding: 24px; 
+            border-left: 4px solid #00B8D9; 
+            margin: 24px 0; 
+            border-radius: 8px;
+            border: 1px solid rgba(0, 184, 217, 0.1);
+          }
+          .highlight h3 {
+            color: #1E2A38;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+          }
+          .button { 
+            display: inline-block; 
+            background: linear-gradient(135deg, #AEEA00 0%, #C6FF00 100%); 
+            color: #1E2A38; 
+            padding: 16px 32px; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            margin: 24px 0;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(174, 234, 0, 0.3);
+          }
+          .button:hover { 
+            background: linear-gradient(135deg, #C6FF00 0%, #AEEA00 100%); 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(174, 234, 0, 0.4);
+          }
+          .features { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 16px; 
+            margin: 32px 0; 
+          }
+          .feature { 
+            flex: 1; 
+            min-width: 200px; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); 
+            border-radius: 8px; 
+            text-align: center;
+            border: 1px solid #E2E8F0;
+          }
+          .feature-icon { 
+            font-size: 32px; 
+            margin-bottom: 12px; 
+            display: block;
+          }
+          .feature h4 {
+            color: #1E2A38;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+          }
+          .feature p {
+            color: #64748B;
+            font-size: 13px;
+            margin: 0;
+            line-height: 1.5;
+          }
+          .stats {
+            background: linear-gradient(135deg, #1E2A38 0%, #2A3A4A 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 24px 0;
+            text-align: center;
+          }
+          .stats h3 {
+            color: #AEEA00;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+          }
+          .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 16px;
+          }
+          .stat-item {
+            text-align: center;
+          }
+          .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #AEEA00;
+            display: block;
+          }
+          .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 4px;
+          }
+          .footer { 
+            text-align: center; 
+            padding: 32px 30px; 
+            color: #64748B; 
+            font-size: 14px; 
+            background: #F8FAFC; 
+            border-top: 1px solid #E2E8F0;
+          }
+          .footer a {
+            color: #00B8D9;
+            text-decoration: none;
+          }
+          .footer a:hover {
+            text-decoration: underline;
+          }
+          @media (max-width: 600px) {
+            .features { flex-direction: column; }
+            .feature { min-width: auto; }
+            .stats-grid { flex-direction: column; gap: 12px; }
+            .header, .content, .footer { padding: 24px 20px; }
+          }
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>🚀 ¡Bienvenido a Securyx!</h1>
-          <p>Tu protección digital empresarial comienza ahora</p>
-        </div>
-        
-        <div class="content">
-          <h2>Hola ${data.firstName},</h2>
+        <div class="email-container">
+          <div class="header">
+            <div class="shield-icon"></div>
+            <h1>¡Bienvenido a Securyx!</h1>
+            <p>Tu protección digital empresarial comienza ahora</p>
+          </div>
           
-          <p>¡Felicitaciones! Tu cuenta de Securyx para <strong>${data.companyName}</strong> está lista.</p>
+          <div class="content">
+            <h2>Hola ${data.firstName},</h2>
+            
+            <p>¡Felicitaciones! Tu cuenta de Securyx para <strong>${data.companyName}</strong> está lista y protegida.</p>
           
           <div class="highlight">
             <h3>🎯 ¿Qué sigue?</h3>
