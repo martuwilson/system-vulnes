@@ -43,7 +43,6 @@ import {
   ExpandMore,
   ContentCopy,
 
-  PersonAdd,
   Visibility,
   Assessment,
   RestartAlt,
@@ -1919,95 +1918,34 @@ export function ScansPage() {
               Reintentar Análisis
             </Button>
           ) : (
-            <>
-              {/* Botón Exportar PDF - Azul */}
-              <Button 
-                startIcon={<PictureAsPdf />}
-                variant="contained"
-                size="large"
-                sx={{
-                  background: '#1976D2',
-                  color: 'white',
-                  borderRadius: '12px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 3,
-                  py: 1.5,
-                  boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
-                  '&:hover': {
-                    background: '#1565C0',
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)'
-                  }
-                }}
-                onClick={() => {
-                  toast.success('✅ Informe exportado correctamente', {
-                    duration: 3000,
-                    icon: '📄'
-                  });
-                }}
-              >
-                Descargar reporte completo
-              </Button>
-              
-              {/* Botón Marcar Resuelto - Verde */}
-              <Button 
-                startIcon={<CheckCircle />}
-                variant="outlined"
-                size="large"
-                sx={{
-                  color: '#4CAF50',
-                  borderColor: '#4CAF50',
-                  backgroundColor: 'transparent',
-                  borderRadius: '12px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 3,
-                  py: 1.5,
-                  border: '2px solid #4CAF50',
-                  '&:hover': {
-                    backgroundColor: '#E8F5E9',
-                    borderColor: '#388E3C',
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(76, 175, 80, 0.2)'
-                  }
-                }}
-                onClick={() => {
-                  toast.success('Estado actualizado correctamente');
-                }}
-              >
-                Marcar este análisis como resuelto
-              </Button>
-              
-              {/* Botón Asignar - Rojo */}
-              <Button 
-                startIcon={<PersonAdd />}
-                variant="outlined"
-                size="large"
-                sx={{
-                  color: '#E53935',
-                  borderColor: '#E53935',
-                  backgroundColor: 'transparent',
-                  borderRadius: '12px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 3,
-                  py: 1.5,
-                  border: '2px solid #E53935',
-                  '&:hover': {
-                    backgroundColor: '#FFEBEE',
-                    borderColor: '#D32F2F',
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(229, 57, 53, 0.2)'
-                  }
-                }}
-                onClick={() => {
-                  toast.success('Funcionalidad de asignación próximamente');
-                }}
-              >
-                Asignar
-              </Button>
-            </>
+            <Button 
+              startIcon={<PictureAsPdf />}
+              variant="contained"
+              size="large"
+              sx={{
+                background: 'linear-gradient(135deg, #1976D2 0%, #42A5F5 100%)',
+                color: 'white',
+                borderRadius: '12px',
+                textTransform: 'none',
+                fontWeight: 600,
+                px: 4,
+                py: 1.5,
+                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1565C0 0%, #1976D2 100%)',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)'
+                }
+              }}
+              onClick={() => {
+                toast.success('✅ Informe exportado correctamente', {
+                  duration: 3000,
+                  icon: '📄'
+                });
+              }}
+            >
+              Descargar reporte completo
+            </Button>
           )}
           
           {/* Botón Cerrar - Neutral */}
