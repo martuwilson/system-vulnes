@@ -19,18 +19,23 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+  // No procesar errores de autenticación durante login/register
+  const isAuthOperation = operation.operationName === 'Login' || operation.operationName === 'Register';
+  
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, extensions }) => {
-      // Si el error es de autenticación, limpiar tokens y redirigir al login
-      if (extensions?.code === 'UNAUTHENTICATED' || message.includes('Unauthorized')) {
+      console.error(`[GraphQL Error]: ${message}`, extensions);
+      
+      // Solo limpiar sesión si NO es una operación de login/register
+      if (!isAuthOperation && (extensions?.code === 'UNAUTHENTICATED' || message.includes('Unauthorized'))) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('userData');
         
         toast.error('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
         
         // Redirigir al login si no estamos ya ahí
-        if (window.location.pathname !== '/auth/login') {
+        if (window.location.pathname !== '/auth/login' && window.location.pathname !== '/auth/register') {
           window.location.href = '/auth/login';
         }
       }
@@ -38,14 +43,16 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
   
   if (networkError) {
-    // Si es un error 401, también manejar como error de autenticación
-    if ('statusCode' in networkError && networkError.statusCode === 401) {
+    console.error(`[Network Error]: ${networkError}`);
+    
+    // Si es un error 401 y NO es login/register, manejar como error de autenticación
+    if (!isAuthOperation && 'statusCode' in networkError && networkError.statusCode === 401) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('userData');
       
       toast.error('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
       
-      if (window.location.pathname !== '/auth/login') {
+      if (window.location.pathname !== '/auth/login' && window.location.pathname !== '/auth/register') {
         window.location.href = '/auth/login';
       }
     }
