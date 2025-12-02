@@ -19,9 +19,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // MercadoPago fields
-  mercadopagoCustomerId String? @unique
-
   companies     Company[]
   subscription  Subscription?
   companyUsers  CompanyUser[]
@@ -113,17 +110,16 @@ model Task {
 }
 
 model Subscription {
-  id                       String             @id @default(cuid())
-  userId                   String             @unique
-  user                     User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan                     SubscriptionPlan
-  status                   SubscriptionStatus
-  mercadopagoPaymentId     String?            @unique
-  mercadopagoPreapprovalId String?            @unique
-  currentPeriodStart       DateTime
-  currentPeriodEnd         DateTime
-  cancelAtPeriodEnd        Boolean            @default(false)
-  canceledAt               DateTime?
+  id                    String             @id @default(cuid())
+  userId                String             @unique
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                  SubscriptionPlan
+  status                SubscriptionStatus
+  stripeSubscriptionId  String?            @unique
+  stripeCustomerId      String?
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean            @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
