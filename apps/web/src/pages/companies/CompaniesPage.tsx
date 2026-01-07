@@ -138,6 +138,23 @@ const DELETE_ASSET = gql`
   }
 `;
 
+const START_SCAN_QUEUED = gql`
+  mutation StartSecurityScanQueued($input: SecurityScanInput!) {
+    startSecurityScanQueued(input: $input) {
+      success
+      message
+      scanId
+      healthScore
+      findings {
+        id
+        title
+        severity
+        description
+      }
+    }
+  }
+`;
+
 interface Asset {
   id: string;
   domain: string;
@@ -220,6 +237,9 @@ export function CompaniesPage() {
   const [deleteAsset] = useMutation(DELETE_ASSET, {
     refetchQueries: ['GetCompanyAssets'],
   });
+  const [startScanQueued] = useMutation(START_SCAN_QUEUED, {
+    refetchQueries: ['GetSecurityScans'],
+  });
 
   const assets: Asset[] = data?.companyAssets || [];
   const allScans = scansData?.securityScans || [];
@@ -297,6 +317,68 @@ export function CompaniesPage() {
       toast.error(error.message || 'Error al agregar asset');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleScan = async (asset: Asset) => {
+    try {
+      toast.loading(`Iniciando escaneo de ${asset.domain}...`, { id: 'scan-loading' });
+      
+      const result = await startScanQueued({
+        variables: { 
+          input: {
+            assetId: asset.id
+          }
+        }
+      });
+      
+      if (result.data?.startSecurityScanQueued?.success) {
+        toast.success(`✅ Escaneo iniciado — ${asset.domain} está siendo analizado`, {
+          id: 'scan-loading',
+          duration: 5000,
+          icon: '🔍',
+        });
+      } else {
+        toast.error(result.data?.startSecurityScanQueued?.message || 'No se pudo iniciar el escaneo', {
+          id: 'scan-loading'
+        });
+      }
+    } catch (error: any) {
+      console.error('Scan error:', error);
+      
+      // Verificar si es un error de límite de plan (HTTP 402 Payment Required)
+      const graphQLErrors = error?.graphQLErrors || [];
+      const networkError = error?.networkError;
+      
+      // Buscar error de límite de plan
+      const planLimitError = graphQLErrors.find((err: any) => 
+        err?.extensions?.code === 'PAYMENT_REQUIRED' ||
+        err?.extensions?.exception?.status === 402
+      );
+      
+      if (planLimitError || networkError?.statusCode === 402) {
+        // Extraer información del error
+        const errorData = planLimitError?.extensions?.exception?.response || 
+                         networkError?.result || 
+                         {};
+        
+        toast.error(errorData.message || 'Alcanzaste el límite de tu plan actual', {
+          id: 'scan-loading',
+          icon: '🔒',
+          duration: 4000,
+        });
+        
+        // Mostrar modal de upgrade
+        setUpgradeDialog({
+          open: true,
+          feature: 'scan',
+          message: errorData.message || 'Alcanzaste el límite de escaneos de tu plan actual'
+        });
+      } else {
+        toast.error(error.message || 'Error al iniciar el escaneo', {
+          id: 'scan-loading'
+        });
+      }
     }
   };
 
@@ -1102,6 +1184,7 @@ export function CompaniesPage() {
                           <Tooltip title="Escanear ahora">
                             <IconButton
                               size="small"
+                              onClick={() => handleScan(asset)}
                               sx={{ 
                                 bgcolor: '#1976D2',
                                 color: 'white',

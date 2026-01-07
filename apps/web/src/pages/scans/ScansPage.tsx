@@ -62,6 +62,7 @@ import {
   Warning
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
+import { UpgradeModal } from '../../components/UpgradeModal';
 import { 
   translateSeverity, 
   translateCategory,
@@ -347,6 +348,10 @@ export function ScansPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [healthScoreFilter, setHealthScoreFilter] = useState('all');
   const [domainFilter, setDomainFilter] = useState('all'); // Nuevo filtro por dominio
+  
+  // Estado para modal de upgrade
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [planLimitError, setPlanLimitError] = useState<any>(null);
 
   // Obtener las empresas del usuario
   const { data: companiesData } = useQuery(GET_MY_COMPANIES);
@@ -478,7 +483,35 @@ export function ScansPage() {
       }
     } catch (error: any) {
       console.error('Scan error:', error);
-      toast.error(error.message || 'Hubo un problema técnico. Verificá tu conexión e intentá nuevamente.');
+      
+      // Verificar si es un error de límite de plan (HTTP 402 Payment Required)
+      const graphQLErrors = error?.graphQLErrors || [];
+      const networkError = error?.networkError;
+      
+      // Buscar error de límite de plan
+      const planLimitError = graphQLErrors.find((err: any) => 
+        err?.extensions?.code === 'PAYMENT_REQUIRED' ||
+        err?.extensions?.exception?.status === 402
+      );
+      
+      if (planLimitError || networkError?.statusCode === 402) {
+        // Extraer información del error
+        const errorData = planLimitError?.extensions?.exception?.response || 
+                         networkError?.result || 
+                         {};
+        
+        setPlanLimitError(errorData);
+        setUpgradeModalOpen(true);
+        
+        // Mostrar toast informativo
+        toast.error(errorData.message || 'Alcanzaste el límite de tu plan actual', {
+          icon: '🔒',
+          duration: 4000,
+        });
+      } else {
+        // Error genérico
+        toast.error(error.message || 'Hubo un problema técnico. Verificá tu conexión e intentá nuevamente.');
+      }
     } finally {
       setScanningDomain(null);
     }
@@ -1973,6 +2006,16 @@ export function ScansPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Modal de upgrade cuando se alcanza límite de plan */}
+      <UpgradeModal 
+        open={upgradeModalOpen}
+        onClose={() => {
+          setUpgradeModalOpen(false);
+          setPlanLimitError(null);
+        }}
+        error={planLimitError}
+      />
     </Box>
   );
 }

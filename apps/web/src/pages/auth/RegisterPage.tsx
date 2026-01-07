@@ -51,9 +51,17 @@ const schema = yup.object({
     .string()
     .required('Dominio de empresa es requerido')
     .matches(
-      /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.([a-zA-Z]{2,}|[a-zA-Z]{2,}\.[a-zA-Z]{2,})$/,
-      'Dominio debe ser válido (ejemplo: miempresa.com o miempresa.com.ar)'
-    ),
+      /^(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.)+[a-zA-Z]{2,}$/,
+      'Dominio debe ser válido (ejemplo: miempresa.com, www.miempresa.com.ar o https://miempresa.com)'
+    )
+    .transform((value) => {
+      // Limpiar el dominio: remover http://, https://, www., y trailing slashes
+      return value
+        .replace(/^https?:\/\//, '')
+        .replace(/^www\./, '')
+        .replace(/\/$/, '')
+        .toLowerCase();
+    }),
 });
 
 interface RegisterFormData {

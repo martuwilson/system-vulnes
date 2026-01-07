@@ -3,6 +3,7 @@ import { UseGuards } from '@nestjs/common';
 import { SecurityService } from './security.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { PlanLimitsGuard } from '../common/plan-limits.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from '@prisma/client';
 import { 
@@ -22,6 +23,7 @@ export class SecurityResolver {
   ) {}
 
   @Mutation(() => SecurityScanResult)
+  @UseGuards(PlanLimitsGuard)
   async startSecurityScanQueued(
     @Args('input') input: SecurityScanInputType,
     @CurrentUser() user: User,
