@@ -180,26 +180,30 @@ export class SecurityProcessor {
   }
 
   private calculateHealthScore(findings: SecurityFinding[]): number {
-    let score = 100;
+    if (findings.length === 0) {
+      return 100; // Sin hallazgos = perfecto
+    }
 
-    findings.forEach((finding) => {
-      switch (finding.severity) {
-        case Severity.CRITICAL:
-          score -= 25;
-          break;
-        case Severity.HIGH:
-          score -= 15;
-          break;
-        case Severity.MEDIUM:
-          score -= 8;
-          break;
-        case Severity.LOW:
-          score -= 3;
-          break;
-      }
-    });
+    // Contar por severidad
+    const counts = {
+      critical: findings.filter(f => f.severity === Severity.CRITICAL).length,
+      high: findings.filter(f => f.severity === Severity.HIGH).length,
+      medium: findings.filter(f => f.severity === Severity.MEDIUM).length,
+      low: findings.filter(f => f.severity === Severity.LOW).length,
+    };
 
-    return Math.max(score, 0);
+    // Sistema de penalización más balanceado
+    // Cada tipo de problema resta un porcentaje, pero con límites
+    const criticalPenalty = Math.min(counts.critical * 12, 40); // Max 40% por críticos
+    const highPenalty = Math.min(counts.high * 8, 30);          // Max 30% por high
+    const mediumPenalty = Math.min(counts.medium * 4, 20);      // Max 20% por medium
+    const lowPenalty = Math.min(counts.low * 1.5, 10);          // Max 10% por low
+
+    const totalPenalty = criticalPenalty + highPenalty + mediumPenalty + lowPenalty;
+    const score = 100 - totalPenalty;
+
+    // El score mínimo es 15% (nunca 0%, siempre hay algo rescatable)
+    return Math.max(Math.round(score), 15);
   }
 
   private async saveResults(
