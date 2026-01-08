@@ -280,11 +280,58 @@ export class SSLCertificateScanner {
    */
   private async testTLSProtocol(domain: string, protocol: string): Promise<boolean> {
     return new Promise((resolve) => {
+      // Mapear nombres de protocolo a los métodos válidos de Node.js
+      const protocolMap: Record<string, string> = {
+        'TLSv1': 'TLSv1_method',
+        'TLSv1.1': 'TLSv1_1_method',
+        'TLSv1.2': 'TLSv1_2_method',
+        // TLS 1.3 no tiene un método específico en versiones antiguas de Node
+        // Se habilita automáticamente con TLSv1_2_method en Node 12+
+      };
+
+      // Si es TLS 1.3, verificar de otra forma (usando minVersion/maxVersion)
+      if (protocol === 'TLSv1.3') {
+        const options = {
+          host: domain,
+          port: 443,
+          minVersion: 'TLSv1.3' as any,
+          maxVersion: 'TLSv1.3' as any,
+          timeout: 5000,
+          rejectUnauthorized: false
+        };
+
+        const socket = tls.connect(options, () => {
+          socket.end();
+          resolve(true);
+        });
+
+        socket.on('error', () => {
+          resolve(false);
+        });
+
+        socket.on('timeout', () => {
+          socket.destroy();
+          resolve(false);
+        });
+
+        socket.setTimeout(5000);
+        return;
+      }
+
+      // Para TLS 1.0, 1.1, 1.2
+      const secureProtocol = protocolMap[protocol];
+      if (!secureProtocol) {
+        this.logger.debug(`Unknown protocol: ${protocol}`);
+        resolve(false);
+        return;
+      }
+
       const options = {
         host: domain,
         port: 443,
-        secureProtocol: `${protocol.replace('.', '_')}_method`,
-        timeout: 5000
+        secureProtocol,
+        timeout: 5000,
+        rejectUnauthorized: false
       };
 
       const socket = tls.connect(options, () => {
