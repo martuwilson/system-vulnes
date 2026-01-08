@@ -45,6 +45,7 @@ import {
   Lock,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
+import { UpgradeModal } from '../../components/UpgradeModal';
 import { formatDateTime } from '../../lib/translations';
 
 const GET_MY_COMPANIES = gql`
@@ -195,6 +196,10 @@ export function CompaniesPage() {
     feature: '',
     message: ''
   });
+  
+  // Estado para UpgradeModal (con detalles de planes)
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [planLimitError, setPlanLimitError] = useState<any>(null);
 
   // Obtener las empresas del usuario
   const { data: companiesData } = useQuery(GET_MY_COMPANIES);
@@ -346,33 +351,46 @@ export function CompaniesPage() {
     } catch (error: any) {
       console.error('Scan error:', error);
       
-      // Verificar si es un error de límite de plan (HTTP 402 Payment Required)
+      // Verificar si es un error de límite de plan
       const graphQLErrors = error?.graphQLErrors || [];
       const networkError = error?.networkError;
       
-      // Buscar error de límite de plan
-      const planLimitError = graphQLErrors.find((err: any) => 
-        err?.extensions?.code === 'PAYMENT_REQUIRED' ||
-        err?.extensions?.exception?.status === 402
-      );
+      // Buscar error de límite de plan por código o por mensaje
+      const planLimitError = graphQLErrors.find((err: any) => {
+        const code = err?.extensions?.code;
+        const status = err?.extensions?.exception?.status;
+        const message = err?.message || '';
+        
+        // Verificar por código HTTP 402, o por mensaje de límite
+        return code === 'PAYMENT_REQUIRED' || 
+               status === 402 || 
+               message.includes('límite') || 
+               message.includes('Alcanzaste');
+      });
       
       if (planLimitError || networkError?.statusCode === 402) {
         // Extraer información del error
         const errorData = planLimitError?.extensions?.exception?.response || 
                          networkError?.result || 
-                         {};
+                         {
+                           message: planLimitError?.message || error.message,
+                           code: 'PAYMENT_REQUIRED',
+                           currentPlan: 'TRIAL',
+                           availablePlans: [
+                             { plan: 'STARTER', price: 29, features: ['1 empresa', 'Escaneos ilimitados'] },
+                             { plan: 'GROWTH', price: 69, features: ['3 empresas', 'Escaneos ilimitados', 'Reportes PDF'] },
+                             { plan: 'PRO', price: 149, features: ['Empresas ilimitadas', 'Todo incluido'] },
+                           ]
+                         };
+        
+        // Mostrar modal de upgrade con planes
+        setPlanLimitError(errorData);
+        setUpgradeModalOpen(true);
         
         toast.error(errorData.message || 'Alcanzaste el límite de tu plan actual', {
           id: 'scan-loading',
           icon: '🔒',
-          duration: 4000,
-        });
-        
-        // Mostrar modal de upgrade
-        setUpgradeDialog({
-          open: true,
-          feature: 'scan',
-          message: errorData.message || 'Alcanzaste el límite de escaneos de tu plan actual'
+          duration: 3000,
         });
       } else {
         toast.error(error.message || 'Error al iniciar el escaneo', {
@@ -2306,6 +2324,16 @@ export function CompaniesPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* ===== UPGRADE MODAL ===== */}
+      <UpgradeModal 
+        open={upgradeModalOpen}
+        onClose={() => {
+          setUpgradeModalOpen(false);
+          setPlanLimitError(null);
+        }}
+        error={planLimitError}
+      />
 
       {/* ===== FOOTER INFORMATIVO ===== */}
       <Box 
