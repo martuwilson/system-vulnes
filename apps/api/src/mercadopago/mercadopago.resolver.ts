@@ -24,12 +24,12 @@ export class MercadopagoResolver {
   async createPaymentPreference(
     @CurrentUser() user: any,
     @Args('plan', { type: () => String }) plan: SubscriptionPlan,
-    @Args('successUrl', { type: () => String, defaultValue: 'http://localhost:3000/payment/success' }) successUrl: string,
-    @Args('failureUrl', { type: () => String, defaultValue: 'http://localhost:3000/payment/failure' }) failureUrl: string,
-    @Args('pendingUrl', { type: () => String, defaultValue: 'http://localhost:3000/payment/pending' }) pendingUrl: string,
+    @Args('successUrl', { type: () => String, defaultValue: 'http://localhost:3000/checkout/success' }) successUrl: string,
+    @Args('failureUrl', { type: () => String, defaultValue: 'http://localhost:3000/checkout/error' }) failureUrl: string,
+    @Args('pendingUrl', { type: () => String, defaultValue: 'http://localhost:3000/checkout/pending' }) pendingUrl: string,
   ): Promise<PaymentPreferenceResponse> {
     const result = await this.mercadopagoService.createPreference(
-      user.userId,
+      user.id,
       plan,
       successUrl,
       failureUrl,

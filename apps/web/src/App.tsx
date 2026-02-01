@@ -19,6 +19,12 @@ import { ScansPage } from './pages/scans/ScansPage';
 import { FindingsPage } from './pages/findings/FindingsPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
 
+// Checkout pages
+import { CheckoutPage } from './pages/checkout/CheckoutPage';
+import { CheckoutSuccess } from './pages/checkout/CheckoutSuccess';
+import { CheckoutError } from './pages/checkout/CheckoutError';
+import { CheckoutPending } from './pages/checkout/CheckoutPending';
+
 // Hooks
 import { useAuth } from './hooks/useAuth';
 
@@ -82,6 +88,15 @@ function App() {
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/app/dashboard" replace />} />
       </Route>
+
+      {/* Checkout Routes (requiere auth) */}
+      <Route
+        path="/checkout"
+        element={isAuthenticated ? <CheckoutPage /> : <Navigate to="/auth/login" replace />}
+      />
+      <Route path="/checkout/success" element={<CheckoutSuccess />} />
+      <Route path="/checkout/error" element={<CheckoutError />} />
+      <Route path="/checkout/pending" element={<CheckoutPending />} />
 
       {/* Legacy redirects */}
       <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
