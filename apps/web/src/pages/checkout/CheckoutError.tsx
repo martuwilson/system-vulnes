@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Button, Card, CardContent } from '@mui/material';
+import { Container, Typography, Button, Card, CardContent, Box } from '@mui/material';
 import { Error as ErrorIcon, Refresh as RetryIcon } from '@mui/icons-material';
 
 export function CheckoutError() {

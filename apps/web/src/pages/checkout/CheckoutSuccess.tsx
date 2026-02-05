@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Button, Card, CardContent } from '@mui/material';
+import { Container, Typography, Button, Card, CardContent } from '@mui/material';
 import { CheckCircle as CheckIcon, Dashboard as DashboardIcon } from '@mui/icons-material';
 
 export function CheckoutSuccess() {

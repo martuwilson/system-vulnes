@@ -18,12 +18,12 @@ COPY packages/shared ./packages/shared
 WORKDIR /app/packages/shared
 RUN npm run build
 
-# Build API
+# Generate Prisma client PRIMERO
 WORKDIR /app/apps/api
-RUN npm run build
+RUN npx prisma generate
 
-# Generate Prisma client
-RUN npm run db:generate
+# Build API DESPUÉS (necesita los tipos de Prisma)
+RUN npm run build
 
 EXPOSE 3001
 
