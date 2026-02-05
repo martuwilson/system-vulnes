@@ -434,7 +434,7 @@ export function DashboardLayout() {
               </Typography>
             </Box>
             <MenuItem 
-              onClick={handleMenuClose}
+              onClick={() => { handleMenuClose(); navigate('/app/profile'); }}
               sx={{
                 py: 1.5,
                 '&:hover': {

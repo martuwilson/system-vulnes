@@ -18,6 +18,7 @@ import { CompaniesPage } from './pages/companies/CompaniesPage';
 import { ScansPage } from './pages/scans/ScansPage';
 import { FindingsPage } from './pages/findings/FindingsPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 // Checkout pages
 import { CheckoutPage } from './pages/checkout/CheckoutPage';
@@ -86,6 +87,7 @@ function App() {
         <Route path="scans" element={<ScansPage />} />
         <Route path="findings" element={<FindingsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
         <Route path="*" element={<Navigate to="/app/dashboard" replace />} />
       </Route>
 

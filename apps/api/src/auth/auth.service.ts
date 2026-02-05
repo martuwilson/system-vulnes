@@ -205,4 +205,24 @@ export class AuthService {
       loginUrl: `${frontendUrl}/auth/login`,
     });
   }
+
+  /**
+   * Actualizar perfil de usuario
+   */
+  async updateProfile(
+    userId: string,
+    data: { firstName: string; lastName: string; companyName?: string },
+  ): Promise<any> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        companyName: data.companyName,
+      },
+      include: {
+        subscription: true,
+      },
+    });
+  }
 }

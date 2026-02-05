@@ -47,4 +47,19 @@ export class AuthResolver {
   async me(@CurrentUser() user: User): Promise<User> {
     return user;
   }
+
+  /**
+   * Mutation para actualizar perfil de usuario
+   * Requiere autenticación
+   */
+  @Mutation(() => User)
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(
+    @CurrentUser() user: User,
+    @Args('firstName') firstName: string,
+    @Args('lastName') lastName: string,
+    @Args('companyName', { nullable: true }) companyName?: string,
+  ): Promise<User> {
+    return this.authService.updateProfile(user.id, { firstName, lastName, companyName });
+  }
 }
