@@ -75,37 +75,42 @@ export class MercadopagoService {
 
     const preference = new Preference(this.client);
 
-    const result = await preference.create({
-      body: {
-        items: [
-          {
-            id: `plan-${plan.toLowerCase()}`,
-            title: `Plan ${plan} - Securyx PyME`,
-            description: `Suscripción mensual al plan ${plan}`,
-            quantity: 1,
-            unit_price: price,
-            currency_id: 'ARS',
-          },
-        ],
-        payer: {
-          email: user.email,
-          name: user.firstName,
-          surname: user.lastName || '',
+    const preferenceBody = {
+      items: [
+        {
+          id: `plan-${plan.toLowerCase()}`,
+          title: `Plan ${plan} - Securyx PyME`,
+          description: `Suscripción mensual al plan ${plan}`,
+          quantity: 1,
+          unit_price: price,
+          currency_id: 'ARS',
         },
-        back_urls: {
-          success: successUrl,
-          failure: failureUrl,
-          pending: pendingUrl,
-        },
-        auto_return: 'approved',
-        external_reference: userId,
-        notification_url: `${this.configService.get('APP_URL')}/mercadopago/webhook`,
-        metadata: {
-          userId,
-          plan,
-        },
-        statement_descriptor: 'SECURYX PYME',
+      ],
+      payer: {
+        email: user.email,
+        name: user.firstName,
+        surname: user.lastName || '',
       },
+      back_urls: {
+        success: successUrl,
+        failure: failureUrl,
+        pending: pendingUrl,
+      },
+      // auto_return: 'approved', // Temporalmente deshabilitado - causa error con back_urls
+      external_reference: userId,
+      notification_url: `${this.configService.get('APP_URL')}/mercadopago/webhook`,
+      metadata: {
+        userId,
+        plan,
+      },
+      statement_descriptor: 'SECURYX PYME',
+    };
+
+    this.logger.log(`📋 Back URLs: success=${successUrl}, failure=${failureUrl}, pending=${pendingUrl}`);
+    this.logger.debug(`📦 Full preference body: ${JSON.stringify(preferenceBody, null, 2)}`);
+
+    const result = await preference.create({
+      body: preferenceBody,
     });
 
     this.logger.log(`Payment preference created: ${result.id}`);

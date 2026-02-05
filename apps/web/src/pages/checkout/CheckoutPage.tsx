@@ -24,8 +24,18 @@ import {
 import toast from 'react-hot-toast';
 
 const CREATE_PAYMENT_PREFERENCE = gql`
-  mutation CreatePaymentPreference($plan: String!) {
-    createPaymentPreference(plan: $plan) {
+  mutation CreatePaymentPreference(
+    $plan: String!
+    $successUrl: String!
+    $failureUrl: String!
+    $pendingUrl: String!
+  ) {
+    createPaymentPreference(
+      plan: $plan
+      successUrl: $successUrl
+      failureUrl: $failureUrl
+      pendingUrl: $pendingUrl
+    ) {
       preferenceId
       initPoint
     }
@@ -96,8 +106,15 @@ export function CheckoutPage() {
     try {
       toast.loading('Generando link de pago...', { id: 'checkout' });
 
+      const baseUrl = window.location.origin;
+      
       const { data } = await createPayment({
-        variables: { plan: selectedPlan },
+        variables: { 
+          plan: selectedPlan,
+          successUrl: `${baseUrl}/checkout/success`,
+          failureUrl: `${baseUrl}/checkout/error`,
+          pendingUrl: `${baseUrl}/checkout/pending`,
+        },
       });
 
       toast.success('Redirigiendo a MercadoPago...', { id: 'checkout' });
