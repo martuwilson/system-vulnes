@@ -99,7 +99,7 @@ export function CheckoutPage() {
   }, [planParam, navigate]);
 
   const plan = PLANS[selectedPlan];
-  const usdToArs = 1480; // TODO: Obtener del backend
+  const usdToArs = 1465; // Tipo de cambio actualizado
   const priceARS = plan.price * usdToArs;
 
   const handlePayment = async () => {

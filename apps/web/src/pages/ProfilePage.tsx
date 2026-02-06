@@ -421,7 +421,7 @@ export function ProfilePage() {
 
               {currentPlan !== 'TRIAL' && (
                 <Typography variant="body2" color="text.secondary">
-                  Se te cobrará ${planPrices[currentPlan]} USD (≈ ${Math.round(planPrices[currentPlan] * 1480).toLocaleString()} ARS)
+                  Se te cobrará ${planPrices[currentPlan]} USD (≈ ${Math.round(planPrices[currentPlan] * 1465).toLocaleString()} ARS)
                 </Typography>
               )}
             </CardContent>
