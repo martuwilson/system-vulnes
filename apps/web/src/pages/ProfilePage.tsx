@@ -17,16 +17,25 @@ import {
   ListItem,
   ListItemText,
   LinearProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  Stack,
+  Paper,
 } from '@mui/material';
 import { 
-  Person, 
   Edit, 
   Save, 
   CreditCard,
-  TrendingUp,
   CheckCircle,
   Receipt,
   Upgrade,
+  Close,
+  ArrowForward,
+  Rocket,
+  Business,
+  Email as EmailIcon,
 } from '@mui/icons-material';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import toast from 'react-hot-toast';
@@ -70,6 +79,7 @@ const UPDATE_PROFILE = gql`
 export function ProfilePage() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const { data, loading, refetch } = useQuery(ME_QUERY);
   const [updateProfile, { loading: updating }] = useMutation(UPDATE_PROFILE);
 
@@ -86,22 +96,22 @@ export function ProfilePage() {
     TRIAL: {
       domains: 1,
       scans: '5 escaneos totales',
-      features: ['Escaneos básicos', 'Alertas por email', '7 días de prueba']
+      features: ['Escaneos básicos', 'Alertas por email', 'Dashboard básico']
     },
     STARTER: {
       domains: 1,
       scans: 'Ilimitados',
-      features: ['1 dominio', 'Escaneos ilimitados', 'Alertas por email', 'Dashboard completo']
+      features: ['1 dominio protegido', 'Escaneos ilimitados mensuales', 'Alertas por email en tiempo real', 'Dashboard completo']
     },
     GROWTH: {
       domains: 3,
       scans: 'Ilimitados',
-      features: ['3 dominios', 'Escaneos ilimitados', 'Alertas email y Slack', 'Reportes PDF', '3 usuarios']
+      features: ['3 dominios protegidos', 'Escaneos ilimitados', 'Alertas email y Slack', 'Reportes PDF', '3 usuarios del equipo']
     },
     PRO: {
       domains: 999,
       scans: 'Ilimitados',
-      features: ['Dominios ilimitados', 'Escaneos ilimitados', 'Alertas avanzadas', 'Reportes PDF/CSV', 'Usuarios ilimitados', 'API access', 'Soporte prioritario']
+      features: ['Dominios ilimitados', 'Escaneos ilimitados', 'Alertas avanzadas multicanal', 'Reportes PDF/CSV personalizados', 'Usuarios ilimitados', 'Acceso API completo', 'Soporte prioritario 24/7']
     }
   };
 
@@ -110,6 +120,20 @@ export function ProfilePage() {
     STARTER: 29,
     GROWTH: 69,
     PRO: 149,
+  };
+  
+  const planIcons: Record<string, string> = {
+    TRIAL: '⏳',
+    STARTER: '⚡',
+    GROWTH: '🚀',
+    PRO: '💎',
+  };
+  
+  const planColors: Record<string, string> = {
+    TRIAL: '#F59E0B',
+    STARTER: '#3B82F6',
+    GROWTH: '#8B5CF6',
+    PRO: '#06B6D4',
   };
 
   const handleEdit = () => {
@@ -149,11 +173,21 @@ export function ProfilePage() {
   const getPlanLabel = (plan: string) => {
     const labels: Record<string, string> = {
       TRIAL: 'Prueba Gratuita',
-      STARTER: 'Starter',
-      GROWTH: 'Growth',
-      PRO: 'Pro',
+      STARTER: 'Plan Starter',
+      GROWTH: 'Plan Growth',
+      PRO: 'Plan Pro',
     };
     return labels[plan] || plan;
+  };
+  
+  const getPlanSubtitle = (plan: string) => {
+    const subtitles: Record<string, string> = {
+      TRIAL: 'Gratis',
+      STARTER: 'El plan perfecto para empezar',
+      GROWTH: 'Para equipos en crecimiento',
+      PRO: 'Máxima protección y flexibilidad',
+    };
+    return subtitles[plan] || '';
   };
 
   const getStatusLabel = (status: string) => {
@@ -162,303 +196,560 @@ export function ProfilePage() {
       TRIAL: 'Prueba',
       CANCELED: 'Cancelado',
       PAST_DUE: 'Vencido',
+      TRIALING: 'En Prueba',
     };
     return labels[status] || status;
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, 'success' | 'warning' | 'error' | 'default'> = {
-      ACTIVE: 'success',
-      TRIAL: 'warning',
-      CANCELED: 'error',
-      PAST_DUE: 'error',
-    };
-    return colors[status] || 'default';
-  };
-
   const currentPlan = user?.subscription?.plan || 'TRIAL';
+  const currentStatus = user?.subscription?.status || 'TRIALING';
   const daysRemaining = user?.subscription?.currentPeriodEnd
     ? Math.ceil((new Date(user.subscription.currentPeriodEnd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
-    : 0;
+    : 7;
   const companiesCount = user?.companies?.length || 0;
   const companiesLimit = planLimits[currentPlan]?.domains || 1;
-  const usagePercentage = (companiesCount / companiesLimit) * 100;
+  const usagePercentage = Math.min((companiesCount / companiesLimit) * 100, 100);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Typography variant="h4" sx={{ fontWeight: 800, mb: 6 }}>
-        Mi Perfil
-      </Typography>
-
-      <Grid container spacing={3}>
-        {/* Avatar y datos básicos */}
-        <Grid item xs={12} md={4}>
-          <Card sx={{ mb: 3 }}>
-            <CardContent sx={{ textAlign: 'center', py: 4 }}>
-              <Avatar
-                sx={{
-                  width: 120,
-                  height: 120,
-                  mx: 'auto',
-                  mb: 2,
-                  bgcolor: '#1976D2',
-                  fontSize: '3rem',
-                }}
-              >
-                {user?.firstName?.[0]}{user?.lastName?.[0]}
-              </Avatar>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+    <Container maxWidth="lg" sx={{ py: 6 }}>
+      {/* PROFILE HEADER - Hero Section */}
+      <Paper
+        elevation={0}
+        sx={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: 4,
+          p: 4,
+          mb: 4,
+          color: 'white',
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '300px',
+            height: '300px',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+            borderRadius: '50%',
+            transform: 'translate(50%, -50%)',
+          },
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Avatar
+              sx={{
+                width: 120,
+                height: 120,
+                bgcolor: 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+                fontSize: '3rem',
+                fontWeight: 700,
+                border: '4px solid rgba(255, 255, 255, 0.3)',
+              }}
+            >
+              {user?.firstName?.[0]}{user?.lastName?.[0]}
+            </Avatar>
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
                 {user?.firstName} {user?.lastName}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {user?.email}
-              </Typography>
-              <Chip 
-                label={getStatusLabel(user?.subscription?.status || 'TRIAL')} 
-                color={getStatusColor(user?.subscription?.status || 'TRIAL')}
-                size="small"
-                sx={{ mt: 1 }}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Plan actual */}
-          <Card>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <TrendingUp color="primary" />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  {getPlanLabel(currentPlan)}
-                </Typography>
-              </Box>
-              
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1976D2', mb: 1 }}>
-                ${planPrices[currentPlan]}
-                <Typography component="span" variant="body2" color="text.secondary">
-                  {currentPlan === 'TRIAL' ? '' : '/mes'}
-                </Typography>
-              </Typography>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="caption" color="text.secondary">
-                  Uso de dominios
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={Math.min(usagePercentage, 100)} 
-                    sx={{ flexGrow: 1, height: 8, borderRadius: 4 }}
-                  />
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                    {companiesCount}/{companiesLimit}
+              {user?.companyName && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                  <Business sx={{ fontSize: 18, opacity: 0.9 }} />
+                  <Typography variant="body1" sx={{ opacity: 0.95 }}>
+                    {user.companyName}
                   </Typography>
                 </Box>
+              )}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <EmailIcon sx={{ fontSize: 18, opacity: 0.9 }} />
+                <Typography variant="body2" sx={{ opacity: 0.95 }}>
+                  {user?.email}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+            <Chip
+              label={`${planIcons[currentPlan]} ${getStatusLabel(currentStatus)}${currentPlan === 'TRIAL' && daysRemaining > 0 ? ` · ${daysRemaining} días` : ''}`}
+              sx={{
+                bgcolor: 'rgba(255, 255, 255, 0.25)',
+                backdropFilter: 'blur(10px)',
+                color: 'white',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                px: 2,
+                py: 2.5,
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+              }}
+            />
+            <Button
+              variant="contained"
+              startIcon={<Edit />}
+              onClick={() => setIsEditing(!isEditing)}
+              sx={{
+                bgcolor: 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+                color: 'white',
+                fontWeight: 600,
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.3)',
+                },
+              }}
+            >
+              {isEditing ? 'Cancelar edición' : 'Editar perfil'}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+      <Grid container spacing={3}>
+        {/* PLAN CARD - Columna izquierda destacada */}
+        <Grid item xs={12} md={5}>
+          <Card
+            sx={{
+              boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+              borderRadius: 3,
+              border: `2px solid ${planColors[currentPlan]}`,
+              position: 'relative',
+              overflow: 'visible',
+            }}
+          >
+            <CardContent sx={{ p: 4 }}>
+              {/* Header del plan con icono */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                <Rocket sx={{ color: planColors[currentPlan], fontSize: 28 }} />
+                <Typography variant="h6" sx={{ fontWeight: 700, color: planColors[currentPlan] }}>
+                  TU PLAN
+                </Typography>
               </Box>
 
-              <List dense sx={{ mb: 2 }}>
+              {/* Nombre del plan */}
+              <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
+                {getPlanLabel(currentPlan)}
+              </Typography>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                {getPlanSubtitle(currentPlan)}
+              </Typography>
+
+              {/* Precio */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h3" sx={{ fontWeight: 700, color: planColors[currentPlan] }}>
+                  ${planPrices[currentPlan]}
+                  <Typography component="span" variant="h6" color="text.secondary">
+                    {currentPlan === 'TRIAL' ? '' : ' USD/mes'}
+                  </Typography>
+                </Typography>
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              {/* Barra de uso */}
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    Uso de dominios
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 700, color: planColors[currentPlan] }}>
+                    {companiesCount}/{companiesLimit === 999 ? '∞' : companiesLimit}
+                  </Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={usagePercentage}
+                  sx={{
+                    height: 10,
+                    borderRadius: 5,
+                    bgcolor: '#f1f5f9',
+                    '& .MuiLinearProgress-bar': {
+                      bgcolor: planColors[currentPlan],
+                      borderRadius: 5,
+                    },
+                  }}
+                />
+                {companiesLimit !== 999 && usagePercentage >= 80 && (
+                  <Typography variant="caption" color="warning.main" sx={{ mt: 0.5, display: 'block' }}>
+                    Estás cerca del límite de tu plan
+                  </Typography>
+                )}
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              {/* Lista de features */}
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2 }}>
+                Incluido en tu plan:
+              </Typography>
+              <List dense sx={{ mb: 3 }}>
                 {planLimits[currentPlan]?.features.map((feature, index) => (
-                  <ListItem key={index} sx={{ px: 0 }}>
-                    <CheckCircle sx={{ fontSize: 16, color: '#10b981', mr: 1 }} />
-                    <ListItemText 
-                      primary={feature} 
-                      primaryTypographyProps={{ variant: 'body2' }}
+                  <ListItem key={index} sx={{ px: 0, py: 0.5 }}>
+                    <CheckCircle sx={{ fontSize: 18, color: '#10b981', mr: 1.5 }} />
+                    <ListItemText
+                      primary={feature}
+                      primaryTypographyProps={{ variant: 'body2', fontWeight: 500 }}
                     />
                   </ListItem>
                 ))}
               </List>
 
-              {daysRemaining > 0 && (
-                <Alert severity={daysRemaining < 7 ? 'warning' : 'info'} sx={{ mb: 2 }}>
-                  {daysRemaining} días restantes
+              {/* Alert de días restantes (solo para Trial) */}
+              {currentPlan === 'TRIAL' && daysRemaining > 0 && (
+                <Alert 
+                  severity={daysRemaining <= 3 ? 'error' : daysRemaining <= 7 ? 'warning' : 'info'} 
+                  sx={{ mb: 3 }}
+                >
+                  <strong>{daysRemaining} día{daysRemaining !== 1 ? 's' : ''} restante{daysRemaining !== 1 ? 's' : ''}</strong> de tu prueba gratuita
                 </Alert>
               )}
 
+              {/* CTA de Upgrade */}
               {currentPlan !== 'PRO' && (
                 <Button
                   fullWidth
                   variant="contained"
+                  size="large"
                   startIcon={<Upgrade />}
+                  endIcon={<ArrowForward />}
                   onClick={() => navigate('/checkout?plan=PRO')}
-                  sx={{ mt: 1 }}
+                  sx={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    fontWeight: 700,
+                    py: 1.5,
+                    fontSize: '1rem',
+                    textTransform: 'none',
+                    boxShadow: '0 4px 14px rgba(102, 126, 234, 0.4)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #5568d3 0%, #6a3f91 100%)',
+                      boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)',
+                      transform: 'translateY(-2px)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
                 >
-                  Mejorar Plan
+                  💎 Mejorar a PRO · Más poder
                 </Button>
               )}
-            </CardContent>
-          </Card>
-        </Grid>
 
-        {/* Columna derecha */}
-        <Grid item xs={12} md={8}>
-          {/* Información Personal */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Información Personal
-                </Typography>
-                {!isEditing && (
-                  <Button
-                    startIcon={<Edit />}
-                    onClick={handleEdit}
-                    variant="outlined"
-                  >
-                    Editar
-                  </Button>
-                )}
-              </Box>
-
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Nombre"
-                    value={isEditing ? formData.firstName : user?.firstName || ''}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    disabled={!isEditing}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Apellido"
-                    value={isEditing ? formData.lastName : user?.lastName || ''}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    disabled={!isEditing}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Empresa"
-                    value={isEditing ? formData.companyName : user?.companyName || ''}
-                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                    disabled={!isEditing}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    value={user?.email || ''}
-                    disabled
-                    helperText="El email no puede ser modificado"
-                  />
-                </Grid>
-              </Grid>
-
-              {isEditing && (
-                <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<Save />}
-                    onClick={handleSave}
-                    disabled={updating}
-                  >
-                    Guardar
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={handleCancel}
-                    disabled={updating}
-                  >
-                    Cancelar
-                  </Button>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Información de Facturación */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                <CreditCard color="primary" />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Facturación
-                </Typography>
-              </Box>
-
-              {user?.subscription?.mercadopagoPaymentId ? (
-                <Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Método de pago
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                    <CreditCard sx={{ color: '#10b981' }} />
-                    <Box>
-                      <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                        MercadoPago
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        ID: {user.subscription.mercadopagoPaymentId}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              ) : (
-                <Alert severity="info">
-                  No hay método de pago configurado. Activá un plan para agregar tu información de pago.
+              {currentPlan === 'PRO' && (
+                <Alert severity="success" icon={<CheckCircle />}>
+                  ✨ Ya tenés el mejor plan disponible
                 </Alert>
               )}
 
               <Divider sx={{ my: 3 }} />
 
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Próxima facturación
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                {user?.subscription?.currentPeriodEnd 
-                  ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString('es-AR', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })
-                  : 'No disponible'}
-              </Typography>
-
-              {currentPlan !== 'TRIAL' && (
-                <Typography variant="body2" color="text.secondary">
-                  Se te cobrará ${planPrices[currentPlan]} USD (≈ ${Math.round(planPrices[currentPlan] * 1465).toLocaleString()} ARS)
+              {/* Próxima renovación */}
+              <Box>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                  {currentPlan === 'TRIAL' ? 'Período de prueba finaliza' : 'Próxima renovación'}
                 </Typography>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Historial de Pagos */}
-          <Card>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                <Receipt color="primary" />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Historial de Pagos
+                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                  {user?.subscription?.currentPeriodEnd
+                    ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString('es-AR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })
+                    : 'No disponible'}
                 </Typography>
+                {currentPlan !== 'TRIAL' && (
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                    Se renovará automáticamente
+                  </Typography>
+                )}
               </Box>
-
-              {user?.subscription?.mercadopagoPaymentId ? (
-                <List>
-                  <ListItem sx={{ px: 0 }}>
-                    <ListItemText
-                      primary={`Plan ${getPlanLabel(currentPlan)}`}
-                      secondary={new Date(user.subscription.currentPeriodStart).toLocaleDateString('es-AR')}
-                    />
-                    <Chip label="Pagado" color="success" size="small" />
-                    <Typography sx={{ ml: 2, fontWeight: 600 }}>
-                      ${planPrices[currentPlan]} USD
-                    </Typography>
-                  </ListItem>
-                </List>
-              ) : (
-                <Alert severity="info">
-                  No hay pagos registrados aún.
-                </Alert>
-              )}
             </CardContent>
           </Card>
         </Grid>
+
+        {/* COLUMNA DERECHA - Información Personal + Facturación */}
+        <Grid item xs={12} md={7}>
+          <Stack spacing={3}>
+            {/* INFORMACIÓN PERSONAL */}
+            <Card sx={{ boxShadow: '0 2px 8px rgba(0,0,0,0.04)', borderRadius: 3 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    Información Personal
+                  </Typography>
+                  {!isEditing && (
+                    <Button
+                      startIcon={<Edit />}
+                      onClick={handleEdit}
+                      variant="outlined"
+                      size="small"
+                      sx={{ textTransform: 'none', fontWeight: 600 }}
+                    >
+                      Editar
+                    </Button>
+                  )}
+                </Box>
+
+                {!isEditing ? (
+                  // MODO LECTURA
+                  <Stack spacing={3}>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5, fontWeight: 600 }}>
+                        Nombre completo
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        {user?.firstName} {user?.lastName}
+                      </Typography>
+                    </Box>
+
+                    <Divider />
+
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5, fontWeight: 600 }}>
+                        Empresa
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        {user?.companyName || 'No especificada'}
+                      </Typography>
+                    </Box>
+
+                    <Divider />
+
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5, fontWeight: 600 }}>
+                        Email
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        {user?.email}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                        El email no puede modificarse por seguridad
+                      </Typography>
+                    </Box>
+                  </Stack>
+                ) : (
+                  // MODO EDICIÓN
+                  <Box>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="Nombre"
+                          value={formData.firstName}
+                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                          size="small"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="Apellido"
+                          value={formData.lastName}
+                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                          size="small"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          fullWidth
+                          label="Empresa"
+                          value={formData.companyName}
+                          onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                          size="small"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          fullWidth
+                          label="Email"
+                          value={user?.email || ''}
+                          disabled
+                          size="small"
+                          helperText="El email no puede modificarse por seguridad"
+                        />
+                      </Grid>
+                    </Grid>
+
+                    <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+                      <Button
+                        variant="contained"
+                        startIcon={<Save />}
+                        onClick={handleSave}
+                        disabled={updating}
+                        sx={{ textTransform: 'none', fontWeight: 600 }}
+                      >
+                        Guardar cambios
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={handleCancel}
+                        disabled={updating}
+                        sx={{ textTransform: 'none', fontWeight: 600 }}
+                      >
+                        Cancelar
+                      </Button>
+                    </Box>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* FACTURACIÓN */}
+            <Card sx={{ boxShadow: '0 2px 8px rgba(0,0,0,0.04)', borderRadius: 3 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                  <CreditCard sx={{ color: '#3B82F6' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    Facturación
+                  </Typography>
+                </Box>
+
+                {user?.subscription?.mercadopagoPaymentId ? (
+                  <Stack spacing={3}>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontWeight: 600 }}>
+                        Método de pago
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 2,
+                            bgcolor: '#10B981',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <CreditCard sx={{ color: 'white', fontSize: 24 }} />
+                        </Box>
+                        <Box>
+                          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                            MercadoPago
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            ID: ••••{user.subscription.mercadopagoPaymentId.slice(-4)}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    <Divider />
+
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5, fontWeight: 600 }}>
+                        Próximo cargo
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#3B82F6' }}>
+                        ${planPrices[currentPlan]} USD
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        {user?.subscription?.currentPeriodEnd
+                          ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString('es-AR', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            })
+                          : 'No disponible'}
+                      </Typography>
+                      {currentPlan !== 'TRIAL' && (
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                          Aproximadamente ${Math.round(planPrices[currentPlan] * 1465).toLocaleString()} ARS
+                        </Typography>
+                      )}
+                    </Box>
+
+                    <Button
+                      variant="outlined"
+                      startIcon={<Receipt />}
+                      onClick={() => setHistoryDialogOpen(true)}
+                      fullWidth
+                      sx={{ textTransform: 'none', fontWeight: 600 }}
+                    >
+                      Ver historial de pagos
+                    </Button>
+                  </Stack>
+                ) : (
+                  <Box>
+                    <Alert severity="info" sx={{ mb: 3 }}>
+                      Todavía no cargaste un método de pago.
+                      {currentPlan === 'TRIAL' && ' Activá un plan para proteger tus dominios.'}
+                    </Alert>
+                    {currentPlan === 'TRIAL' && (
+                      <Button
+                        variant="contained"
+                        startIcon={<Upgrade />}
+                        onClick={() => navigate('/checkout?plan=STARTER')}
+                        fullWidth
+                        sx={{ textTransform: 'none', fontWeight: 600 }}
+                      >
+                        Activar plan Starter →
+                      </Button>
+                    )}
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          </Stack>
+        </Grid>
       </Grid>
+
+      {/* DIALOG - Historial de Pagos */}
+      <Dialog
+        open={historyDialogOpen}
+        onClose={() => setHistoryDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+          },
+        }}
+      >
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Receipt sx={{ color: '#3B82F6' }} />
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              Historial de Pagos
+            </Typography>
+          </Box>
+          <IconButton onClick={() => setHistoryDialogOpen(false)} size="small">
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {user?.subscription?.mercadopagoPaymentId ? (
+            <List>
+              <ListItem
+                sx={{
+                  px: 0,
+                  py: 2,
+                  borderBottom: '1px solid #e2e8f0',
+                }}
+              >
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                    Plan {getPlanLabel(currentPlan)}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {user.subscription.currentPeriodStart
+                      ? new Date(user.subscription.currentPeriodStart).toLocaleDateString('es-AR')
+                      : 'Fecha no disponible'}
+                  </Typography>
+                </Box>
+                <Box sx={{ textAlign: 'right' }}>
+                  <Chip label="Pagado" color="success" size="small" sx={{ mb: 0.5 }} />
+                  <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                    ${planPrices[currentPlan]} USD
+                  </Typography>
+                </Box>
+              </ListItem>
+            </List>
+          ) : (
+            <Alert severity="info">No hay pagos registrados aún.</Alert>
+          )}
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }
