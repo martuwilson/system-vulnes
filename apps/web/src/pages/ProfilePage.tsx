@@ -34,8 +34,6 @@ import {
   Close,
   ArrowForward,
   Rocket,
-  Business,
-  Email as EmailIcon,
 } from '@mui/icons-material';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import toast from 'react-hot-toast';
@@ -218,7 +216,7 @@ export function ProfilePage() {
         sx={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           borderRadius: 4,
-          p: 4,
+          p: 3,
           mb: 4,
           color: 'white',
           position: 'relative',
@@ -240,49 +238,44 @@ export function ProfilePage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
             <Avatar
               sx={{
-                width: 120,
-                height: 120,
+                width: 100,
+                height: 100,
                 bgcolor: 'rgba(255, 255, 255, 0.2)',
                 backdropFilter: 'blur(10px)',
-                fontSize: '3rem',
+                fontSize: '2.5rem',
                 fontWeight: 700,
-                border: '4px solid rgba(255, 255, 255, 0.3)',
+                border: '3px solid rgba(255, 255, 255, 0.3)',
               }}
             >
               {user?.firstName?.[0]}{user?.lastName?.[0]}
             </Avatar>
             <Box>
-              <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, fontSize: '2rem' }}>
                 {user?.firstName} {user?.lastName}
               </Typography>
-              {user?.companyName && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                  <Business sx={{ fontSize: 18, opacity: 0.9 }} />
-                  <Typography variant="body1" sx={{ opacity: 0.95 }}>
-                    {user.companyName}
+              <Typography variant="body1" sx={{ opacity: 0.9, mb: 0.5, fontWeight: 500 }}>
+                {user?.companyName ? `${user.companyName}` : 'Administrador'}
+                {user?.email && (
+                  <Typography component="span" sx={{ opacity: 0.8, fontWeight: 400, ml: 1 }}>
+                    · {user.email}
                   </Typography>
-                </Box>
-              )}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <EmailIcon sx={{ fontSize: 18, opacity: 0.9 }} />
-                <Typography variant="body2" sx={{ opacity: 0.95 }}>
-                  {user?.email}
-                </Typography>
-              </Box>
+                )}
+              </Typography>
             </Box>
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
             <Chip
               label={`${planIcons[currentPlan]} ${getStatusLabel(currentStatus)}${currentPlan === 'TRIAL' && daysRemaining > 0 ? ` · ${daysRemaining} días` : ''}`}
+              size="small"
               sx={{
-                bgcolor: 'rgba(255, 255, 255, 0.25)',
+                bgcolor: 'rgba(255, 255, 255, 0.2)',
                 backdropFilter: 'blur(10px)',
                 color: 'white',
-                fontWeight: 600,
-                fontSize: '0.875rem',
-                px: 2,
-                py: 2.5,
-                border: '1px solid rgba(255, 255, 255, 0.3)',
+                fontWeight: 500,
+                fontSize: '0.8125rem',
+                px: 1.5,
+                py: 1.5,
+                border: '1px solid rgba(255, 255, 255, 0.25)',
               }}
             />
             <Button
@@ -430,7 +423,7 @@ export function ProfilePage() {
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  💎 Mejorar a PRO · Más poder
+                  💎 Desbloquear protección completa
                 </Button>
               )}
 
@@ -609,7 +602,7 @@ export function ProfilePage() {
                       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontWeight: 600 }}>
                         Método de pago
                       </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
                         <Box
                           sx={{
                             width: 48,
@@ -632,6 +625,10 @@ export function ProfilePage() {
                           </Typography>
                         </Box>
                       </Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <CheckCircle sx={{ fontSize: 14, color: '#10B981' }} />
+                        Pagos seguros con MercadoPago
+                      </Typography>
                     </Box>
 
                     <Divider />
