@@ -23,6 +23,7 @@ import {
   IconButton,
   Stack,
   Paper,
+  CircularProgress,
 } from '@mui/material';
 import { 
   Edit, 
@@ -45,7 +46,6 @@ const ME_QUERY = gql`
       email
       firstName
       lastName
-      companyName
       subscription {
         plan
         status
@@ -59,17 +59,15 @@ const ME_QUERY = gql`
         name
       }
     }
-    # Podríamos agregar una query para los assets/scans si queremos mostrar uso
   }
 `;
 
 const UPDATE_PROFILE = gql`
-  mutation UpdateProfile($firstName: String!, $lastName: String!, $companyName: String) {
-    updateProfile(firstName: $firstName, lastName: $lastName, companyName: $companyName) {
+  mutation UpdateProfile($firstName: String!, $lastName: String!) {
+    updateProfile(firstName: $firstName, lastName: $lastName) {
       id
       firstName
       lastName
-      companyName
     }
   }
 `;
@@ -78,16 +76,26 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
-  const { data, loading, refetch } = useQuery(ME_QUERY);
+  const { data, loading, error, refetch } = useQuery(ME_QUERY, {
+    fetchPolicy: 'cache-and-network',
+    errorPolicy: 'all',
+  });
   const [updateProfile, { loading: updating }] = useMutation(UPDATE_PROFILE);
 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    companyName: '',
   });
 
   const user = data?.me;
+  const userCompany = user?.companies?.[0]; // Primera empresa del usuario
+
+  // Debug: Ver qué está llegando
+  console.log('🔍 ProfilePage - Data:', data);
+  console.log('🔍 ProfilePage - User:', user);
+  console.log('🔍 ProfilePage - Loading:', loading);
+  console.log('🔍 ProfilePage - Error:', error);
+  console.log('🔍 ProfilePage - UserCompany:', userCompany);
 
   // Plan limits
   const planLimits: Record<string, { domains: number, scans: string, features: string[] }> = {
@@ -138,7 +146,6 @@ export function ProfilePage() {
     setFormData({
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
-      companyName: user?.companyName || '',
     });
     setIsEditing(true);
   };
@@ -162,8 +169,34 @@ export function ProfilePage() {
 
   if (loading) {
     return (
+      <Container maxWidth="lg" sx={{ py: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress size={60} />
+          <Typography variant="h6" sx={{ mt: 3, color: 'text.secondary' }}>
+            Cargando tu perfil...
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
+
+  if (error) {
+    console.error('❌ Error loading profile:', error);
+    return (
       <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Typography>Cargando...</Typography>
+        <Alert severity="error">
+          Error al cargar el perfil: {error.message}
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Alert severity="warning">
+          No se pudo cargar la información del usuario. Por favor, intenta <Button onClick={() => refetch()}>recargar</Button>.
+        </Alert>
       </Container>
     );
   }
@@ -254,7 +287,7 @@ export function ProfilePage() {
                 {user?.firstName} {user?.lastName}
               </Typography>
               <Typography variant="body1" sx={{ opacity: 0.9, mb: 0.5, fontWeight: 500 }}>
-                {user?.companyName ? `${user.companyName}` : 'Administrador'}
+                {userCompany?.name || 'Administrador'}
                 {user?.email && (
                   <Typography component="span" sx={{ opacity: 0.8, fontWeight: 400, ml: 1 }}>
                     · {user.email}
@@ -501,7 +534,7 @@ export function ProfilePage() {
                         Empresa
                       </Typography>
                       <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {user?.companyName || 'No especificada'}
+                        {userCompany?.name || 'Sin empresa asignada'}
                       </Typography>
                     </Box>
 
@@ -545,9 +578,10 @@ export function ProfilePage() {
                         <TextField
                           fullWidth
                           label="Empresa"
-                          value={formData.companyName}
-                          onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                          value={userCompany?.name || 'Sin empresa'}
+                          disabled
                           size="small"
+                          helperText="La empresa se gestiona desde la sección de Empresas"
                         />
                       </Grid>
                       <Grid item xs={12}>

@@ -58,8 +58,7 @@ export class AuthResolver {
     @CurrentUser() user: User,
     @Args('firstName') firstName: string,
     @Args('lastName') lastName: string,
-    @Args('companyName', { nullable: true }) companyName?: string,
   ): Promise<User> {
-    return this.authService.updateProfile(user.id, { firstName, lastName, companyName });
+    return this.authService.updateProfile(user.id, { firstName, lastName });
   }
 }

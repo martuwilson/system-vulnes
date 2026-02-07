@@ -211,17 +211,17 @@ export class AuthService {
    */
   async updateProfile(
     userId: string,
-    data: { firstName: string; lastName: string; companyName?: string },
+    data: { firstName: string; lastName: string },
   ): Promise<any> {
     return this.prisma.user.update({
       where: { id: userId },
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
-        companyName: data.companyName,
       },
       include: {
         subscription: true,
+        companies: true,
       },
     });
   }

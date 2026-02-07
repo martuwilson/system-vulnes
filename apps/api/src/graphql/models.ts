@@ -75,27 +75,6 @@ registerEnumType(ReportFrequency, { name: 'ReportFrequency' });
 registerEnumType(ReportFormat, { name: 'ReportFormat' });
 
 @ObjectType()
-export class User {
-  @Field()
-  id: string;
-
-  @Field()
-  email: string;
-
-  @Field()
-  firstName: string;
-
-  @Field()
-  lastName: string;
-
-  @Field()
-  createdAt: Date;
-
-  @Field()
-  updatedAt: Date;
-}
-
-@ObjectType()
 export class UserSubscription {
   @Field()
   id: string;
@@ -115,6 +94,9 @@ export class UserSubscription {
   @Field({ nullable: true })
   stripeCustomerId?: string;
 
+  @Field({ nullable: true })
+  mercadopagoPaymentId?: string;
+
   @Field()
   currentPeriodStart: Date;
 
@@ -123,6 +105,9 @@ export class UserSubscription {
 
   @Field()
   cancelAtPeriodEnd: boolean;
+
+  @Field({ nullable: true })
+  canceledAt?: Date;
 
   @Field()
   createdAt: Date;
@@ -150,6 +135,33 @@ export class Company {
 
   @Field()
   updatedAt: Date;
+}
+
+@ObjectType()
+export class User {
+  @Field()
+  id: string;
+
+  @Field()
+  email: string;
+
+  @Field()
+  firstName: string;
+
+  @Field()
+  lastName: string;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+
+  @Field(() => [Company], { nullable: true })
+  companies?: Company[];
+
+  @Field(() => UserSubscription, { nullable: true })
+  subscription?: UserSubscription;
 }
 
 @ObjectType()
