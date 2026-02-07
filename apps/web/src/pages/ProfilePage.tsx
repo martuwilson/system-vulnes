@@ -396,9 +396,16 @@ export function ProfilePage() {
                     },
                   }}
                 />
-                {companiesLimit !== 999 && usagePercentage >= 80 && (
-                  <Typography variant="caption" color="warning.main" sx={{ mt: 0.5, display: 'block' }}>
-                    Estás cerca del límite de tu plan
+                {companiesLimit !== 999 && usagePercentage >= 100 && (
+                  <Alert severity="warning" sx={{ mt: 2, py: 0.5 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      Llegaste al límite de dominios. Agregá más protección con PRO.
+                    </Typography>
+                  </Alert>
+                )}
+                {companiesLimit !== 999 && usagePercentage >= 80 && usagePercentage < 100 && (
+                  <Typography variant="caption" color="warning.main" sx={{ mt: 0.5, display: 'block', fontWeight: 500 }}>
+                    ⚠️ Cerca del límite. Considerá mejorar a PRO.
                   </Typography>
                 )}
               </Box>
@@ -427,7 +434,12 @@ export function ProfilePage() {
                   severity={daysRemaining <= 3 ? 'error' : daysRemaining <= 7 ? 'warning' : 'info'} 
                   sx={{ mb: 3 }}
                 >
-                  <strong>{daysRemaining} día{daysRemaining !== 1 ? 's' : ''} restante{daysRemaining !== 1 ? 's' : ''}</strong> de tu prueba gratuita
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    {daysRemaining <= 3 ? '⏰ ' : ''}Quedan {daysRemaining} día{daysRemaining !== 1 ? 's' : ''} para proteger tus dominios.
+                  </Typography>
+                  <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
+                    Activá un plan para mantener la protección continua.
+                  </Typography>
                 </Alert>
               )}
 
@@ -691,11 +703,18 @@ export function ProfilePage() {
                     </Box>
 
                     <Button
-                      variant="outlined"
+                      variant="text"
                       startIcon={<Receipt />}
                       onClick={() => setHistoryDialogOpen(true)}
                       fullWidth
-                      sx={{ textTransform: 'none', fontWeight: 600 }}
+                      sx={{ 
+                        textTransform: 'none', 
+                        fontWeight: 500,
+                        color: 'text.secondary',
+                        '&:hover': {
+                          bgcolor: 'rgba(0,0,0,0.02)',
+                        }
+                      }}
                     >
                       Ver historial de pagos
                     </Button>
@@ -703,8 +722,14 @@ export function ProfilePage() {
                 ) : (
                   <Box>
                     <Alert severity="info" sx={{ mb: 3 }}>
-                      Todavía no cargaste un método de pago.
-                      {currentPlan === 'TRIAL' && ' Activá un plan para proteger tus dominios.'}
+                      <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                        Todavía no cargaste un método de pago
+                      </Typography>
+                      <Typography variant="caption">
+                        {currentPlan === 'TRIAL' 
+                          ? 'Activá un plan para mantener tus dominios protegidos después de la prueba.'
+                          : 'Agregá un método de pago para activar tu plan.'}
+                      </Typography>
                     </Alert>
                     {currentPlan === 'TRIAL' && (
                       <Button
