@@ -189,15 +189,21 @@ export class CompaniesService {
       return false;
     }
 
-    // Límites por plan
-    const limits = {
-      TRIAL: 1,      // Solo 1 empresa en trial
-      STARTER: 3,    // Hasta 3 empresas en starter
-      PROFESSIONAL: 10, // Hasta 10 empresas en professional
+    // Límites por plan (sincronizados con frontend)
+    const limits: Record<string, number> = {
+      TRIAL: 1,         // 1 empresa en trial
+      STARTER: 1,       // 1 empresa en starter  
+      GROWTH: 3,        // 3 empresas en growth
+      PRO: 999,         // Ilimitado en pro
     };
 
     const currentCompanies = user.companies.length;
-    const maxCompanies = limits[user.subscription.plan] || 0;
+    const maxCompanies = limits[user.subscription.plan] || 1;
+
+    // Si el plan es PRO (999), considerarlo ilimitado
+    if (maxCompanies === 999) {
+      return true;
+    }
 
     return currentCompanies < maxCompanies;
   }

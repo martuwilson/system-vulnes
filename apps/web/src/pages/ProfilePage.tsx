@@ -396,14 +396,21 @@ export function ProfilePage() {
                     },
                   }}
                 />
-                {companiesLimit !== 999 && usagePercentage >= 100 && (
-                  <Alert severity="warning" sx={{ mt: 2, py: 0.5 }}>
+                {companiesLimit !== 999 && companiesCount > companiesLimit && (
+                  <Alert severity="error" sx={{ mt: 2, py: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      Llegaste al límite de dominios. Agregá más protección con PRO.
+                      ⚠️ Superaste el límite de {companiesLimit} dominio{companiesLimit !== 1 ? 's' : ''}. Mejorá a PRO para más protección.
                     </Typography>
                   </Alert>
                 )}
-                {companiesLimit !== 999 && usagePercentage >= 80 && usagePercentage < 100 && (
+                {companiesLimit !== 999 && companiesCount === companiesLimit && (
+                  <Alert severity="info" sx={{ mt: 2, py: 0.5 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      ✓ Usaste todos tus dominios disponibles ({companiesLimit}). Mejorá a PRO para agregar más.
+                    </Typography>
+                  </Alert>
+                )}
+                {companiesLimit !== 999 && companiesCount < companiesLimit && usagePercentage >= 80 && (
                   <Typography variant="caption" color="warning.main" sx={{ mt: 0.5, display: 'block', fontWeight: 500 }}>
                     ⚠️ Cerca del límite. Considerá mejorar a PRO.
                   </Typography>

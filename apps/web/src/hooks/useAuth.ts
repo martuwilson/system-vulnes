@@ -11,6 +11,13 @@ const LOGIN_MUTATION = gql`
         email
         firstName
         lastName
+        subscription {
+          id
+          plan
+          status
+          currentPeriodStart
+          currentPeriodEnd
+        }
       }
     }
   }
@@ -25,6 +32,13 @@ const REGISTER_MUTATION = gql`
         email
         firstName
         lastName
+        subscription {
+          id
+          plan
+          status
+          currentPeriodStart
+          currentPeriodEnd
+        }
       }
     }
   }
@@ -35,6 +49,13 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  subscription?: {
+    id: string;
+    plan: string;
+    status: string;
+    currentPeriodStart: string;
+    currentPeriodEnd: string;
+  };
 }
 
 interface AuthState {

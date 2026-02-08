@@ -162,22 +162,42 @@ export function DashboardLayout() {
         <Typography variant="caption" color="text.secondary" sx={{ mb: 1.5, display: 'block' }}>
           {user?.email}
         </Typography>
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            px: 1.5,
-            py: 0.4,
-            borderRadius: 1.5,
-            backgroundColor: '#E8F5E8',
-            color: '#2E7D32',
-            border: '1px solid #A5D6A7',
-          }}
-        >
-          <Person sx={{ fontSize: 14, mr: 0.5 }} />
-          <Typography variant="caption" fontWeight="600" sx={{ fontSize: '0.7rem' }}>
-            Administrador
-          </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, alignItems: 'center' }}>
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              px: 1.5,
+              py: 0.4,
+              borderRadius: 1.5,
+              backgroundColor: '#E8F5E8',
+              color: '#2E7D32',
+              border: '1px solid #A5D6A7',
+            }}
+          >
+            <Person sx={{ fontSize: 14, mr: 0.5 }} />
+            <Typography variant="caption" fontWeight="600" sx={{ fontSize: '0.7rem' }}>
+              Administrador
+            </Typography>
+          </Box>
+          {user?.subscription && (
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                px: 1.5,
+                py: 0.4,
+                borderRadius: 1.5,
+                backgroundColor: user.subscription.plan === 'TRIAL' ? '#FEF3C7' : user.subscription.plan === 'STARTER' ? '#DBEAFE' : user.subscription.plan === 'GROWTH' ? '#EDE9FE' : '#CFFAFE',
+                color: user.subscription.plan === 'TRIAL' ? '#92400E' : user.subscription.plan === 'STARTER' ? '#1E3A8A' : user.subscription.plan === 'GROWTH' ? '#5B21B6' : '#0E7490',
+                border: `1px solid ${user.subscription.plan === 'TRIAL' ? '#FCD34D' : user.subscription.plan === 'STARTER' ? '#60A5FA' : user.subscription.plan === 'GROWTH' ? '#A78BFA' : '#22D3EE'}`,
+              }}
+            >
+              <Typography variant="caption" fontWeight="600" sx={{ fontSize: '0.7rem' }}>
+                {user.subscription.plan === 'TRIAL' ? '⏳ Trial' : user.subscription.plan === 'STARTER' ? '⚡ Starter' : user.subscription.plan === 'GROWTH' ? '🚀 Growth' : '💎 Pro'}
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Box>
 

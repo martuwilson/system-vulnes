@@ -18,28 +18,31 @@ export class AssetsService {
     // Verificar que la empresa existe y pertenece al usuario
     const company = await this.companiesService.getCompanyById(userId, input.companyId);
     
+    // Normalizar el dominio (remover protocolo, www, y barras)
+    const normalizedDomain = this.normalizeDomain(input.domain);
+    
     // Validar formato del dominio
-    if (!this.isValidDomain(input.domain)) {
-      throw new BadRequestException('Formato de dominio inválido');
+    if (!this.isValidDomain(normalizedDomain)) {
+      throw new BadRequestException('Formato de dominio inválido. Ejemplo válido: ejemplo.com o www.ejemplo.com');
     }
 
     // Verificar que el dominio no esté ya registrado en esta empresa
     const existingAsset = await this.prisma.asset.findFirst({
       where: {
-        domain: input.domain,
+        domain: normalizedDomain,
         companyId: input.companyId,
         isActive: true,
       },
     });
 
     if (existingAsset) {
-      throw new BadRequestException(`El dominio ${input.domain} ya está registrado en esta empresa`);
+      throw new BadRequestException(`El dominio ${normalizedDomain} ya está registrado en esta empresa`);
     }
 
     // Crear el asset
     const asset = await this.prisma.asset.create({
       data: {
-        domain: input.domain,
+        domain: normalizedDomain,
         companyId: input.companyId,
         isActive: input.isActive ?? true,
       },
@@ -132,6 +135,27 @@ export class AssetsService {
   }
 
   /**
+   * Normalizar dominio removiendo protocolo, www, y barras
+   */
+  private normalizeDomain(domain: string): string {
+    let normalized = domain.trim().toLowerCase();
+    
+    // Remover protocolo (http://, https://, etc.)
+    normalized = normalized.replace(/^(https?:\/\/)?/, '');
+    
+    // Remover barras finales
+    normalized = normalized.replace(/\/+$/, '');
+    
+    // Remover path (cualquier cosa después de la primera barra)
+    normalized = normalized.split('/')[0];
+    
+    // Remover puerto si existe
+    normalized = normalized.split(':')[0];
+    
+    return normalized;
+  }
+
+  /**
    * Validar formato de dominio
    */
   private isValidDomain(domain: string): boolean {
@@ -188,14 +212,20 @@ export class AssetsService {
       },
     });
 
-    // Límites por plan
-    const limits = {
-      TRIAL: 3,         // 3 dominios en trial
-      STARTER: 10,      // 10 dominios en starter  
-      PROFESSIONAL: 50, // 50 dominios en professional
+    // Límites por plan (sincronizados con frontend)
+    const limits: Record<string, number> = {
+      TRIAL: 1,         // 1 dominio en trial
+      STARTER: 1,       // 1 dominio en starter  
+      GROWTH: 3,        // 3 dominios en growth
+      PRO: 999,         // Ilimitado en pro
     };
 
-    const maxAssets = limits[user.subscription.plan] || 0;
+    const maxAssets = limits[user.subscription.plan] || 1;
+
+    // Si el plan es PRO (999), considerarlo ilimitado
+    if (maxAssets === 999) {
+      return true;
+    }
 
     return totalAssets < maxAssets;
   }
