@@ -84,12 +84,14 @@ const GET_COMPANY_SCANS = gql`
 
 const GET_USER_SUBSCRIPTION = gql`
   query GetUserSubscription {
-    userProfile {
+    me {
       id
       subscription {
         id
         plan
         status
+        currentPeriodStart
+        currentPeriodEnd
       }
     }
   }
@@ -229,7 +231,7 @@ export function CompaniesPage() {
   });
 
   // Obtener límites del plan actual
-  const userPlan = subscriptionData?.userProfile?.subscription?.plan || 'TRIAL';
+  const userPlan = subscriptionData?.me?.subscription?.plan || 'TRIAL';
   const { data: planLimitsData } = useQuery(GET_PLAN_LIMITS, {
     variables: { plan: userPlan },
     skip: !userPlan,
